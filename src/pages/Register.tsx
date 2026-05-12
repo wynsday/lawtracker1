@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react'
+import { type FormEvent, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authRegister } from '../lib/authApi'
 
@@ -21,6 +21,11 @@ function EyeOff() {
 
 export default function Register() {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    return () => { document.documentElement.removeAttribute('data-theme') }
+  }, [])
 
   const [username,      setUsername]      = useState('')
   const [password,      setPassword]      = useState('')

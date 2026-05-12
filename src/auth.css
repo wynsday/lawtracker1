@@ -7,38 +7,44 @@
   justify-content: center;
   background: var(--color-bg-secondary);
   padding: 1rem;
+  font-family: 'Nunito', sans-serif;
 }
 
 .auth-card {
-  background: var(--color-bg-primary);
-  border: .5px solid var(--color-border-light);
+  background: var(--color-card, #2a2840);
+  border: 1px solid var(--color-border-light);
+  border-top: 3px solid var(--michigan-bg);
   border-radius: var(--radius-lg);
   padding: 2rem 2rem 1.75rem;
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.35);
 }
 
 .auth-wordmark {
+  font-family: 'Quicksand', sans-serif;
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
   color: var(--color-text-tertiary);
   margin-bottom: 1.5rem;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .auth-title {
-  font-size: 18px;
-  font-weight: 600;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
   color: var(--color-text-primary);
   margin-bottom: .25rem;
 }
 
 .auth-subtitle {
+  font-family: 'Nunito', sans-serif;
   font-size: 13px;
   color: var(--color-text-tertiary);
   margin-bottom: 1.5rem;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .auth-field {
@@ -47,22 +53,23 @@
 
 .auth-label {
   display: block;
+  font-family: 'Quicksand', sans-serif;
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: .05em;
+  letter-spacing: .07em;
   color: var(--color-text-tertiary);
   margin-bottom: .4rem;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .auth-input {
   width: 100%;
-  font-family: var(--font-sans);
+  font-family: 'Nunito', sans-serif;
   font-size: 14px;
   padding: 8px 11px;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border-medium);
-  background: var(--color-bg-primary);
+  background: var(--color-bg-secondary);
   color: var(--color-text-primary);
   outline: none;
   transition: border-color .15s;
@@ -74,26 +81,28 @@
 
 .auth-input::placeholder {
   color: var(--color-text-tertiary);
+  font-family: 'Nunito', sans-serif;
 }
 
 .auth-btn {
   display: block;
   width: 100%;
-  font-family: var(--font-sans);
+  font-family: 'Quicksand', sans-serif;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   padding: 9px 16px;
   border-radius: var(--radius-md);
   border: none;
-  background: var(--color-text-primary);
-  color: var(--color-bg-primary);
+  background: var(--michigan-bg);
+  color: white;
   cursor: pointer;
   transition: opacity .15s;
   margin-top: .25rem;
   text-align: center;
+  letter-spacing: .02em;
 }
 
-.auth-btn:hover:not(:disabled) { opacity: .82; }
+.auth-btn:hover:not(:disabled) { opacity: .85; }
 .auth-btn:disabled { opacity: .4; cursor: default; }
 
 .auth-btn-secondary {
@@ -108,6 +117,7 @@
 }
 
 .auth-notice {
+  font-family: 'Nunito', sans-serif;
   font-size: 13px;
   padding: 8px 12px;
   border-radius: var(--radius-md);
@@ -134,6 +144,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  font-family: 'Nunito', sans-serif;
   font-size: 13px;
   color: var(--color-text-secondary);
   margin-bottom: .85rem;
@@ -153,14 +164,15 @@
   background: none;
   border: none;
   cursor: pointer;
+  font-family: 'Quicksand', sans-serif;
   font-size: 13px;
+  font-weight: 600;
   color: var(--color-text-tertiary);
   padding: 0;
   margin-bottom: 1.25rem;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-family: var(--font-sans);
 }
 
 .auth-back:hover { color: var(--color-text-primary); }
@@ -169,10 +181,11 @@
   background: none;
   border: none;
   cursor: pointer;
+  font-family: 'Quicksand', sans-serif;
   font-size: 13px;
+  font-weight: 600;
   color: var(--michigan-bg);
   padding: 0;
-  font-family: var(--font-sans);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -186,6 +199,7 @@
 }
 
 .auth-footer {
+  font-family: 'Nunito', sans-serif;
   text-align: center;
   font-size: 13px;
   color: var(--color-text-tertiary);
@@ -195,13 +209,14 @@
 
 .auth-footer a,
 .auth-footer-link {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
   color: var(--michigan-bg);
   text-decoration: none;
   cursor: pointer;
   background: none;
   border: none;
   font-size: 13px;
-  font-family: var(--font-sans);
   padding: 0;
 }
 
@@ -209,8 +224,8 @@
 .auth-footer-link:hover { text-decoration: underline; }
 
 .auth-username-display {
+  font-family: 'Nunito', sans-serif;
   font-size: 14px;
-  font-weight: 500;
   color: var(--color-text-primary);
   margin-bottom: 1.25rem;
 }
@@ -237,7 +252,6 @@
   display: flex;
   align-items: center;
   line-height: 1;
-  font-family: var(--font-sans);
 }
 
 .auth-eye-btn:hover { color: var(--color-text-secondary); }
@@ -371,7 +385,7 @@
   border: none;
   cursor: pointer;
   padding: 0;
-  font-family: var(--font-sans);
+  font-family: 'Nunito', sans-serif;
 }
 
 .ts-swatch-box {
@@ -409,7 +423,7 @@
   cursor: pointer;
   color: rgba(255,255,255,.55);
   font-size: 12px;
-  font-family: var(--font-sans);
+  font-family: 'Quicksand', sans-serif;
   padding: 4px 10px;
   border-radius: 11px;
   white-space: nowrap;
@@ -766,6 +780,7 @@
 .home-rep-card--soon[data-party="republican"]  { border-color: #C00000; }
 .home-rep-card--soon[data-party="independent"] { border-color: #808080; }
 .home-rep-card--soon[data-party="green"]       { border-color: #00B050; }
+.home-rep-card--soon[data-party="republican"]  { border-color: #C00000; }
 .home-rep-card--soon[data-party="libertarian"] { border-color: #FFC000; }
 .home-rep-card--soon[data-party="other"]       { border-color: #B597D5; }
 .home-rep-card--soon[data-party="brown"]       { border-color: #8B4513; }

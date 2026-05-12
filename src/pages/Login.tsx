@@ -27,6 +27,11 @@ export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    return () => { document.documentElement.removeAttribute('data-theme') }
+  }, [])
+
   // Redirect if already signed in
   useEffect(() => {
     if (ready && user) navigate('/', { replace: true })
