@@ -155,7 +155,7 @@ body {
 .chips { display: flex; flex-wrap: wrap; gap: 5px; }
 
 .chip {
-  font-size: 13px; padding: 4px 13px;
+  font-size: 14px; padding: 4px 13px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--color-border-medium);
   cursor: pointer;
@@ -186,7 +186,7 @@ body {
 .chip[data-f="city-council"] .chip-dot { background: var(--office-council); }
 .chip[data-f="county-board"] .chip-dot { background: var(--office-county); }
 
-.count { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 0.6rem; }
+.count { font-size: 13px; color: var(--color-text-tertiary); margin-bottom: 0.6rem; }
 
 .bill {
   position: relative; overflow: hidden;

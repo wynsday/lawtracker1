@@ -58,7 +58,25 @@ export default function Register() {
   }
 
   return (
-    <div className="auth-page">
+    <>
+      <button
+        onClick={() => navigate('/')}
+        style={{
+          position: 'fixed', top: 12, left: 12, zIndex: 100,
+          background: '#4F4262', color: '#fff',
+          border: 'none', borderRadius: 20, padding: '5px 9px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer',
+          boxShadow: '0 2px 8px rgba(0,0,0,.25)',
+        }}
+        aria-label="Go to home"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </button>
+      <div className="auth-page">
       <div className="auth-card">
         <div className="auth-wordmark">Women for Shared Progress</div>
         <div className="auth-title">Create account</div>
@@ -164,5 +182,6 @@ export default function Register() {
         </div>
       </div>
     </div>
+    </>
   )
 }
