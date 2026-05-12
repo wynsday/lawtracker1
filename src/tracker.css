@@ -1,0 +1,358 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-bg-primary:   #ffffff;
+  --color-bg-secondary: #f5f5f3;
+  --color-bg-info:      #e6f1fb;
+  --color-bg-success:   #eaf3de;
+  --color-bg-danger:    #fcebeb;
+  --color-bg-warning:   #faeeda;
+  --color-bg-neutral:   #f1efe8;
+  --color-text-primary:   #1a1a18;
+  --color-text-secondary: #5f5e5a;
+  --color-text-tertiary:  #888780;
+  --color-text-info:      #0c447c;
+  --color-text-success:   #27500a;
+  --color-text-danger:    #791f1f;
+  --color-text-warning:   #633806;
+  --color-text-neutral:   #444441;
+  --color-border-light:   rgba(0,0,0,0.1);
+  --color-border-medium:  rgba(0,0,0,0.18);
+  --federal-bg:    #1b2d56;
+  --federal-text:  #c8dff5;
+  --michigan-bg:   #0073cf;
+  --michigan-text: #ffffff;
+  --local-bg:      #2a6b3a;
+  --local-text:    #dff0e4;
+  --stalled-bg:    #e8e6e0;
+  --stalled-text:  #888780;
+  --pipe-done:     #378add;
+  --pipe-curr:     #185fa5;
+  --pipe-future:   #c8c7c0;
+  --bar-con:       #B81616;
+  --bar-lib:       #1A3E9C;
+  --bar-ctr:       #5C14B8;
+  --party-democrat:    #00B0F0;
+  --party-republican:  #C00000;
+  --party-independent: #808080;
+  --party-green:       #00B050;
+  --party-libertarian: #FFC000;
+  --party-other:       #B597D5;
+  --party-brown:       #8B4513;
+  --wsp-green:         #00B050;
+  --wsp-blue:          #00B0F0;
+  --wsp-purple-light:  #B597D5;
+  --wsp-purple-dark:   #4F4262;
+  --wsp-orange:        #E97132;
+  --wsp-teal:          #03B9D7;
+  --wsp-yellow:        #FFC000;
+  --wsp-red:           #C00000;
+  --color-bg-dark:     #1e1c2e;
+  --color-bg-light:    #f5f0ff;
+  --color-card-dark:   #2a2840;
+  --color-card-light:  #ffffff;
+  --font-calibri:  Calibri, 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-pill:20px;
+  --font-sans: system-ui, -apple-system, sans-serif;
+  --office-gov:     #1e6b1e;
+  --office-mi-s:    #0073cf;
+  --office-mi-h:    #3a8fd9;
+  --office-com:     #888780;
+  --office-us-s:    #1b2d56;
+  --office-pres:    #7a1515;
+  --office-mayor:   #8b4500;
+  --office-council: #006666;
+  --office-county:  #5a3d1a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-primary:   #1e1e1c;
+    --color-bg-secondary: #272725;
+    --color-bg-info:      #042c53;
+    --color-bg-success:   #173404;
+    --color-bg-danger:    #501313;
+    --color-bg-warning:   #412402;
+    --color-bg-neutral:   #2c2c2a;
+    --color-text-primary:   #f0ede6;
+    --color-text-secondary: #b4b2a9;
+    --color-text-tertiary:  #888780;
+    --color-text-info:      #b5d4f4;
+    --color-text-success:   #c0dd97;
+    --color-text-danger:    #f7c1c1;
+    --color-text-warning:   #fac775;
+    --color-text-neutral:   #d3d1c7;
+    --color-border-light:   rgba(255,255,255,0.1);
+    --color-border-medium:  rgba(255,255,255,0.18);
+    --federal-bg:    #0c2044;
+    --federal-text:  #b5d4f4;
+    --michigan-bg:   #004f8f;
+    --michigan-text: #d4eaff;
+    --local-bg:      #1a4a26;
+    --local-text:    #a0d8b0;
+    --stalled-bg:    #2c2c2a;
+    --stalled-text:  #888780;
+    --pipe-done:     #85b7eb;
+    --pipe-curr:     #b5d4f4;
+    --pipe-future:   #444441;
+    --bar-con:       #C84040;
+    --bar-lib:       #3060C0;
+    --bar-ctr:       #7228CC;
+    --office-gov:    #3aa83a;
+    --office-mi-s:   #4a90d9;
+    --office-mi-h:   #6aaae0;
+    --office-com:    #aaa9a2;
+    --office-us-s:   #6a8fc0;
+    --office-pres:   #c05050;
+    --office-mayor:  #cc7722;
+    --office-council:#009999;
+    --office-county: #a07040;
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  padding: 1.5rem 1rem;
+  max-width: 920px;
+  margin: 0 auto;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+#root { max-width: 920px; margin: 0 auto; }
+
+.page-header    { margin-bottom: 1.25rem; }
+.page-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.page-title     { font-size: 20px; font-weight: 500; margin-bottom: 3px; }
+.page-subtitle  { font-size: 13px; color: var(--color-text-tertiary); }
+
+.search-wrap { flex-shrink: 0; padding-top: 2px; }
+.search-input {
+  font-family: var(--font-sans); font-size: 13px;
+  padding: 5px 12px 5px 30px; border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-medium);
+  background: var(--color-bg-primary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%23888780' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E") no-repeat 10px center;
+  color: var(--color-text-primary); outline: none; width: 190px;
+  transition: border-color 0.15s, width 0.2s;
+}
+.search-input:focus { border-color: var(--michigan-bg); width: 230px; }
+.search-input::placeholder { color: var(--color-text-tertiary); }
+
+.filter-group-city { margin-top: -3px; }
+.fg-indent { padding-left: 12px; color: var(--color-text-tertiary); font-size: 10px; }
+
+.filter-groups  { margin-bottom: 1rem; }
+.filter-group   { margin-bottom: 7px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.fg-label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--color-text-tertiary); white-space: nowrap;
+  min-width: 120px; font-weight: 500; padding-top: 3px;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.chip {
+  font-size: 13px; padding: 4px 13px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-medium);
+  cursor: pointer;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+  font-family: var(--font-calibri);
+  font-weight: 600;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.chip:hover { background: var(--color-bg-neutral); border-color: var(--color-text-tertiary); }
+.chip.active { background: var(--color-text-primary); color: var(--color-bg-primary); border-color: transparent; }
+.chip.active:hover { filter: brightness(1.15); }
+
+.chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.chip.active .chip-dot { opacity: 0.7; }
+
+.chip[data-f="liberal"]      .chip-dot { background: var(--bar-lib); border-radius: 2px; }
+.chip[data-f="center"]       .chip-dot { background: var(--bar-ctr); border-radius: 2px; }
+.chip[data-f="conservative"] .chip-dot { background: var(--bar-con); border-radius: 2px; }
+
+.chip[data-f="governor"]     .chip-dot { background: var(--office-gov); }
+.chip[data-f="mi-senate"]    .chip-dot { background: var(--office-mi-s); }
+.chip[data-f="mi-house"]     .chip-dot { background: var(--office-mi-h); }
+.chip[data-f="committee"]    .chip-dot { background: var(--office-com); }
+.chip[data-f="us-senate"]    .chip-dot { background: var(--office-us-s); }
+.chip[data-f="mayor"]        .chip-dot { background: var(--office-mayor); }
+.chip[data-f="city-council"] .chip-dot { background: var(--office-council); }
+.chip[data-f="county-board"] .chip-dot { background: var(--office-county); }
+
+.count { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 0.6rem; }
+
+.bill {
+  position: relative; overflow: hidden;
+  border: 0.5px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: calc(40px + 0.65rem) 1.25rem 1rem 1.25rem;
+  margin-bottom: 10px;
+  background: var(--color-bg-primary);
+}
+
+.policy-bar { position: absolute; top: 0; left: 0; right: 0; height: 40px; }
+.policy-bar-label {
+  position: absolute; bottom: 5px; left: 12px;
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em;
+  color: rgba(255,255,255,0.85); font-weight: bold;
+  font-family: var(--font-calibri); pointer-events: none; white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.7), 0 0 8px rgba(0,0,0,0.4);
+}
+
+.copy-btn {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(255,255,255,0.18); border: none; cursor: pointer;
+  color: rgba(255,255,255,0.7); padding: 4px 5px; border-radius: 4px;
+  display: flex; align-items: center; z-index: 2; transition: all 0.15s; line-height: 1;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+.copy-btn:hover  { background: rgba(255,255,255,0.38); color: #ffffff; }
+.copy-btn.copied { color: #33CC33; background: rgba(255,255,255,0.25); }
+
+.card-top-tags {
+  position: absolute; top: 9px; right: 46px;
+  display: flex; gap: 6px; align-items: center; z-index: 1; flex-wrap: nowrap;
+}
+
+.tag {
+  font-size: 13px; padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap; line-height: 1.55; font-weight: 400;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.45), 0 0 0 0.5px rgba(0,0,0,0.12);
+}
+.tag-fed     { background: var(--federal-bg);  color: var(--federal-text); }
+.tag-mi      { background: var(--michigan-bg); color: var(--michigan-text); }
+.tag-local   { background: var(--local-bg);    color: var(--local-text); }
+.tag-now     { background: var(--color-bg-danger);  color: var(--color-text-danger); }
+.tag-months  { background: var(--color-bg-warning); color: var(--color-text-warning); }
+.tag-year    { background: var(--color-bg-neutral); color: var(--color-text-neutral); }
+.tag-stalled { background: rgba(51,204,51,0.12); color: #33CC33; }
+
+.amend-tag {
+  font-size: 11px; padding: 1px 6px; border-radius: 8px;
+  background: var(--color-bg-secondary); color: var(--color-text-secondary);
+  margin-left: 3px; border: 0.5px solid var(--color-border-light);
+  display: inline-block; vertical-align: middle;
+}
+
+.bill-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); line-height: 1.4; margin-bottom: 0.5rem; }
+.bill-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.65; margin-bottom: 0.7rem; }
+
+.office-badge {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--color-text-tertiary); font-family: var(--font-calibri); font-weight: 600;
+  margin-top: 0.5rem;
+}
+.office-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.od-gov     { background: var(--office-gov); }
+.od-mis     { background: var(--office-mi-s); }
+.od-mih     { background: var(--office-mi-h); }
+.od-com     { background: var(--office-com); }
+.od-uss     { background: var(--office-us-s); }
+.od-pres    { background: var(--office-pres); }
+.od-mayor   { background: var(--office-mayor); }
+.od-council { background: var(--office-council); }
+.od-county  { background: var(--office-county); }
+
+.pipeline-section { margin-bottom: 0.75rem; }
+.pipeline-head {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--color-text-tertiary); margin-bottom: 7px; font-weight: 500;
+}
+.pipeline { display: flex; align-items: flex-start; overflow-x: auto; padding-bottom: 2px; }
+.pipe-step {
+  display: flex; flex-direction: column; align-items: center;
+  flex: 1; min-width: 56px; position: relative;
+}
+.pipe-step:not(:last-child)::after {
+  content: ''; position: absolute;
+  top: 4px; left: calc(50% + 6px); right: calc(-50% + 6px);
+  height: 1.5px; background: var(--pipe-future); z-index: 0;
+}
+.pipe-step.done:not(:last-child)::after { background: var(--pipe-done); }
+.pipe-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1.5px solid var(--pipe-future);
+  background: var(--color-bg-primary);
+  z-index: 1; position: relative; flex-shrink: 0; margin-bottom: 5px;
+}
+.pipe-step.done    .pipe-dot { background: var(--pipe-done); border-color: var(--pipe-done); }
+.pipe-step.curr    .pipe-dot { background: var(--pipe-curr); border-color: var(--pipe-curr); box-shadow: 0 0 0 3px rgba(24,95,165,0.18); }
+.pipe-step.stalled .pipe-dot { background: var(--stalled-text); border-color: var(--stalled-text); }
+.pipe-label {
+  font-size: 9px; text-align: center; line-height: 1.3;
+  color: var(--pipe-future); max-width: 62px; word-break: break-word;
+}
+.pipe-step.done    .pipe-label { color: var(--color-text-tertiary); }
+.pipe-step.curr    .pipe-label { color: var(--pipe-curr); font-weight: 600; font-size: 10px; }
+.pipe-step.stalled .pipe-label { color: var(--stalled-text); font-weight: 600; font-size: 10px; }
+.pipe-date {
+  font-size: 8px; margin-top: 2px; font-weight: 700;
+  color: var(--pipe-done); text-align: center; white-space: nowrap;
+}
+.pipe-step.curr    .pipe-date { color: var(--pipe-curr); }
+.pipe-step.future  .pipe-date { color: var(--pipe-future); }
+.stage-note { font-size: 11px; color: var(--color-text-tertiary); margin-top: 5px; font-style: italic; }
+
+.meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: 12px; margin-bottom: 0.75rem; }
+.meta-grid .lbl { color: var(--color-text-tertiary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+.meta-grid .val { color: var(--color-text-secondary); line-height: 1.5; }
+.full-width { grid-column: 1 / -1; }
+
+.deciding-divider { display: flex; align-items: center; gap: 8px; margin: 0.85rem 0 0.55rem; }
+.deciding-divider::before, .deciding-divider::after { content: ''; flex: 1; height: 0.5px; background: var(--color-border-light); }
+.deciding-divider span { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-tertiary); white-space: nowrap; font-weight: 500; }
+
+.decision-item { padding: 5px 0 5px 14px; font-size: 12px; color: var(--color-text-secondary); position: relative; line-height: 1.55; border-bottom: 0.5px solid var(--color-border-light); }
+.decision-item:last-child { border-bottom: none; }
+.decision-item::before { content: '\2192'; position: absolute; left: 0; color: var(--color-text-tertiary); font-size: 11px; top: 6px; }
+.decision-label { font-weight: 500; color: var(--color-text-primary); }
+
+.download-btn {
+  font-family: var(--font-sans); font-size: 12px;
+  padding: 5px 13px; border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-medium);
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  cursor: pointer; transition: background 0.1s, border-color 0.1s;
+  display: inline-flex; align-items: center; gap: 5px;
+  flex-shrink: 0;
+}
+.download-btn:hover { background: var(--color-bg-neutral); border-color: var(--color-text-tertiary); }
+
+.header-actions { display: flex; align-items: center; gap: 8px; padding-top: 2px; }
+
+.empty { font-size: 13px; color: var(--color-text-tertiary); padding: 1.5rem 0; text-align: center; }
+.loading { font-size: 13px; color: var(--color-text-tertiary); padding: 1.5rem 0; text-align: center; }
+
+/* ── Return-to-top button on bill cards ─────── */
+.bill-scroll-top {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0,0,0,.06);
+  border: 1px solid var(--color-border-medium);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+  transition: background .15s, color .15s, border-color .15s;
+  z-index: 1;
+}
+.bill-scroll-top:hover {
+  background: var(--michigan-bg);
+  color: white;
+  border-color: transparent;
+}
