@@ -343,8 +343,10 @@ function parseOS(ua: string): string {
 export default function Home() {
   const { user, ready, signOut } = useAuth()
   const navigate                  = useNavigate()
-  const [isDark, setIsDark]               = useState(true)
-  const [presidentMode, setPresidentMode] = useState<'president' | 'election'>('president')
+  const [isDark, setIsDark]               = useState(() => localStorage.getItem('wsp-theme') !== 'light')
+  const [presidentMode, setPresidentMode] = useState<'president' | 'election'>(() =>
+    localStorage.getItem('wsp-president-mode') === 'election' ? 'election' : 'president'
+  )
   const [showSeats, setShowSeats]         = useState(false)
   const [showFeedback, setShowFeedback]   = useState(false)
   const [feedbackText, setFeedbackText]   = useState('')
@@ -353,8 +355,13 @@ export default function Home() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
+    localStorage.setItem('wsp-theme', isDark ? 'dark' : 'light')
     return () => { document.documentElement.removeAttribute('data-theme') }
   }, [isDark])
+
+  useEffect(() => {
+    localStorage.setItem('wsp-president-mode', presidentMode)
+  }, [presidentMode])
 
   if (!ready) return null
 

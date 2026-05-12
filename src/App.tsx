@@ -13,6 +13,7 @@ import Profile                 from './pages/Profile'
 import Alerts                  from './pages/Alerts'
 import Watching                from './pages/Watching'
 import Archive                 from './pages/Archive'
+import AlertSettings           from './pages/AlertSettings'
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
       <Route path="/alerts"                 element={<Alerts />} />
       <Route path="/watching"               element={<Watching />} />
       <Route path="/archive"               element={<Archive />} />
+      <Route path="/alerts/settings"       element={<AlertSettings />} />
     </Routes>
   )
 }
