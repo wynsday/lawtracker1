@@ -1,7 +1,22 @@
 import { useNavigate } from 'react-router-dom'
 
+const ENTRIES = [
+  {
+    version: 'v0.1 — May 2026',
+    items: [
+      '46 bills tracked across federal and Michigan state levels',
+      'Home dashboard with bill pipeline, representatives panel, and election cycle toggle',
+      'Light and dark mode',
+      'Account registration and secure login',
+      'Profile page with address and district lookup',
+      'Feedback button',
+    ],
+  },
+]
+
 export default function Changelog() {
   const navigate = useNavigate()
+
   return (
     <div style={{
       minHeight: '100dvh',
@@ -28,12 +43,41 @@ export default function Changelog() {
         </svg>
       </button>
 
-      <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 16 }}>
-        Change Log
-      </h1>
-      <p style={{ fontSize: 16, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-        Coming soon
-      </p>
+      <div style={{ maxWidth: 560 }}>
+        <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 6, marginTop: 0 }}>
+          Change Log
+        </h1>
+        <p style={{ fontSize: 14, color: 'var(--color-text-tertiary)', marginBottom: 36, lineHeight: 1.6 }}>
+          A record of what's been built and shipped.
+        </p>
+
+        {ENTRIES.map(entry => (
+          <div key={entry.version} style={{
+            background: 'var(--color-card, #fff)',
+            border: '.5px solid var(--color-border-light)',
+            borderRadius: 12,
+            padding: '22px 24px',
+            marginBottom: 20,
+          }}>
+            <h2 style={{
+              fontFamily: "'Quicksand', sans-serif",
+              fontSize: 17,
+              fontWeight: 700,
+              margin: '0 0 16px 0',
+              color: 'var(--color-text-primary)',
+            }}>
+              {entry.version}
+            </h2>
+            <ul style={{ margin: 0, padding: '0 0 0 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {entry.items.map(item => (
+                <li key={item} style={{ fontSize: 15, color: 'var(--color-text-secondary)', lineHeight: 1.55 }}>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
