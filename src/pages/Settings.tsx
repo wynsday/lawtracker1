@@ -1,7 +1,17 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export default function Settings() {
   const navigate = useNavigate()
+  useEffect(() => {
+    const theme = localStorage.getItem('wsp-theme') ?? 'dark'
+    document.documentElement.setAttribute('data-theme', theme)
+    document.documentElement.setAttribute('data-page', 'content')
+    return () => {
+      document.documentElement.removeAttribute('data-theme')
+      document.documentElement.removeAttribute('data-page')
+    }
+  }, [])
   return (
     <div style={{
       minHeight: '100dvh',
@@ -28,10 +38,10 @@ export default function Settings() {
         </svg>
       </button>
 
-      <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 12 }}>
+      <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 12, color: 'var(--page-title)' }}>
         Settings
       </h1>
-      <p style={{ fontSize: 18, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+      <p style={{ fontSize: 18, color: 'var(--page-title)', lineHeight: 1.6 }}>
         Settings page coming soon.
       </p>
     </div>

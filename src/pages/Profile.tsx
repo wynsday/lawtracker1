@@ -108,7 +108,7 @@ const labelStyle: React.CSSProperties = {
   fontFamily: "'Quicksand', sans-serif",
   fontSize: 13,
   fontWeight: 700,
-  color: 'var(--color-text-secondary)',
+  color: 'var(--page-subtitle)',
   marginBottom: 6,
   textTransform: 'uppercase',
   letterSpacing: '.5px',
@@ -119,6 +119,16 @@ export default function Profile() {
   const [data, setData] = useState<ProfileData>(load)
   const [saved, setSaved] = useState(false)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    const theme = localStorage.getItem('wsp-theme') ?? 'dark'
+    document.documentElement.setAttribute('data-theme', theme)
+    document.documentElement.setAttribute('data-page', 'content')
+    return () => {
+      document.documentElement.removeAttribute('data-theme')
+      document.documentElement.removeAttribute('data-page')
+    }
+  }, [])
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
@@ -175,7 +185,7 @@ export default function Profile() {
 
       <div style={{ maxWidth: 480 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, margin: 0 }}>
+          <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, margin: 0, color: 'var(--color-text-primary)' }}>
             My Profile
           </h1>
           <span style={{
@@ -189,7 +199,7 @@ export default function Profile() {
           </span>
         </div>
 
-        <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 32, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 13, color: 'var(--color-text-primary)', marginBottom: 32, lineHeight: 1.6 }}>
           Location information is used to populate Your Representatives on your dashboard. If the outline is green, we have what we need and you don't have to fill anything else out for the pipeline to do its job.
         </p>
 
@@ -274,7 +284,7 @@ export default function Profile() {
           </div>
         </div>
 
-        <p style={{ fontSize: 14, color: 'var(--color-text-secondary)', marginTop: 16, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 14, color: 'var(--page-title)', marginTop: 16, lineHeight: 1.6 }}>
           Your address is used for district lookups and is stored only on this device.
         </p>
       </div>

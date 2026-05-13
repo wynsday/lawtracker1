@@ -1,7 +1,17 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export default function AlertSettings() {
   const navigate = useNavigate()
+  useEffect(() => {
+    const theme = localStorage.getItem('wsp-theme') ?? 'dark'
+    document.documentElement.setAttribute('data-theme', theme)
+    document.documentElement.setAttribute('data-page', 'content')
+    return () => {
+      document.documentElement.removeAttribute('data-theme')
+      document.documentElement.removeAttribute('data-page')
+    }
+  }, [])
   return (
     <div style={{
       minHeight: '100dvh',
@@ -28,10 +38,10 @@ export default function AlertSettings() {
         </svg>
       </button>
 
-      <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 16 }}>
+      <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 16, color: 'var(--page-title)' }}>
         Alert Settings
       </h1>
-      <p style={{ fontSize: 16, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+      <p style={{ fontSize: 16, color: 'var(--page-title)', lineHeight: 1.6 }}>
         Coming soon
       </p>
     </div>

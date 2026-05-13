@@ -18,6 +18,9 @@
   --color-text-neutral:   #444441;
   --color-border-light:   rgba(0,0,0,0.1);
   --color-border-medium:  rgba(0,0,0,0.18);
+  --color-teal:           #0D5C7A;
+  --page-title:           #4F4262;
+  --page-subtitle:        #0D5C7A;
   --federal-bg:    #1b2d56;
   --federal-text:  #c8dff5;
   --michigan-bg:   #0073cf;
@@ -86,6 +89,8 @@
     --color-text-neutral:   #d3d1c7;
     --color-border-light:   rgba(255,255,255,0.1);
     --color-border-medium:  rgba(255,255,255,0.18);
+    --page-title:           #FFFFFF;
+    --page-subtitle:        #B597D5;
     --federal-bg:    #0c2044;
     --federal-text:  #b5d4f4;
     --michigan-bg:   #004f8f;
@@ -111,6 +116,60 @@
     --office-county: #a07040;
   }
 }
+
+[data-theme="dark"] {
+  --color-bg-primary:   #1e1e1c;
+  --color-bg-secondary: #272725;
+  --color-bg-info:      #042c53;
+  --color-bg-success:   #173404;
+  --color-bg-danger:    #501313;
+  --color-bg-warning:   #412402;
+  --color-bg-neutral:   #2c2c2a;
+  --color-text-primary:   #f0ede6;
+  --color-text-secondary: #b4b2a9;
+  --color-text-tertiary:  #888780;
+  --color-text-info:      #b5d4f4;
+  --color-text-success:   #c0dd97;
+  --color-text-danger:    #f7c1c1;
+  --color-text-warning:   #fac775;
+  --color-text-neutral:   #d3d1c7;
+  --color-border-light:   rgba(255,255,255,0.1);
+  --color-border-medium:  rgba(255,255,255,0.18);
+  --page-title:           #FFFFFF;
+  --page-subtitle:        #B597D5;
+  --federal-bg:    #0c2044;
+  --federal-text:  #b5d4f4;
+  --michigan-bg:   #004f8f;
+  --michigan-text: #d4eaff;
+  --local-bg:      #1a4a26;
+  --local-text:    #a0d8b0;
+  --stalled-bg:    #2c2c2a;
+  --stalled-text:  #888780;
+  --pipe-done:     #85b7eb;
+  --pipe-curr:     #b5d4f4;
+  --pipe-future:   #444441;
+  --bar-con:       #C84040;
+  --bar-lib:       #3060C0;
+  --bar-ctr:       #7228CC;
+  --office-gov:    #3aa83a;
+  --office-mi-s:   #4a90d9;
+  --office-mi-h:   #6aaae0;
+  --office-com:    #aaa9a2;
+  --office-us-s:   #6a8fc0;
+  --office-pres:   #c05050;
+  --office-mayor:  #cc7722;
+  --office-council:#009999;
+  --office-county: #a07040;
+}
+
+[data-theme="light"] {
+  --page-title:    #4F4262;
+  --page-subtitle: #0D5C7A;
+}
+
+[data-theme="dark"][data-page="content"] h1,
+[data-theme="dark"][data-page="content"] h2,
+[data-theme="dark"][data-page="content"] .page-title { color: #B597D5; }
 
 body {
   font-family: var(--font-sans);

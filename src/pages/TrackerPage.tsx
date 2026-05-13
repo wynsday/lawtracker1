@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { ActiveFilters, Bill } from '../types/bill'
 import { useBills } from '../hooks/useBills'
@@ -17,6 +17,12 @@ export default function TrackerPage() {
   const navigate = useNavigate()
   const { bills, loading, error } = useBills(['MI', 'US'])
   const [active, setActive] = useState<ActiveFilters>(DEFAULT_FILTERS)
+
+  useEffect(() => {
+    const theme = localStorage.getItem('wsp-theme') ?? 'dark'
+    document.documentElement.setAttribute('data-theme', theme)
+    return () => { document.documentElement.removeAttribute('data-theme') }
+  }, [])
 
   function handleFilterChange(group: keyof ActiveFilters, value: string) {
     setActive(prev => ({ ...prev, [group]: value }))

@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const ENTRIES = [
@@ -16,6 +17,15 @@ const ENTRIES = [
 
 export default function Changelog() {
   const navigate = useNavigate()
+  useEffect(() => {
+    const theme = localStorage.getItem('wsp-theme') ?? 'dark'
+    document.documentElement.setAttribute('data-theme', theme)
+    document.documentElement.setAttribute('data-page', 'content')
+    return () => {
+      document.documentElement.removeAttribute('data-theme')
+      document.documentElement.removeAttribute('data-page')
+    }
+  }, [])
 
   return (
     <div style={{
@@ -44,10 +54,10 @@ export default function Changelog() {
       </button>
 
       <div style={{ maxWidth: 560 }}>
-        <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 6, marginTop: 0 }}>
+        <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 6, marginTop: 0, color: 'var(--page-title)' }}>
           Change Log
         </h1>
-        <p style={{ fontSize: 14, color: 'var(--color-text-tertiary)', marginBottom: 36, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 14, color: 'var(--page-subtitle)', marginBottom: 36, lineHeight: 1.6 }}>
           A record of what's been built and shipped.
         </p>
 
@@ -64,13 +74,13 @@ export default function Changelog() {
               fontSize: 17,
               fontWeight: 700,
               margin: '0 0 16px 0',
-              color: 'var(--color-text-primary)',
+              color: 'var(--page-title)',
             }}>
               {entry.version}
             </h2>
             <ul style={{ margin: 0, padding: '0 0 0 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
               {entry.items.map(item => (
-                <li key={item} style={{ fontSize: 15, color: 'var(--color-text-secondary)', lineHeight: 1.55 }}>
+                <li key={item} style={{ fontSize: 15, color: 'var(--page-title)', lineHeight: 1.55 }}>
                   {item}
                 </li>
               ))}

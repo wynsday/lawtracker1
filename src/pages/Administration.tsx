@@ -1,7 +1,13 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export default function Administration() {
   const navigate = useNavigate()
+  useEffect(() => {
+    const theme = localStorage.getItem('wsp-theme') ?? 'dark'
+    document.documentElement.setAttribute('data-theme', theme)
+    return () => { document.documentElement.removeAttribute('data-theme') }
+  }, [])
   return (
     <div style={{
       minHeight: '100dvh',
@@ -28,13 +34,13 @@ export default function Administration() {
         </svg>
       </button>
 
-      <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 4 }}>
+      <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 4, color: 'var(--page-title)' }}>
         Administration
       </h1>
-      <p style={{ fontSize: 14, color: 'var(--color-text-tertiary)', marginBottom: 28 }}>
+      <p style={{ fontSize: 14, color: 'var(--page-subtitle)', marginBottom: 28 }}>
         Cabinet members and senior administration officials
       </p>
-      <p style={{ fontSize: 16, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+      <p style={{ fontSize: 16, color: 'var(--page-title)', lineHeight: 1.6 }}>
         Cabinet and administration member profiles coming soon.
       </p>
     </div>

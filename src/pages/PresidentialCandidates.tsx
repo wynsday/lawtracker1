@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 interface Candidate {
@@ -44,6 +45,11 @@ function fmtDate(iso: string): string {
 
 export default function PresidentialCandidates() {
   const navigate = useNavigate()
+  useEffect(() => {
+    const theme = localStorage.getItem('wsp-theme') ?? 'dark'
+    document.documentElement.setAttribute('data-theme', theme)
+    return () => { document.documentElement.removeAttribute('data-theme') }
+  }, [])
   return (
     <div style={{
       minHeight: '100dvh',
@@ -70,10 +76,10 @@ export default function PresidentialCandidates() {
         </svg>
       </button>
 
-      <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 4 }}>
+      <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 4, color: 'var(--page-title)' }}>
         Presidential Candidates
       </h1>
-      <p style={{ fontSize: 14, color: 'var(--color-text-tertiary)', marginBottom: 28 }}>
+      <p style={{ fontSize: 14, color: 'var(--page-subtitle)', marginBottom: 28 }}>
         Official candidates listed in order of announcement date
       </p>
 

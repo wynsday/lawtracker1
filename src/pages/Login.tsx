@@ -28,7 +28,8 @@ export default function Login() {
   const location = useLocation()
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', 'dark')
+    const theme = localStorage.getItem('wsp-theme') ?? 'dark'
+    document.documentElement.setAttribute('data-theme', theme)
     return () => { document.documentElement.removeAttribute('data-theme') }
   }, [])
 
