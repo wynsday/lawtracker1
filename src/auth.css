@@ -458,8 +458,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding: 28px 180px 24px 24px;
-  gap: 5px;
+  padding: 14px 180px 12px 24px;
+  gap: 3px;
 }
 
 .home-header-org {
@@ -473,7 +473,7 @@
 
 .home-header-title {
   font-family: 'Saira Stencil One', sans-serif;
-  font-size: 36px;
+  font-size: 40px;
   font-weight: 400;
   color: white;
   text-shadow: 0 2px 14px rgba(0,0,0,.5);
