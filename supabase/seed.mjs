@@ -19,7 +19,7 @@ const bills = [
 {
   id:1, state:'US', level:'federal', municipality:null,
   amend:['4th'], urgency:'urgent', policy_bias:22, issues:['surveillance'], ratify_office:'us-senate',
-  stage_dates:['Oct 2023','Jan 2026','Apr 30',null,null,null], stage:3,
+  stage_dates:['2023-10','2026-01','2026-04-30',null,null,null], stage:3,
   stage_note:'45-day clean extension signed by President Trump April 30 — new hard deadline mid-June 2026. House passed a 3-year renewal (235-191, Apr 29) loaded with a CBDC ban that Senate Majority Leader Thune declared dead on arrival. Senate passed a clean 45-day extension instead (unanimous). Senate on recess through May 11 — full reauthorization negotiations resume week of May 12.',
   name:'FISA Section 702 — 45-Day Extension Signed; Full Deal Due Mid-June',
   bill_desc:"The government collects foreign targets' communications abroad — but those sweeps also capture thousands of Americans' texts, emails, and calls each year. The FBI ran 7,413 warrantless searches of American data in 2025 alone, up 35% in one year. Congress has now extended 702 twice in short-term patches — a 10-day stopgap April 17, then a 45-day clean extension April 30 — after the House's 3-year renewal was blocked by the Senate because Speaker Johnson attached a Central Bank Digital Currency ban. Both chambers are now home for recess. The full reform-vs-clean-renewal fight resumes in May.",
@@ -36,7 +36,7 @@ const bills = [
 {
   id:2, state:'US', level:'federal', municipality:null,
   amend:['4th'], urgency:'urgent', policy_bias:50, issues:['surveillance'], ratify_office:'committee',
-  stage_dates:['Mar 2026',null,null,null,null,null], stage:1,
+  stage_dates:['2026-03',null,null,null,null,null], stage:1,
   stage_note:'Senate Judiciary Committee — bipartisan; introduced March 2026; being pushed as the vehicle for FISA reform before the April 30 deadline',
   name:'S. 4082 — Government Surveillance Reform Act (GSRA)',
   bill_desc:'The most comprehensive bipartisan surveillance reform bill in Congress. It would require a judge to approve any search of Americans\' communications collected under FISA 702; ban the government from buying your location history and browsing data from commercial companies without a warrant; and require the secret FISA Court to publish its legal rulings in redacted form so the public knows how the law is being interpreted.',
@@ -53,7 +53,7 @@ const bills = [
 {
   id:3, state:'US', level:'federal', municipality:null,
   amend:['4th'], urgency:'months', policy_bias:55, issues:['surveillance','technology'], ratify_office:'us-senate',
-  stage_dates:['May 2023','Nov 2023','Apr 2026',null,null,null], stage:3,
+  stage_dates:['2023-05','2023-11','2026-04',null,null,null], stage:3,
   stage_note:'Passed House 219-199 with strong bipartisan support — now in Senate; no floor vote scheduled as of April 2026',
   name:'Fourth Amendment Is Not For Sale Act',
   bill_desc:'Right now the government can skip the entire warrant process by simply buying your location history, browsing records, and personal data from data broker companies using taxpayer money. FBI, ICE, DHS, IRS, and the Secret Service have all done this. DHS signed a $1 billion contract with Palantir to build AI-powered surveillance systems using this purchased data. This bill makes buying your data without a court order illegal for any law enforcement or intelligence agency.',
@@ -70,7 +70,7 @@ const bills = [
 {
   id:4, state:'US', level:'federal', municipality:null,
   amend:['1st'], urgency:'stalled', policy_bias:60, issues:['speech'], ratify_office:'committee',
-  stage_dates:['Jan 2025',null,null,null,null,null], stage:1,
+  stage_dates:['2025-01',null,null,null,null,null], stage:1,
   stage_note:'Reintroduced in 119th Congress (2025) — Senate Judiciary Committee; previously blocked by Sen. Tom Cotton after Trump called on Republicans to kill this bill',
   name:'PRESS Act — Federal Shield Law for Journalists',
   bill_desc:"There is no federal law protecting journalists from being forced to reveal their sources or having their phones and email records secretly seized by the government. 49 states have shield laws — Congress does not. This bill would stop the government from secretly subpoenaing your email or phone provider to find out who a journalist talked to, and stop federal courts from jailing reporters who refuse to protect their sources. The House passed it unanimously in 2024.",
@@ -87,7 +87,7 @@ const bills = [
 {
   id:5, state:'US', level:'federal', municipality:null,
   amend:['14th','due'], urgency:'stalled', policy_bias:12, issues:['voting'], ratify_office:'us-senate',
-  stage_dates:['Jan 2025','Jan 2026','Feb 2026',null,null,null], stage:3,
+  stage_dates:['2025-01','2026-01','2026-02',null,null,null], stage:3,
   stage_note:'Passed House 218-213 (Feb 2026) — Senate debate began March 17; filibuster holding with no Democratic crossovers; needs 60 votes, Republicans have 53',
   name:'H.R. 22 — SAVE America Act (Voter Proof-of-Citizenship)',
   bill_desc:'Requires Americans to show a passport, original birth certificate, or naturalization certificate in person to register to vote in federal elections. An estimated 21 million eligible Americans lack ready access to these specific documents, including many elderly Black voters who were never issued birth certificates.',
@@ -104,7 +104,7 @@ const bills = [
 {
   id:6, state:'US', level:'federal', municipality:null,
   amend:['4th'], urgency:'stalled', policy_bias:72, issues:['technology','surveillance','policing'], ratify_office:'committee',
-  stage_dates:['Jul 2025',null,null,null,null,null], stage:1,
+  stage_dates:['2025-07',null,null,null,null,null], stage:1,
   stage_note:'House Judiciary Committee — introduced 2025; sitting without a hearing for over a year as DHS, FBI, and TSA expand facial recognition use',
   name:'H.R. 4695 — Facial Recognition Act of 2025',
   bill_desc:'A facial recognition match alone cannot be the basis for your arrest. Annual accuracy and bias testing required for all government systems. Mass public face surveillance banned. This bill responds to documented wrongful arrests caused by facial recognition errors — errors that studies show are far more common for Black and Brown faces. DHS just signed a $1 billion contract with Palantir that includes AI-powered facial recognition. There is nothing in federal law stopping a police department from building a database of every face that walked past a camera on a public street.',
@@ -123,7 +123,7 @@ const bills = [
 {
   id:7, state:'MI', level:'michigan', municipality:null,
   amend:['4th','due'], urgency:'urgent', policy_bias:80, issues:['immigration'], ratify_office:'mi-senate',
-  stage_dates:['Sep 2025','Feb 2026',null,null,null], stage:2,
+  stage_dates:['2025-09','2026-02',null,null,null], stage:2,
   stage_note:'Senate Civil Rights Committee voted to report SBs 508 & 510 to full Senate — SB 509 still in committee; no full Senate floor vote yet as of April 2026',
   name:'MI SBs 508-510 — ICE Enforcement Limits Package',
   bill_desc:'Three linked bills that draw constitutional lines around how ICE can operate in Michigan. SB 508 bans immigration enforcement at schools, hospitals, churches, and courthouses unless there is a warrant or imminent danger. SB 509 requires a court warrant before any Michigan government entity can hand over personal information for immigration enforcement. SB 510 bans law enforcement officers from wearing masks while interacting with the public in non-undercover situations. All three respond to documented tactics that constitutional law experts say violate the 4th Amendment and due process.',
@@ -140,7 +140,7 @@ const bills = [
 {
   id:8, state:'MI', level:'michigan', municipality:null,
   amend:['1st','due'], urgency:'urgent', policy_bias:52, issues:['speech','policing'], ratify_office:'mi-house',
-  stage_dates:['Jan 2026','Feb 2026','Mar 19',null,null], stage:3,
+  stage_dates:['2026-01','2026-02','2026-03-19',null,null], stage:3,
   stage_note:'Passed Michigan Senate 22-15 with bipartisan support (March 19, 2026) — now in House Judiciary Committee; AG Dana Nessel and Gov. Whitmer are actively pushing for House passage',
   name:'MI SB 502 — Anti-Terrorism Statute Intent Requirement',
   bill_desc:"Michigan's current anti-terrorism law allows someone to be charged based on how their words were perceived by others — even if they were joking, using hyperbole, or making a heated political statement. This bill adds an intent requirement: prosecutors must prove you knowingly or recklessly made a terrorist threat, not just that a listener felt threatened. This directly addresses First and Fourteenth Amendment concerns about vague laws criminalizing protected speech.",
@@ -157,7 +157,7 @@ const bills = [
 {
   id:9, state:'MI', level:'michigan', municipality:null,
   amend:['4th'], urgency:'urgent', policy_bias:78, issues:['immigration'], ratify_office:'committee',
-  stage_dates:['Feb 2026',null,null,null,null], stage:1,
+  stage_dates:['2026-02',null,null,null,null], stage:1,
   stage_note:'Introduced February 2026 — House Judiciary Committee; no hearing scheduled as of April 2026',
   name:'MI HB 5495 — Federal Agent Accountability for 4th Amendment Violations',
   bill_desc:'Removes legal immunity for federal agents in Michigan state courts if they violate the 4th Amendment — specifically for stops, searches, or arrests made on the basis of how someone looks, what language they speak, their perceived accent, religion, gender identity, or political affiliation. Michigan would be among the first states to create state-level legal accountability for federal agents who violate constitutional rights on state soil.',
@@ -174,7 +174,7 @@ const bills = [
 {
   id:10, state:'MI', level:'michigan', municipality:null,
   amend:['4th','due'], urgency:'months', policy_bias:65, issues:['policing'], ratify_office:'mi-house',
-  stage_dates:['Mar 2025','Jan 2026',null,null,null], stage:2,
+  stage_dates:['2025-03','2026-01',null,null,null], stage:2,
   stage_note:'Passed out of Senate Civil Rights, Judiciary & Public Safety Committee — awaiting House vote before December 31, 2026',
   name:'MI SBs 333-343 — Police S.T.A.T. Package',
   bill_desc:'An 11-bill package that would set statewide minimum standards for police conduct in Michigan. Key provisions: use-of-force must be objectively reasonable; officers must attempt de-escalation; strict limits on no-knock warrants; mandatory body cameras with anti-tampering enforcement; and a legal duty to intervene if you witness a fellow officer using excessive force. Michigan has over 600 law enforcement agencies — each currently sets its own standards, or none.',
@@ -191,7 +191,7 @@ const bills = [
 {
   id:11, state:'MI', level:'michigan', municipality:null,
   amend:['14th','due'], urgency:'months', policy_bias:15, issues:['voting'], ratify_office:'committee',
-  stage_dates:['Mar 2026',null,null,null,null], stage:1,
+  stage_dates:['2026-03',null,null,null,null], stage:1,
   stage_note:'Introduced March 2026 — House Elections Committee; can pass the Republican-majority House; will not pass Democratic-controlled Senate under current alignment',
   name:'MI HB 4765 — Proof of Citizenship for Voter Registration',
   bill_desc:"Requires Michigan voters to show a passport, birth certificate, or naturalization document in person to register to vote. Michigan's Deputy Secretary of State warned that standard state driver's licenses — which most people use for ID — would not be accepted under this bill. Voters needing an Enhanced Driver's License would face extra fees. The 14th Amendment's equal protection clause prohibits placing different financial burdens on citizens' voting rights based on what documents they happen to have.",
@@ -208,7 +208,7 @@ const bills = [
 {
   id:12, state:'MI', level:'michigan', municipality:null,
   amend:['due'], urgency:'year', policy_bias:55, issues:['policing'], ratify_office:'committee',
-  stage_dates:['Nov 2025',null,null,null,null], stage:1,
+  stage_dates:['2025-11',null,null,null,null], stage:1,
   stage_note:'House Judiciary Committee pending — bipartisan sponsors; no hearing scheduled as of April 2026',
   name:'MI HBs 5474-5477 — Returning Citizens ID Package',
   bill_desc:"Requires Michigan's Department of Corrections to give every person a driver's license or state ID on the day they are released from prison. Without valid ID, a formerly incarcerated person cannot legally get a job, rent an apartment, open a bank account, or register to vote. The state releases people and then makes it nearly impossible for them to legally reintegrate. Bipartisan sponsors frame this as a 14th Amendment equal protection issue.",
@@ -225,7 +225,7 @@ const bills = [
 {
   id:13, state:'MI', level:'michigan', municipality:null,
   amend:['due'], urgency:'urgent', policy_bias:16, issues:['labor'], ratify_office:'mi-senate',
-  stage_dates:['Jan 2026','Feb 2026','Mar 2026',null,null], stage:3,
+  stage_dates:['2026-01','2026-02','2026-03',null,null], stage:3,
   stage_note:'Passed Michigan House 56-52 (March 2026) — Senate Regulatory Affairs Committee; Senate Majority Leader Singh has signaled opposition to rolling back the voter-approved law',
   name:'MI HB 4001 — Earned Sick Time Employer Exemptions',
   bill_desc:"Michigan voters passed Proposition B in 2018 requiring nearly all employers to provide paid sick leave. The legislature amended it in a lame-duck session the same year to exempt small businesses and seasonal workers. In 2023, the Michigan Supreme Court ruled 5-2 that the lame-duck amendment was unconstitutional — reverting to the voter-approved original, which took full effect in February 2025. HB 4001 attempts to re-create the exemptions the court struck down: exempting employers with fewer than 10 employees, capping accrual at 40 hours annually, and removing family care provisions. Critics argue this is a direct end-run around the Supreme Court.",
@@ -242,7 +242,7 @@ const bills = [
 {
   id:14, state:'MI', level:'michigan', municipality:null,
   amend:[], urgency:'months', policy_bias:50, issues:['labor'], ratify_office:'mi-senate',
-  stage_dates:['Jan 2026','Feb 2026','Mar 2026',null,null], stage:3,
+  stage_dates:['2026-01','2026-02','2026-03',null,null], stage:3,
   stage_note:'Passed Michigan House 62-47 (March 2026) — Senate Transportation Committee hearing scheduled May 2026; Gov. Whitmer has endorsed a $3.1B package',
   name:'MI HBs 4890-4892 — Roads & Bridges Emergency Funding Package',
   bill_desc:"Michigan's roads are among the worst in the nation — the American Society of Civil Engineers consistently gives Michigan roads a D rating. This package authorizes $3.1 billion in bonded funding for critical road and bridge repairs, with a 10-year repayment schedule from existing gas tax revenue. The House added a prevailing wage requirement — contractors on funded projects must pay union-scale wages — which added Democratic votes but stiffened Republican resistance. Every year without a deal, the estimated cost of needed repairs grows by $400 million.",
@@ -259,7 +259,7 @@ const bills = [
 {
   id:15, state:'MI', level:'michigan', municipality:null,
   amend:[], urgency:'months', policy_bias:65, issues:['environment'], ratify_office:'mi-house',
-  stage_dates:['Oct 2025','Jan 2026','Feb 2026',null,null], stage:3,
+  stage_dates:['2025-10','2026-01','2026-02',null,null], stage:3,
   stage_note:'Passed Michigan Senate 26-11 (February 2026) — House Natural Resources Committee; Michigan must file allocation plan with federal EPA by September 2026 to preserve $200M in federal matching funds',
   name:'MI SB 147 — PFAS Contamination Remediation Fund',
   bill_desc:'Michigan has the most PFAS-contaminated sites of any state — over 11,500 locations across 82 counties. PFAS (forever chemicals used in firefighting foam and thousands of consumer products) contaminate drinking water and cause thyroid disease, kidney cancer, and developmental disorders in children. Michigan received $450 million from the 3M PFAS settlement, but without legislation designating the funds, they sit in the general fund. SB 147 dedicates the settlement funds to a Remediation Account and creates a statewide testing program for private wells — where 1 in 5 Michigan residents get their drinking water.',
@@ -276,7 +276,7 @@ const bills = [
 {
   id:16, state:'MI', level:'michigan', municipality:null,
   amend:['due'], urgency:'months', policy_bias:72, issues:['healthcare'], ratify_office:'mi-house',
-  stage_dates:['Sep 2025','Nov 2025','Jan 2026',null,null], stage:3,
+  stage_dates:['2025-09','2025-11','2026-01',null,null], stage:3,
   stage_note:'Passed Michigan Senate 20-17 along party lines (January 2026) — House Insurance & Financial Services Committee; Governor Whitmer has pledged to sign',
   name:'MI SBs 200-203 — Medical Debt Credit Reporting Prohibition',
   bill_desc:'Michigan has 1.8 million residents with medical debt on their credit reports — disproportionately low-income workers, seniors, and people of color. This package bans credit reporting agencies from including medical debt on Michigan residents\' credit reports, stops creditors from using medical debt as a factor in housing or employment decisions, extends the statute of limitations for disputing fraudulent medical billing, and requires hospitals to notify patients of financial assistance programs before sending bills to collection.',
@@ -293,7 +293,7 @@ const bills = [
 {
   id:17, state:'MI', level:'michigan', municipality:null,
   amend:[], urgency:'months', policy_bias:60, issues:['education'], ratify_office:'mi-senate',
-  stage_dates:['Nov 2025','Mar 2026',null,null,null], stage:2,
+  stage_dates:['2025-11','2026-03',null,null,null], stage:2,
   stage_note:'Senate Education Committee approved 5-3 (March 2026) — awaiting full Michigan Senate floor vote; Gov. Whitmer has supported the framework since the Spartan Strong response',
   name:'MI SB 312 — K-12 School Safety & Mental Health Standards Act',
   bill_desc:'Michigan has no state minimum standard requiring schools to have a licensed mental health professional on staff. Following the Oxford High School shooting (2021) and the Michigan State University shooting (2023), SB 312 would mandate one licensed mental health professional for every 250 students by 2028, a school safety coordinator at every building, and threat assessment protocols that must be followed when a student is identified as a risk. It includes $120 million in state appropriation to fund the requirements.',
@@ -310,7 +310,7 @@ const bills = [
 {
   id:18, state:'MI', level:'michigan', municipality:null,
   amend:[], urgency:'months', policy_bias:85, issues:['environment'], ratify_office:'mi-senate',
-  stage_dates:['Jun 2025','Sep 2025','Nov 2025',null,null], stage:3,
+  stage_dates:['2025-06','2025-09','2025-11',null,null], stage:3,
   stage_note:"Passed Michigan House 56-53 (November 2025) — Senate Energy & Environment Committee hearing scheduled May 2026; Gov. Whitmer has made this a 2026 priority",
   name:'MI HB 4450 — Clean Energy Standards Implementation',
   bill_desc:"Michigan's 2023 Clean Energy Act set a goal of 100% clean electricity by 2040 — but did not fully fund the transition or set binding interim benchmarks. HB 4450 implements that framework: requires utilities to reach 60% renewable generation by 2030, 80% by 2035, and 100% by 2040; creates a $250M annual Clean Energy Transition Fund to support workers displaced from fossil fuel jobs; and requires the Michigan Public Service Commission to approve only new generating capacity that is carbon-zero. Michigan currently gets about 15% of electricity from renewables.",
@@ -327,7 +327,7 @@ const bills = [
 {
   id:19, state:'MI', level:'michigan', municipality:null,
   amend:[], urgency:'stalled', policy_bias:75, issues:['education'], ratify_office:'governor',
-  stage_dates:['Jan 2026','Feb 2026','Mar 2026','Apr 2026','Apr 2026'], stage:5,
+  stage_dates:['2026-01','2026-02','2026-03','2026-04','2026-04'], stage:5,
   stage_note:'✅ ENACTED — Gov. Whitmer signed April 2026. Michigan becomes the 18th state to permanently enshrine universal free school meals in statute. All 1.4 million Michigan public school students receive free breakfast and lunch; $150M annual appropriation dedicated.',
   name:'MI SB 401 — Universal Free School Meals Permanent Fund (ENACTED)',
   bill_desc:'During the COVID-19 pandemic, federal waivers made school meals free for all students. When waivers expired, 98,000 Michigan children who previously received free meals lost access. Michigan launched a temporary Universal Free School Meals program using pandemic funds in 2023. SB 401 makes it permanent, funded through a dedicated state appropriation of $150 million annually. Michigan data shows food-insecure students score 10 points lower on standardized tests than food-secure peers. Seventeen states have already made free school meals permanent — Michigan would be the 18th.',
@@ -344,7 +344,7 @@ const bills = [
 {
   id:20, state:'MI', level:'michigan', municipality:null,
   amend:['due'], urgency:'months', policy_bias:67, issues:['housing'], ratify_office:'mi-senate',
-  stage_dates:['Oct 2025','Dec 2025','Feb 2026',null,null], stage:3,
+  stage_dates:['2025-10','2025-12','2026-02',null,null], stage:3,
   stage_note:'Passed Michigan House 63-45 (February 2026) — Senate Housing & Human Services Committee; bipartisan support in the Senate expected but final vote not yet scheduled',
   name:'MI HBs 4100-4103 — Affordable Housing Workforce Tax Credit Package',
   bill_desc:'Michigan needs 186,000 housing units to meet current demand, with a 20-year deficit concentrated in communities of color and low-income areas. This four-bill package creates a Michigan Affordable Housing Tax Credit matching the federal Low-Income Housing Tax Credit dollar-for-dollar; allows counties to establish local housing trust funds with state matching; expands the state definition of homelessness to qualify more people for housing assistance; and restricts landlords from using algorithmic rent-pricing software to coordinate rents — a practice the DOJ sued RealPage for in 2024.',
@@ -361,7 +361,7 @@ const bills = [
 {
   id:21, state:'MI', level:'michigan', municipality:null,
   amend:['4th'], urgency:'stalled', policy_bias:68, issues:['policing'], ratify_office:'committee',
-  stage_dates:['Jan 2026',null,null,null,null], stage:1,
+  stage_dates:['2026-01',null,null,null,null], stage:1,
   stage_note:'House Judiciary Committee — introduced January 2026; no hearing scheduled under Republican leadership as of April 2026',
   name:'MI HBs 4315-4318 — Child Access Prevention & Safe Storage',
   bill_desc:'Michigan has no law requiring gun owners to safely store firearms when not in use. This package creates a criminal misdemeanor for leaving a firearm accessible to a child without a trigger lock or secure storage; a felony if the unsecured gun is used by a child to injure someone; requires gun dealers to provide a cable lock or trigger lock with every firearm sale; and authorizes the state to distribute free gun safes through a cost-sharing program. In the year after the Oxford High School shooting, Michigan recorded 17 incidents where a child accessed an improperly stored firearm — 12 resulted in injury or death.',
@@ -378,7 +378,7 @@ const bills = [
 {
   id:22, state:'MI', level:'michigan', municipality:null,
   amend:['1st'], urgency:'stalled', policy_bias:55, issues:['speech'], ratify_office:'governor',
-  stage_dates:['Nov 2025','Jan 2026','Mar 2026','Dec 2025','Dec 23 2025'], stage:5,
+  stage_dates:['2025-11','2026-01','2026-03','2025-12','2025-12-23'], stage:5,
   stage_note:"✅ ENACTED — Gov. Whitmer signed December 23, 2025 (Public Act 52 of 2025). Michigan's Uniform Public Expression Protection Act (UPEPA) took effect March 24, 2026. Michigan became the 39th state with anti-SLAPP protections.",
   name:'MI HB 4045 — Anti-SLAPP Citizen Protection Act (ENACTED)',
   bill_desc:"SLAPP suits — Strategic Lawsuits Against Public Participation — are designed not to win, but to bankrupt and silence critics. Michigan had no anti-SLAPP law until December 2025. The new UPEPA (Public Act 52) allows defendants to file a special motion to dismiss within 60 days, automatically stays all discovery, requires the court to hold a hearing within 60 days, and mandates attorney's fees paid by the party that filed the SLAPP suit if the motion succeeds. The law applies broadly to speech on matters of public concern — public comments at government meetings, journalism, consumer reviews, tenant complaints, and advocacy speech. Michigan became the 39th state to adopt anti-SLAPP protection.",
@@ -395,7 +395,7 @@ const bills = [
 {
   id:23, state:'MI', level:'michigan', municipality:null,
   amend:['due'], urgency:'urgent', policy_bias:60, issues:['policing'], ratify_office:'governor',
-  stage_dates:['Jan 2026','Feb 2026','Feb 2026','Mar 2026',null], stage:4,
+  stage_dates:['2026-01','2026-02','2026-02','2026-03',null], stage:4,
   stage_note:"Passed Michigan Senate 29-7 and Michigan House 62-45 (March 2026) — on Gov. Whitmer's desk; Whitmer has signaled strong support",
   name:'MI SB 520 — Automatic Clean Slate Expungement Expansion',
   bill_desc:"Michigan passed Clean Slate legislation in 2020 allowing automatic expungement of qualifying convictions after a waiting period — but the system has faced years of implementation delays and technical backlogs. SB 520 expands the list of expungeable offenses; shortens the felony waiting period from 10 years to 7 years; adds misdemeanor marijuana convictions for now-legal conduct to the automatic list without a waiting period; and requires the statewide criminal database (LEIN) to mark expunged records as sealed within 60 days of eligibility rather than after a paper application. An estimated 1.2 million Michiganders are eligible for expungement but have not applied.",
@@ -412,7 +412,7 @@ const bills = [
 {
   id:24, state:'MI', level:'michigan', municipality:null,
   amend:['due'], urgency:'year', policy_bias:58, issues:['policing'], ratify_office:'committee',
-  stage_dates:['Feb 2026',null,null,null,null], stage:1,
+  stage_dates:['2026-02',null,null,null,null], stage:1,
   stage_note:'House Judiciary Committee — introduced February 2026; bipartisan sponsors; no hearing scheduled as of April 2026',
   name:'MI HBs 4820-4822 — Wrongful Conviction Compensation Reform',
   bill_desc:"Michigan currently caps wrongful conviction compensation at $50,000 per year of wrongful imprisonment — a limit set in 2016 and never adjusted for inflation. Michigan Innocence Clinic has exonerated 57 people since 2009; the average time wrongfully imprisoned was 14.8 years. This package raises the cap to $100,000 per year; creates an immediate $25,000 emergency fund payable within 30 days of exoneration; provides automatic Medicaid enrollment for 5 years post-exoneration; and creates a legal presumption that the state has liability in cases reversed by a court based on actual innocence.",
@@ -429,7 +429,7 @@ const bills = [
 {
   id:25, state:'MI', level:'michigan', municipality:null,
   amend:['due'], urgency:'stalled', policy_bias:88, issues:['healthcare'], ratify_office:'committee',
-  stage_dates:['Oct 2025',null,null,null,null], stage:1,
+  stage_dates:['2025-10',null,null,null,null], stage:1,
   stage_note:'Senate Health Policy Committee — introduced October 2025; no hearing scheduled; pending ruling in Michigan Right to Life v. State of Michigan on Prop 3 scope',
   name:'MI SBs 302-305 — Prop 3 Reproductive Rights Insurance Coverage Mandate',
   bill_desc:'Michigan voters passed Proposal 3 in 2022 with 56.7% of the vote, enshrining the right to reproductive freedom in the Michigan Constitution. SBs 302-305 implement Prop 3 by requiring Michigan health insurance plans — including Medicaid, state employee plans, and individual market plans — to cover all reproductive healthcare including abortion without a deductible or copay. Michigan is one of only six states that still requires women to purchase a separate abortion rider as an add-on to their health plan — a restriction passed in a 2013 ballot referendum — which these bills would repeal.',
@@ -446,7 +446,7 @@ const bills = [
 {
   id:26, state:'MI', level:'michigan', municipality:null,
   amend:[], urgency:'months', policy_bias:70, issues:['technology','environment'], ratify_office:'mi-senate',
-  stage_dates:['Dec 2025','Feb 2026','Mar 2026',null,null], stage:3,
+  stage_dates:['2025-12','2026-02','2026-03',null,null], stage:3,
   stage_note:"Passed Michigan House 58-50 (March 2026) — Senate Energy & Environment Committee; tied to Gov. Whitmer's Michigan EV Future initiative",
   name:'MI HBs 5600-5602 — EV Charging Infrastructure Investment Program',
   bill_desc:"Michigan is the heart of American auto manufacturing — but only 4.2% of vehicles registered in Michigan are electric, far below the national average of 8.7%. HBs 5600-5602 create a $200M revolving loan fund for public and private charging station installation, with grants for rural and low-income communities; require all new publicly funded parking structures to include EV-ready conduit; and mandate that gas stations along Michigan interstate highways with 12+ pumps install at least one Level 2 charger by 2028. The federal NEVI program requires state matching plans — Michigan has submitted one but lacks a state fund to maximize the federal draw.",
@@ -463,7 +463,7 @@ const bills = [
 {
   id:27, state:'MI', level:'michigan', municipality:null,
   amend:['due'], urgency:'urgent', policy_bias:72, issues:['labor','housing'], ratify_office:'mi-house',
-  stage_dates:['Oct 2025','Dec 2025','Feb 2026',null,null], stage:3,
+  stage_dates:['2025-10','2025-12','2026-02',null,null], stage:3,
   stage_note:'Passed Michigan Senate 22-14 (February 2026) — House Energy, Communications & Technology Committee; over 85,000 Michigan households had utilities shut off in winter 2025-26',
   name:'MI SBs 88-90 — Utility Shutoff Moratorium & Energy Affordability Package',
   bill_desc:'Michigan law currently prohibits utility shutoffs only during winter months (Nov. 1-Mar. 31) for households below 150% of the federal poverty line. This package extends that protection year-round for households below 200% FPL; requires utilities to offer payment plans at no more than 7% of monthly income; bans reconnection fees above $50; and creates a state Low Income Energy Assistance Fund funded by a $0.002/kWh surcharge on commercial and industrial users. Over 85,000 Michigan households were shut off in winter 2025-26 — the highest count in seven years.',
@@ -480,7 +480,7 @@ const bills = [
 {
   id:28, state:'MI', level:'michigan', municipality:null,
   amend:['1st','due'], urgency:'months', policy_bias:78, issues:['voting'], ratify_office:'committee',
-  stage_dates:['Jan 2026',null,null,null,null], stage:1,
+  stage_dates:['2026-01',null,null,null,null], stage:1,
   stage_note:'House Elections Committee — introduced January 2026; no hearing scheduled under Republican majority; mirrors provisions Michigan voters approved in Prop 2 (2022)',
   name:'MI HBs 5050-5053 — Voting Access Modernization Package',
   bill_desc:"Michigan voters passed Proposal 2 in 2022 with 59.9% of the vote, enshrining voting rights in the Michigan Constitution — including the right to an absentee ballot, 9 days of early voting, and same-day voter registration. HBs 5050-5053 codify unimplemented elements of Prop 2: a ranked-choice voting pilot program for 5 volunteer counties; uniform polling hours (7am-8pm) statewide including tribal jurisdictions; the right to receive voting assistance from a person of the voter's choice; and a language assistance mandate for jurisdictions where more than 5% of voters speak a primary language other than English.",
@@ -499,7 +499,7 @@ const bills = [
 {
   id:29, state:'MI', level:'local', municipality:'Detroit',
   amend:['4th'], urgency:'months', policy_bias:77, issues:['surveillance','policing'], ratify_office:'city-council',
-  stage_dates:['Jan 2026','Feb 2026',null,null,null], stage:2,
+  stage_dates:['2026-01','2026-02',null,null,null], stage:2,
   stage_note:'Introduced Jan 2026; Planning & Economic Development Committee approved Feb 2026; full council public hearing scheduled for May 2026',
   name:'Detroit — Surveillance Technology Oversight Ordinance',
   bill_desc:"Detroit has expanded use of ShotSpotter acoustic gunshot detection, facial recognition through Project Green Light, and more than 700 Automatic License Plate Readers (ALPRs) city-wide. In 2020, Detroit resident Robert Williams was wrongfully arrested based on a facial recognition match — the first publicly documented case of its kind in the United States. This ordinance would require City Council approval before any new surveillance technology is purchased or deployed; mandate quarterly public reports on each system's usage, accuracy rates, and demographic impact; and prohibit any surveillance data from being shared with federal immigration authorities without a court order.",
@@ -516,7 +516,7 @@ const bills = [
 {
   id:30, state:'MI', level:'local', municipality:'Detroit',
   amend:[], urgency:'months', policy_bias:55, issues:['housing'], ratify_office:'city-council',
-  stage_dates:['Dec 2025','Mar 2026',null,null,null], stage:2,
+  stage_dates:['2025-12','2026-03',null,null,null], stage:2,
   stage_note:'Introduced Dec 2025; Housing & Revitalization Committee approved March 2026; full council public hearing scheduled for May 2026',
   name:'Detroit — Short-Term Rental Licensing & Density Cap Ordinance',
   bill_desc:'Detroit has seen an influx of Airbnb and VRBO properties converting long-term rentals to short-term, particularly in Corktown, Midtown, and East English Village. A 2025 Detroit Planning Department study found that in neighborhoods near new developments, short-term rentals have reduced long-term rental supply by 12-18% while increasing average monthly rents by $175-$230. This ordinance would require all STR operators to obtain a city license (currently unregulated), cap STRs at 8% of residential units per block, ban non-owner-occupied STRs in single-family residential zones, and require a minimum 30-day stay in historically Black neighborhoods identified by Detroit\'s Anti-Displacement Plan.',
@@ -533,7 +533,7 @@ const bills = [
 {
   id:31, state:'MI', level:'local', municipality:'Ann Arbor',
   amend:[], urgency:'months', policy_bias:90, issues:['environment'], ratify_office:'city-council',
-  stage_dates:['Feb 2026',null,null,null,null], stage:1,
+  stage_dates:['2026-02',null,null,null,null], stage:1,
   stage_note:'Introduced Feb 2026; Planning Commission review underway; council vote expected summer 2026 as part of the A2ZERO carbon neutrality plan',
   name:'Ann Arbor — All-Electric New Construction Ordinance',
   bill_desc:"Ann Arbor committed to carbon neutrality by 2030 under the A2ZERO plan. Buildings currently account for 52% of Ann Arbor's greenhouse gas emissions. This ordinance bans natural gas hookups in all new residential and commercial construction after January 1, 2027, requiring all-electric heating, cooking, hot water, and dryers. It also requires all-electric systems in any major renovation (over $50,000) and establishes a city-funded rebate of up to $3,000 for households converting existing gas appliances to electric. State law currently prevents Ann Arbor from banning gas in existing buildings — this ordinance applies only to new construction and major renovations, which is within current municipal authority.",
@@ -550,7 +550,7 @@ const bills = [
 {
   id:32, state:'MI', level:'local', municipality:'Grand Rapids',
   amend:['due'], urgency:'months', policy_bias:82, issues:['housing'], ratify_office:'mayor',
-  stage_dates:['Sep 2025','Nov 2025','Jan 2026','Mar 2026',null], stage:4,
+  stage_dates:['2025-09','2025-11','2026-01','2026-03',null], stage:4,
   stage_note:"Passed Grand Rapids City Commission 5-2 (March 2026) — on Mayor Bliss's desk; she has expressed support but has not yet signed; 30-day signature window",
   name:'Grand Rapids — Just Cause Eviction & Tenant Bill of Rights',
   bill_desc:"Grand Rapids has seen a 40% increase in eviction filings since 2021, coinciding with a 28% increase in average rents. Landlords are not currently required to give a reason for eviction — a 'no-fault' eviction can remove a family with 30 days notice regardless of payment history. This ordinance requires landlords to document a 'just cause' before evicting a tenant — covering nonpayment, lease violations, illegal activity, or legitimate owner move-in — and prohibits 'no-cause' lease non-renewals. It also requires relocation assistance equal to two months' rent for any tenant displaced by an owner move-in conversion, and mandates that all new leases be provided in both English and Spanish.",
@@ -567,7 +567,7 @@ const bills = [
 {
   id:33, state:'MI', level:'local', municipality:'Lansing',
   amend:['due'], urgency:'months', policy_bias:72, issues:['labor'], ratify_office:'city-council',
-  stage_dates:['Dec 2025','Feb 2026',null,null,null], stage:2,
+  stage_dates:['2025-12','2026-02',null,null,null], stage:2,
   stage_note:'Introduced Dec 2025; Council Labor & Economic Development Committee approved Feb 2026; full council public hearing scheduled for June 2026',
   name:'Lansing — Wage Theft Enforcement Ordinance',
   bill_desc:'Wage theft — employers failing to pay earned wages, tip theft, misclassification as independent contractors, and illegal paycheck deductions — costs Lansing workers an estimated $14 million annually according to a 2025 Michigan State University study. State law allows workers to file complaints with the Michigan Department of Labor and Economic Growth, but average resolution time is 14 months. This ordinance creates a City of Lansing Wage Theft Complaint Office with a dedicated investigator; authority to mediate disputes and refer cases to the state AG; and a public registry of repeat violators who face city contract and licensing bars.',
@@ -584,7 +584,7 @@ const bills = [
 {
   id:34, state:'MI', level:'local', municipality:'Flint',
   amend:['due'], urgency:'urgent', policy_bias:65, issues:['environment','housing'], ratify_office:'mayor',
-  stage_dates:['Jan 2026','Jan 2026','Feb 2026','Mar 2026',null], stage:4,
+  stage_dates:['2026-01','2026-01','2026-02','2026-03',null], stage:4,
   stage_note:"Passed Flint City Council 8-1 (March 2026) — on Mayor Neeley's desk; he has publicly supported lead accountability measures; 15-day signature window",
   name:'Flint — Lead Disclosure & Tenant Remediation Ordinance',
   bill_desc:"The Flint water crisis began in 2014 but its full impact — on renters especially — remains unaddressed. While the City replaced lead service lines to the water meter under the settlement, lead contamination at the tap inside buildings depends on interior plumbing that is the landlord's responsibility. This ordinance requires Flint landlords to test water at the tap (not just at the meter) in all rental units and disclose results to tenants within 30 days; creates a Lead Remediation Fund to assist low-income homeowners and landlords with pipe replacement; and allows tenants in lead-affected units to withhold rent into escrow until remediation is complete — a legal remedy currently unavailable in Michigan landlord-tenant law.",
@@ -601,7 +601,7 @@ const bills = [
 {
   id:35, state:'MI', level:'local', municipality:'Kalamazoo',
   amend:[], urgency:'months', policy_bias:70, issues:['environment'], ratify_office:'city-council',
-  stage_dates:['Oct 2025','Jan 2026',null,null,null], stage:2,
+  stage_dates:['2025-10','2026-01',null,null,null], stage:2,
   stage_note:"Introduced Oct 2025; Environmental Sustainability Committee approved Jan 2026; public hearing and council vote scheduled for June 2026",
   name:'Kalamazoo — Tree Canopy Protection Ordinance',
   bill_desc:"Kalamazoo's urban tree canopy has declined 18% over the past decade — a loss concentrated in lower-income neighborhoods on the city's south side, where canopy cover is now 12% compared to 38% in north-side neighborhoods. Trees reduce surface temperatures by 5-15 degrees, reduce stormwater runoff, and are independently associated with lower rates of childhood asthma. This ordinance requires one-for-two replacement for any mature tree (diameter over 6 inches) removed during development; establishes a Tree Canopy Fund, funded by developer fees of $150 per removed inch of trunk diameter; and prohibits removal of trees on city right-of-ways during bird nesting season (April 1 - August 15).",
@@ -618,7 +618,7 @@ const bills = [
 {
   id:36, state:'MI', level:'local', municipality:'Ann Arbor',
   amend:['due'], urgency:'months', policy_bias:86, issues:['housing'], ratify_office:'city-council',
-  stage_dates:['Feb 2026',null,null,null,null], stage:1,
+  stage_dates:['2026-02',null,null,null,null], stage:1,
   stage_note:'Introduced Feb 2026; Housing & Human Services Advisory Board review underway; council vote expected fall 2026',
   name:'Ann Arbor — Tenant Right to Counsel Ordinance',
   bill_desc:"94% of landlords in Ann Arbor eviction proceedings in 15th District Court have legal representation. Only 4% of tenants do. Unrepresented tenants are 8 times more likely to receive a default judgment against them — often because they do not understand their rights, miss a hearing date, or cannot navigate the paperwork. This ordinance guarantees any Ann Arbor renter facing an eviction summons the right to a free, court-assigned attorney, funded by a $12/unit annual levy on all Ann Arbor rental properties with 5 or more units. Estimated annual cost: $1.4 million. Cities with right-to-counsel programs — New York, San Francisco, Cleveland — have seen eviction rates drop 17-24%.",
@@ -635,7 +635,7 @@ const bills = [
 {
   id:37, state:'MI', level:'local', municipality:'Detroit',
   amend:[], urgency:'months', policy_bias:75, issues:['policing'], ratify_office:'mayor',
-  stage_dates:['Oct 2025','Dec 2025','Jan 2026','Feb 2026',null], stage:4,
+  stage_dates:['2025-10','2025-12','2026-01','2026-02',null], stage:4,
   stage_note:"Passed Detroit City Council 7-2 (February 2026) — on Mayor Sheffield's desk; he has expressed support but has not yet signed as of April 2026",
   name:'Detroit — Cannabis Social Equity Licensing Priority Ordinance',
   bill_desc:"Detroit currently has 94 licensed cannabis dispensaries. Fewer than 10% are Black-owned — despite 79% of Detroit's population being Black and the city's residents having experienced some of the highest marijuana arrest rates in Michigan during prohibition. This ordinance creates a Cannabis Social Equity Priority Pool: 40% of all new dispensary and provisioning center licenses issued in the next 5 years are reserved for applicants who lived in high-arrest ZIP codes for at least 5 years during the War on Drugs period; reduces application and licensing fees by 75% for equity applicants; and creates a Detroit Cannabis Business Development Fund with $2M in seed money for equity licensees.",
@@ -652,7 +652,7 @@ const bills = [
 {
   id:38, state:'MI', level:'local', municipality:'Wayne County',
   amend:[], urgency:'months', policy_bias:65, issues:['policing','healthcare'], ratify_office:'county-board',
-  stage_dates:['Nov 2025','Feb 2026',null,null,null], stage:2,
+  stage_dates:['2025-11','2026-02',null,null,null], stage:2,
   stage_note:"Introduced Nov 2025; Ways & Means Committee approved Feb 2026; Board of Commissioners public hearing scheduled May 2026",
   name:'Wayne County — Mental Health Diversion Court Expansion',
   bill_desc:"Wayne County's existing Mental Health Court serves approximately 200 people per year — a fraction of the estimated 3,500 people with serious mental illness who cycle through the Wayne County Jail annually. Research shows mental health diversion reduces recidivism by 32% and costs $8,400 less per person than incarceration. This ordinance expands Wayne County Mental Health Court from 200 to 500 annual slots; adds a Specialty Veterans Court with trauma-informed protocols; funds a co-responder model pairing licensed social workers with patrol officers for mental health service calls; and creates a two-year outcome-monitoring dashboard with public reporting.",
@@ -669,7 +669,7 @@ const bills = [
 {
   id:39, state:'MI', level:'local', municipality:'Grand Rapids',
   amend:[], urgency:'months', policy_bias:76, issues:['housing'], ratify_office:'city-council',
-  stage_dates:['Oct 2025','Jan 2026',null,null,null], stage:2,
+  stage_dates:['2025-10','2026-01',null,null,null], stage:2,
   stage_note:"Introduced Oct 2025; Planning & Housing Committee approved Jan 2026; full Commission hearing and vote expected summer 2026",
   name:'Grand Rapids — Inclusionary Zoning Ordinance',
   bill_desc:"Grand Rapids has lost 6,200 affordable housing units since 2015, as market-rate development concentrated in downtown and the Medical Mile corridor converts or displaces affordable stock. The city's housing waitlist has 4,800 families — a three-to-five-year wait for a voucher. This ordinance requires any new residential development of 10 or more units to set aside 15% of units as affordable at 80% of Area Median Income; developers who choose a fee-in-lieu must pay $12,000 per unit into the Grand Rapids Affordable Housing Fund; and the fund must be spent within 24 months in the same neighborhood where it was generated.",
@@ -686,7 +686,7 @@ const bills = [
 {
   id:40, state:'MI', level:'local', municipality:'Dearborn',
   amend:[], urgency:'year', policy_bias:62, issues:['labor','housing'], ratify_office:'committee',
-  stage_dates:['Jan 2026',null,null,null,null], stage:1,
+  stage_dates:['2026-01',null,null,null,null], stage:1,
   stage_note:'Introduced Jan 2026; Community & Economic Development Committee review underway; no hearing date set as of April 2026',
   name:'Dearborn — Community Benefits Agreement Requirement',
   bill_desc:"Dearborn is experiencing its most significant development transformation since the Ford Rouge Complex was built — new mixed-use development near the River Rouge site, the Corktown Ford expansion, and the Dearborn Waterfront Project are all in various planning stages. This ordinance requires any development project receiving $1 million or more in city incentives — Tax Increment Financing, Payment in Lieu of Taxes arrangements, or direct grants — to execute a Community Benefits Agreement with at least three local community organizations covering: local hiring minimums of 40% Dearborn residents, environmental impact mitigation plans, and affordable housing set-asides of at least 10% if residential is included.",
@@ -703,7 +703,7 @@ const bills = [
 {
   id:41, state:'MI', level:'local', municipality:'Traverse City',
   amend:[], urgency:'months', policy_bias:55, issues:['housing'], ratify_office:'city-council',
-  stage_dates:['Jan 2026','Mar 2026',null,null,null], stage:2,
+  stage_dates:['2026-01','2026-03',null,null,null], stage:2,
   stage_note:'Introduced Jan 2026; Planning Commission reviewed and recommended approval March 2026 — full City Commission vote expected June 2026',
   name:'Traverse City — Short-Term Rental Density Cap Ordinance',
   bill_desc:"Traverse City has seen 22% of its housing stock converted to short-term rentals over the past five years — one of the highest STR concentration rates of any city in Michigan. Service sector workers who staff the city's tourist economy — restaurants, hotels, retail — are increasingly unable to live within commuting distance of Traverse City. The Northern Michigan Housing Coalition estimates the workforce housing shortage costs the regional economy $42 million annually in turnover and unfilled positions. This ordinance limits STRs to 5% of residential housing units per neighborhood; requires owner-occupancy for all STR licenses in the central downtown area; and creates a STR Impact Fund from license fees to subsidize workforce housing development.",
@@ -720,7 +720,7 @@ const bills = [
 {
   id:42, state:'MI', level:'local', municipality:'Detroit',
   amend:['4th','due'], urgency:'months', policy_bias:80, issues:['policing'], ratify_office:'city-council',
-  stage_dates:['Mar 2026',null,null,null,null], stage:1,
+  stage_dates:['2026-03',null,null,null,null], stage:1,
   stage_note:'Introduced March 2026; Public Health & Safety Committee; no hearing date set as of April 2026',
   name:'Detroit — Civilian Police Oversight Commission Enhancement',
   bill_desc:"Detroit's Board of Police Commissioners (BOPC) has existed since 1974 but lacks the tools to operate as a genuinely independent oversight body. Currently, BOPC investigations are conducted by DPD's own Internal Affairs unit — the department investigates itself. Disciplinary recommendations from BOPC are routinely ignored by the Police Chief with no required explanation. This ordinance gives BOPC independent subpoena power to compel witness testimony and document production; authority to hire its own civilian investigators independent of DPD; and requires DPD to implement BOPC disciplinary recommendations within 60 days or submit a written public explanation for departing from the recommendation.",
@@ -737,7 +737,7 @@ const bills = [
 {
   id:43, state:'MI', level:'local', municipality:'Ingham County',
   amend:[], urgency:'months', policy_bias:60, issues:['technology'], ratify_office:'county-board',
-  stage_dates:['Dec 2025','Feb 2026',null,null,null], stage:2,
+  stage_dates:['2025-12','2026-02',null,null,null], stage:2,
   stage_note:'Introduced Dec 2025; Finance Committee approved Feb 2026; Board of Commissioners full hearing scheduled May 2026',
   name:'Ingham County — Rural Broadband Access Investment Ordinance',
   bill_desc:'4,200 Ingham County homes — concentrated in Delhi, Stockbridge, Leslie, and Leroy townships — have no broadband access faster than 25 Mbps, the federal definition of minimum adequate service. Remote work, telehealth, and K-12 online learning are inaccessible to these households. This ordinance creates the Ingham County Broadband Fund using $8.5M of remaining federal ARPA reserves; co-invests with ISPs to bring fiber-to-the-home to unserved rural parcels on a 50% county/50% provider cost-sharing basis; and requires any ISP receiving county co-investment to offer a low-income tier at no more than $30/month. The federal BEAD program requires certified county co-investment plans — this is the vehicle to unlock that match.',
@@ -754,7 +754,7 @@ const bills = [
 {
   id:44, state:'MI', level:'local', municipality:'Pontiac',
   amend:['due'], urgency:'urgent', policy_bias:78, issues:['housing'], ratify_office:'mayor',
-  stage_dates:['Nov 2025','Jan 2026','Feb 2026','Mar 2026',null], stage:4,
+  stage_dates:['2025-11','2026-01','2026-02','2026-03',null], stage:4,
   stage_note:"Passed Pontiac City Council 5-2 (March 2026) — on Mayor Tim Greimel's desk; he has supported anti-displacement as a campaign commitment; 30-day signature window",
   name:'Pontiac — Anti-Displacement Tenant Protection Ordinance',
   bill_desc:"Pontiac is experiencing its first significant gentrification pressure in decades — driven by proximity to Auburn Hills employers, the Big Beaver commercial corridor, and new investment following the city's exit from state financial oversight in 2023. Long-term residents — predominantly Black families with median tenure of 14 years — are being displaced by investor-purchased single family homes converted to short-term and higher-rent rentals. This ordinance requires 180-day notice before any rent increase above 5% or any owner move-in conversion; mandates relocation assistance equal to 3 months' rent for any tenant displaced by conversion or major renovation; and establishes a city Right of First Refusal allowing the city to purchase any property sold to an out-of-county investor and offer it to a community land trust.",
@@ -771,7 +771,7 @@ const bills = [
 {
   id:45, state:'MI', level:'local', municipality:'Ann Arbor',
   amend:['due'], urgency:'months', policy_bias:82, issues:['policing','housing'], ratify_office:'city-council',
-  stage_dates:['Feb 2026',null,null,null,null], stage:1,
+  stage_dates:['2026-02',null,null,null,null], stage:1,
   stage_note:'Introduced Feb 2026; Human Rights Commission review underway; council vote expected fall 2026',
   name:'Ann Arbor — Fair Chance Housing Ordinance',
   bill_desc:"Approximately 1 in 4 Ann Arbor adults has an arrest or conviction record, including many University of Michigan students with minor marijuana convictions. Current Ann Arbor rental application practices allow landlords to automatically reject any applicant with a criminal record — regardless of offense type, age of record, or evidence of rehabilitation. This ordinance bans landlords from automatically disqualifying rental applicants based on criminal history; requires individualized assessment considering offense type, time elapsed, evidence of rehabilitation, and relevance to tenancy; prohibits criminal history inquiries until after a conditional offer is made ('ban the box' in housing); and creates a private right of action for applicants who can show discriminatory screening.",
@@ -788,7 +788,7 @@ const bills = [
 {
   id:46, state:'MI', level:'local', municipality:'Kent County',
   amend:[], urgency:'year', policy_bias:72, issues:['immigration'], ratify_office:'county-board',
-  stage_dates:['Jan 2026',null,null,null,null], stage:1,
+  stage_dates:['2026-01',null,null,null,null], stage:1,
   stage_note:'Introduced Jan 2026; Human Services Committee review underway; Board vote expected fall 2026',
   name:'Kent County — Newcomer Integration Services Fund',
   bill_desc:"Grand Rapids receives the second-largest refugee resettlement in Michigan, and Kent County as a whole receives more than 1,200 immigrants annually through both refugee and family-based channels. Research by the West Michigan Policy Forum found that newcomers who access integration services within their first six months have employment rates 42% higher at 24 months than those who do not. This ordinance creates a $2.5M Kent County Newcomer Integration Fund using a combination of county general funds and federal Title IV-E pass-through dollars; funds English language learning partnerships with GRCC and Davenport University, professional credential recognition services, and transit pass programs; and requires annual outcome reporting to the Board of Commissioners.",

@@ -86,6 +86,12 @@ export default function BillCard({ bill }: { bill: Bill }) {
     }
   }
 
+  function renderIntroduced(text: string) {
+    const entries = text.split(/;\s*/).map(e => e.replace(/ — /g, ': ').trim()).filter(Boolean)
+    if (entries.length <= 1) return <>{entries[0] ?? text}</>
+    return <>{entries.map((e, i) => <div key={i} className="field-demand">• {e}</div>)}</>
+  }
+
   function renderWithDemand(text: string) {
     const idx = text.indexOf(' — ')
     if (idx === -1) return <>{text}</>
@@ -133,7 +139,7 @@ export default function BillCard({ bill }: { bill: Bill }) {
         </div>
         <div>
           <div className="lbl">Introduced by</div>
-          <div className="val">{bill.introduced}</div>
+          <div className="val">{renderIntroduced(bill.introduced)}</div>
         </div>
         <div className="full-width">
           <div className="lbl">Key supporters</div>

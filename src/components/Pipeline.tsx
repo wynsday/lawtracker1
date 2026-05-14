@@ -2,6 +2,23 @@ import type { CSSProperties } from 'react'
 import type { Bill } from '../types/bill'
 import { FEDERAL_STAGES, MICHIGAN_STAGES, LOCAL_STAGES } from '../lib/constants'
 
+function fmtDate(s: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    const d = new Date(s + 'T00:00:00')
+    const day = String(d.getDate()).padStart(2, '0')
+    const mon = d.toLocaleDateString('en-US', { month: 'short' })
+    const yy = String(d.getFullYear()).slice(2)
+    return `${day} ${mon} ${yy}`
+  }
+  if (/^\d{4}-\d{2}$/.test(s)) {
+    const d = new Date(s + '-01T00:00:00')
+    const mon = d.toLocaleDateString('en-US', { month: 'short' })
+    const yy = String(d.getFullYear()).slice(2)
+    return `${mon} ${yy}`
+  }
+  return s
+}
+
 function pipelineColor(policyBias: number): string {
   if (policyBias < 40) return '#C84040'
   if (policyBias > 60) return '#3060C0'
@@ -44,7 +61,7 @@ export default function Pipeline({ bill }: { bill: Bill }) {
               <div className="pipe-dot" style={dotStyle} />
               <div className="pipe-label">
                 {label}
-                {dates[i] && <div className="pipe-date">{dates[i]}</div>}
+                {dates[i] && <div className="pipe-date">{fmtDate(dates[i]!)}</div>}
               </div>
             </div>
           )
