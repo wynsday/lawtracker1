@@ -4,6 +4,7 @@ import { ISSUE_LABELS, CITY_FILTERS } from '../lib/constants'
 interface FilterGroupsProps {
   active: ActiveFilters
   onChange: (group: keyof ActiveFilters, value: string) => void
+  hideTiming?: boolean
 }
 
 function Chip({ group, value, active, label, children, onChange }: {
@@ -25,7 +26,7 @@ function Chip({ group, value, active, label, children, onChange }: {
   )
 }
 
-export default function FilterGroups({ active, onChange }: FilterGroupsProps) {
+export default function FilterGroups({ active, onChange, hideTiming }: FilterGroupsProps) {
   return (
     <div className="filter-groups">
 
@@ -51,16 +52,17 @@ export default function FilterGroups({ active, onChange }: FilterGroupsProps) {
         </div>
       )}
 
-      <div className="filter-group">
+      {!hideTiming && <div className="filter-group">
         <span className="fg-label">Timing</span>
         <div className="chips">
           <Chip group="timing" value="all"     active={active.timing} onChange={onChange}>All</Chip>
           <Chip group="timing" value="urgent"  active={active.timing} onChange={onChange}>Act now</Chip>
           <Chip group="timing" value="months"  active={active.timing} onChange={onChange}>Months</Chip>
           <Chip group="timing" value="session" active={active.timing} onChange={onChange}>Session</Chip>
-          <Chip group="timing" value="stalled" active={active.timing} onChange={onChange}>Stalled</Chip>
+          <Chip group="timing" value="stalled"  active={active.timing} onChange={onChange}>Stalled</Chip>
+          <Chip group="timing" value="enacted" active={active.timing} onChange={onChange}>Recently enacted</Chip>
         </div>
-      </div>
+      </div>}
 
       <div className="filter-group">
         <span className="fg-label">Constitutional impact</span>

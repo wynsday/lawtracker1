@@ -156,6 +156,17 @@ html[data-page="tracker"][data-theme="dark"] {
   --office-county: #a07040;
 }
 
+html[data-page="enacted"][data-theme="light"],
+html[data-page="enacted"] {
+  --color-bg-primary:   #ede0cc;
+  --color-bg-secondary: #d9c4a8;
+}
+html[data-page="enacted"][data-theme="dark"] {
+  --color-bg-primary:   #261f18;
+  --color-bg-secondary: #332b22;
+}
+[data-page="enacted"] .bill { border: 1px solid #00B050; }
+
 body {
   font-family: var(--font-sans);
   background: var(--color-bg-secondary);

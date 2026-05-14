@@ -597,10 +597,15 @@ export default function Home() {
             <span className="home-secondary-label">Settings</span>
           </button>
 
-          <button className="home-secondary-card" style={{ background: '#4F4262' }}
-            disabled aria-label="Coming Soon">
-            <span className="home-secondary-label">—</span>
-            <span className="home-secondary-badge">Coming Soon</span>
+          <button
+            className="home-secondary-card" style={{ background: '#00B050' }}
+            onClick={() => navigate('/enacted-legislation')}
+            aria-label="Enacted Legislation"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span className="home-secondary-label">Enacted</span>
           </button>
 
           <button className="home-secondary-card" style={{ background: '#4F4262' }}

@@ -378,7 +378,7 @@ const bills = [
 {
   id:22, state:'MI', level:'michigan', municipality:null,
   amend:['1st'], urgency:'stalled', policy_bias:55, issues:['speech'], ratify_office:'governor',
-  stage_dates:['2025-11','2026-01','2026-03','2025-12','2025-12-23'], stage:5,
+  stage_dates:['2025-03-18','2025-04-17','2025-10-22','2025-12-19','2025-12-23'], stage:5,
   stage_note:"✅ ENACTED — Gov. Whitmer signed December 23, 2025 (Public Act 52 of 2025). Michigan's Uniform Public Expression Protection Act (UPEPA) took effect March 24, 2026. Michigan became the 39th state with anti-SLAPP protections.",
   name:'MI HB 4045 — Anti-SLAPP Citizen Protection Act (ENACTED)',
   bill_desc:"SLAPP suits — Strategic Lawsuits Against Public Participation — are designed not to win, but to bankrupt and silence critics. Michigan had no anti-SLAPP law until December 2025. The new UPEPA (Public Act 52) allows defendants to file a special motion to dismiss within 60 days, automatically stays all discovery, requires the court to hold a hearing within 60 days, and mandates attorney's fees paid by the party that filed the SLAPP suit if the motion succeeds. The law applies broadly to speech on matters of public concern — public comments at government meetings, journalism, consumer reviews, tenant complaints, and advocacy speech. Michigan became the 39th state to adopt anti-SLAPP protection.",
