@@ -20,7 +20,7 @@ async function post(path: string, body: object) {
     })
     return res.json()
   } catch {
-    return { ok: false, error: 'Network error — check your connection.' }
+    return { ok: false, error: 'Network error; check your connection.' }
   }
 }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import ThemeToggle from '../components/ThemeToggle'
 
 // ─── Icon components ───────────────────────────────────────────────────────
 type IP = { size?: number; color?: string }
@@ -343,7 +344,6 @@ function parseOS(ua: string): string {
 export default function Home() {
   const { user, ready, signOut } = useAuth()
   const navigate                  = useNavigate()
-  const [isDark, setIsDark]               = useState(() => localStorage.getItem('wsp-theme') !== 'light')
   const [presidentMode, setPresidentMode] = useState<'president' | 'election'>(() =>
     localStorage.getItem('wsp-president-mode') === 'election' ? 'election' : 'president'
   )
@@ -354,10 +354,10 @@ export default function Home() {
   const sessionStartRef                   = useRef<number>(Date.now())
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
-    localStorage.setItem('wsp-theme', isDark ? 'dark' : 'light')
+    const theme = localStorage.getItem('wsp-theme') ?? 'dark'
+    document.documentElement.setAttribute('data-theme', theme)
     return () => { document.documentElement.removeAttribute('data-theme') }
-  }, [isDark])
+  }, [])
 
   useEffect(() => {
     localStorage.setItem('wsp-president-mode', presidentMode)
@@ -425,14 +425,10 @@ export default function Home() {
         <p className="home-header-org">Women for Shared Progress</p>
         <h1 className="home-header-title">3AM Pipeline</h1>
         <p className="home-header-tagline">Legislation Matters</p>
-        <button
-          className="home-theme-toggle"
-          onClick={() => setIsDark(d => !d)}
-          aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          {isDark ? '☀ Light' : '☾ Dark'}
-        </button>
       </header>
+      <div style={{ position: 'fixed', top: 8, right: 12, zIndex: 100 }}>
+        <ThemeToggle />
+      </div>
 
       <div className="home-content">
 

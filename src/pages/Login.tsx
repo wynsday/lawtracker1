@@ -150,7 +150,7 @@ export default function Login() {
 
         {justRegistered && (
           <div className="auth-notice auth-notice-success">
-            Account created — sign in below.
+            Account created; sign in below.
           </div>
         )}
 

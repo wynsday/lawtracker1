@@ -5,7 +5,7 @@ export default function Decisions({ decisions }: { decisions: Decision[] }) {
     <div className="decisions">
       {decisions.map((d, i) => (
         <div key={i} className="decision-item">
-          <span className="decision-label">{d.label}</span> — {d.text}
+          <span className="decision-label">{d.label}:</span> {d.text}
         </div>
       ))}
     </div>

@@ -39,15 +39,17 @@ export default function FilterGroups({ active, onChange }: FilterGroupsProps) {
         </div>
       </div>
 
-      <div className="filter-group filter-group-city">
-        <span className="fg-label fg-indent">↳ City</span>
-        <div className="chips">
-          <Chip group="city" value="all" active={active.city} onChange={onChange}>All cities</Chip>
-          {CITY_FILTERS.map(city => (
-            <Chip key={city} group="city" value={city} active={active.city} onChange={onChange}>{city}</Chip>
-          ))}
+      {active.level === 'local' && (
+        <div className="filter-group filter-group-city">
+          <span className="fg-label fg-indent">↳ City</span>
+          <div className="chips">
+            <Chip group="city" value="all" active={active.city} onChange={onChange}>All cities</Chip>
+            {CITY_FILTERS.map(city => (
+              <Chip key={city} group="city" value={city} active={active.city} onChange={onChange}>{city}</Chip>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="filter-group">
         <span className="fg-label">Timing</span>
@@ -100,11 +102,11 @@ export default function FilterGroups({ active, onChange }: FilterGroupsProps) {
         <span className="fg-label">Currently with</span>
         <div className="chips">
           <Chip group="office" value="all"          active={active.office} onChange={onChange}>All</Chip>
+          <Chip group="office" value="us-senate"    active={active.office} onChange={onChange}><span className="chip-dot" />U.S. Senate</Chip>
           <Chip group="office" value="governor"     active={active.office} onChange={onChange}><span className="chip-dot" />Governor Whitmer</Chip>
           <Chip group="office" value="mi-senate"    active={active.office} onChange={onChange}><span className="chip-dot" />Michigan Senate</Chip>
           <Chip group="office" value="mi-house"     active={active.office} onChange={onChange}><span className="chip-dot" />Michigan House</Chip>
           <Chip group="office" value="committee"    active={active.office} onChange={onChange}><span className="chip-dot" />In Committee</Chip>
-          <Chip group="office" value="us-senate"    active={active.office} onChange={onChange}><span className="chip-dot" />U.S. Senate</Chip>
           <Chip group="office" value="mayor"        active={active.office} onChange={onChange}><span className="chip-dot" />With Mayor / Exec</Chip>
           <Chip group="office" value="city-council" active={active.office} onChange={onChange}><span className="chip-dot" />City Council</Chip>
           <Chip group="office" value="county-board" active={active.office} onChange={onChange}><span className="chip-dot" />County Board</Chip>

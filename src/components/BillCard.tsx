@@ -86,6 +86,19 @@ export default function BillCard({ bill }: { bill: Bill }) {
     }
   }
 
+  function renderWithDemand(text: string) {
+    const idx = text.indexOf(' — ')
+    if (idx === -1) return <>{text}</>
+    const names = text.slice(0, idx)
+    const demand = text.slice(idx + 3)
+    return (
+      <>
+        {names}
+        <div className="field-demand">• {demand}</div>
+      </>
+    )
+  }
+
   return (
     <div className="bill">
       <div className="policy-bar" style={parseCssStyle(policyBarStyle(bill.policy_bias))}>
@@ -122,13 +135,13 @@ export default function BillCard({ bill }: { bill: Bill }) {
           <div className="lbl">Introduced by</div>
           <div className="val">{bill.introduced}</div>
         </div>
-        <div>
+        <div className="full-width">
           <div className="lbl">Key supporters</div>
-          <div className="val">{bill.supporters}</div>
+          <div className="val">{renderWithDemand(bill.supporters)}</div>
         </div>
         <div className="full-width">
           <div className="lbl">Key blockers</div>
-          <div className="val">{bill.blockers}</div>
+          <div className="val">{renderWithDemand(bill.blockers)}</div>
         </div>
       </div>
 
@@ -136,21 +149,25 @@ export default function BillCard({ bill }: { bill: Bill }) {
 
       <Decisions decisions={bill.decisions} />
 
-      <div className="office-badge">
-        <div className={`office-dot ${offMeta.dotCls}`} />
-        {offMeta.label}
-      </div>
+      <div className="card-footer-row">
+        <div className="office-badge">
+          <span className="office-badge-label">
+            <span className={`office-dot ${offMeta.dotCls}`} />
+            {offMeta.label}
+          </span>
+        </div>
 
-      <button
-        className="bill-scroll-top"
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        title="Return to Top"
-        aria-label="Return to Top"
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <polyline points="18 15 12 9 6 15"/>
-        </svg>
-      </button>
+        <button
+          className="bill-scroll-top"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          title="Return to Top"
+          aria-label="Return to Top"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="18 15 12 9 6 15"/>
+          </svg>
+        </button>
+      </div>
     </div>
   )
 }
