@@ -158,8 +158,8 @@ html[data-page="tracker"][data-theme="dark"] {
 
 html[data-page="enacted"][data-theme="light"],
 html[data-page="enacted"] {
-  --color-bg-primary:   #ede0cc;
-  --color-bg-secondary: #d9c4a8;
+  --color-bg-primary:   #f6f0e6;
+  --color-bg-secondary: #ece2d4;
 }
 html[data-page="enacted"][data-theme="dark"] {
   --color-bg-primary:   #261f18;

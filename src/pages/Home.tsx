@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
+import { getOfficialsByState } from '../lib/officials'
 
 // ─── Icon components ───────────────────────────────────────────────────────
 type IP = { size?: number; color?: string }
@@ -245,57 +246,6 @@ function MarchingBugsIcon() {
 }
 
 // ─── Data types & constants ────────────────────────────────────────────────
-type Party = 'democrat' | 'republican' | 'independent' | 'green' | 'libertarian' | 'other' | 'brown'
-
-interface Rep {
-  level:         'local' | 'state' | 'national'
-  role:          string
-  name:          string
-  party:         Party
-  committees:    string[]
-  phone:         string
-  email:         string
-  officeSince:   string   // ISO date
-  nextElection?: string   // ISO date — when seat is next on the ballot
-}
-
-interface Seat { level: 'local' | 'state' | 'national'; seat: string; nextElection: string }
-
-const PLACEHOLDER_REPS: Rep[] = [
-  // National — sorted most-recent-first by officeSince
-  { level: 'national', role: 'U.S. Senator',        name: 'Sen. B. Sample',  party: 'democrat',    committees: ['Finance', 'Judiciary'],       phone: '(202) 224-0002', email: 'sen.sample.b@mail.senate.gov',  officeSince: '2025-01-03', nextElection: '2030-11-03' },
-  { level: 'national', role: 'U.S. Representative', name: 'Rep. A. Sample',  party: 'democrat',    committees: ['Armed Services', 'Education'], phone: '(202) 225-0001', email: 'rep.sample@mail.house.gov',     officeSince: '2023-01-03', nextElection: '2026-11-03' },
-  { level: 'national', role: 'U.S. Senator',        name: 'Sen. C. Sample',  party: 'republican',  committees: ['Banking', 'Energy'],           phone: '(202) 224-0003', email: 'sen.sample.c@mail.senate.gov',  officeSince: '2021-01-03', nextElection: '2026-11-03' },
-  // State
-  { level: 'state',    role: 'State House Rep.',    name: 'Rep. D. Sample',  party: 'democrat',    committees: ['Appropriations', 'Labor'],     phone: '(517) 373-0001', email: 'rep.sample.d@house.mi.gov',     officeSince: '2025-01-01', nextElection: '2026-11-03' },
-  { level: 'state',    role: 'State Senator',       name: 'Sen. E. Sample',  party: 'republican',  committees: ['Judiciary', 'Education'],      phone: '(517) 373-0002', email: 'sen.sample.e@senate.mi.gov',    officeSince: '2023-01-01', nextElection: '2026-11-03' },
-  // Local
-  { level: 'local',    role: 'County Commissioner', name: 'Comm. F. Sample', party: 'independent', committees: ['Public Works'],                phone: '(555) 201-0001', email: 'commissioner.sample@county.gov', officeSince: '2024-01-15', nextElection: '2026-08-04' },
-]
-
-const ALL_SEATS: Seat[] = [
-  { level: 'national', seat: 'U.S. President',              nextElection: '2028-11-07' },
-  { level: 'national', seat: 'U.S. House (MI-8)',           nextElection: '2026-11-03' },
-  { level: 'national', seat: 'U.S. Senate — Class II',      nextElection: '2026-11-03' },
-  { level: 'national', seat: 'U.S. Senate — Class III',     nextElection: '2028-11-07' },
-  { level: 'state',    seat: 'Governor',                    nextElection: '2026-11-03' },
-  { level: 'state',    seat: 'Lieutenant Governor',         nextElection: '2026-11-03' },
-  { level: 'state',    seat: 'Attorney General',            nextElection: '2026-11-03' },
-  { level: 'state',    seat: 'Secretary of State',          nextElection: '2026-11-03' },
-  { level: 'state',    seat: 'State Senate District 14',    nextElection: '2026-11-03' },
-  { level: 'state',    seat: 'State House District 45',     nextElection: '2026-11-03' },
-  { level: 'state',    seat: 'MI Supreme Court — 2 seats',  nextElection: '2026-11-03' },
-  { level: 'state',    seat: 'MI Court of Appeals',         nextElection: '2026-11-03' },
-  { level: 'local',    seat: 'County Commissioner Dist. 3', nextElection: '2026-08-04' },
-  { level: 'local',    seat: 'County Prosecutor',           nextElection: '2026-08-04' },
-  { level: 'local',    seat: 'County Sheriff',              nextElection: '2026-11-03' },
-  { level: 'local',    seat: 'County Clerk',                nextElection: '2026-11-03' },
-  { level: 'local',    seat: 'County Treasurer',            nextElection: '2026-11-03' },
-  { level: 'local',    seat: 'City Council Ward 2',         nextElection: '2026-11-03' },
-  { level: 'local',    seat: 'District Court Judge',        nextElection: '2026-11-03' },
-  { level: 'local',    seat: 'School Board — 3 seats',      nextElection: '2026-11-03' },
-  { level: 'local',    seat: 'Community College Board',     nextElection: '2026-11-03' },
-]
 
 const PRESIDENT = {
   name:        'Donald J. Trump',
@@ -310,12 +260,6 @@ const ELECTION_DATES = [
   { label: 'General Election',            date: '2026-11-03' },
 ]
 
-function isElectionSoon(nextElection?: string): boolean {
-  if (!nextElection) return false
-  const cutoff = new Date()
-  cutoff.setMonth(cutoff.getMonth() + 6)
-  return new Date(nextElection) <= cutoff
-}
 
 function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -347,11 +291,23 @@ export default function Home() {
   const [presidentMode, setPresidentMode] = useState<'president' | 'election'>(() =>
     localStorage.getItem('wsp-president-mode') === 'election' ? 'election' : 'president'
   )
-  const [showSeats, setShowSeats]         = useState(false)
   const [showFeedback, setShowFeedback]   = useState(false)
   const [feedbackText, setFeedbackText]   = useState('')
   const [submitting, setSubmitting]       = useState(false)
   const sessionStartRef                   = useRef<number>(Date.now())
+
+  const profileAddr = (() => {
+    try {
+      const r = localStorage.getItem('wsp-profile')
+      return r ? JSON.parse(r) as {
+        state?: string; city?: string; zip?: string
+        congressional_district?: string
+        state_senate_district?: string
+        state_house_district?: string
+      } : null
+    } catch { return null }
+  })()
+  const hasProfileAddr = (profileAddr?.state ?? '').trim() !== ''
 
   useEffect(() => {
     const theme = localStorage.getItem('wsp-theme') ?? 'dark'
@@ -663,7 +619,7 @@ export default function Home() {
                       <span><span className="home-pmeta-lbl">Previous term</span>{fmtDate(PRESIDENT.previousTerm.start)} – {fmtDate(PRESIDENT.previousTerm.end)}</span>
                     )}
                   </div>
-                  <button className="home-district-action-btn" onClick={() => navigate('/administration')}>Administration</button>
+                  <button className="home-district-action-btn" style={{ background: '#4F4262' }} onClick={() => navigate('/administration')}>Administration</button>
                 </div>
               ) : (
                 <div className="home-election-cycle">
@@ -675,38 +631,64 @@ export default function Home() {
                       </div>
                     ))}
                   </div>
-                  <button className="home-district-action-btn" onClick={() => navigate('/presidential-candidates')}>Presidential Candidates</button>
+                  <button className="home-district-action-btn" style={{ background: '#4F4262' }} onClick={() => navigate('/presidential-candidates')}>Presidential Candidates</button>
                 </div>
               )}
             </div>
+            {!hasProfileAddr && (
+              <div className="home-no-profile-msg" style={{ marginBottom: 14 }}>
+                <span>Set your address in</span>
+                <button onClick={() => navigate('/profile')}>My Profile</button>
+                <span>to load your elected officials.</span>
+              </div>
+            )}
+
             <div className="home-district-grid">
               {(['local', 'state', 'national'] as const).map(level => {
-                const colReps = PLACEHOLDER_REPS
-                  .filter(r => r.level === level)
-                  .sort((a, b) => new Date(b.officeSince).getTime() - new Date(a.officeSince).getTime())
+                const officials = hasProfileAddr
+                  ? getOfficialsByState(profileAddr?.state ?? '').filter(o => o.level === level)
+                  : []
+
+                // District identifiers for this column, ordered highest → lowest level
+                const districtCards: { label: string; value: string }[] = []
+                if (level === 'national' && profileAddr?.congressional_district) {
+                  districtCards.push({ label: 'Congressional District', value: profileAddr.congressional_district })
+                }
+                if (level === 'state') {
+                  if (profileAddr?.state_senate_district)
+                    districtCards.push({ label: 'State Senate District', value: profileAddr.state_senate_district })
+                  if (profileAddr?.state_house_district)
+                    districtCards.push({ label: 'State House District', value: profileAddr.state_house_district })
+                }
+
                 return (
                   <div key={level} className="home-district-col">
                     <div className="home-district-col-header">{level.charAt(0).toUpperCase() + level.slice(1)}</div>
-                    {colReps.map((rep, i) => (
-                      <div
-                        key={i}
-                        className={`home-rep-card${isElectionSoon(rep.nextElection) ? ' home-rep-card--soon' : ''}`}
-                        data-party={rep.party}
-                      >
-                        <div className="home-rep-role">{rep.role}</div>
-                        <div className="home-rep-name">{rep.name}</div>
-                        <div className="home-rep-since">Since {fmtDate(rep.officeSince)}</div>
-                        <ul className="home-rep-committees" aria-label="Committees">
-                          {rep.committees.map(c => <li key={c}>{c}</li>)}
-                        </ul>
-                        <div className="home-rep-contact-info">
-                          <a href={`tel:${rep.phone.replace(/\D/g, '')}`} className="home-rep-phone" aria-label={`Call ${rep.name}`}>
-                            {rep.phone}
-                          </a>
-                          <a href={`mailto:${rep.email}`} className="home-rep-email" aria-label={`Email ${rep.name}`}>
-                            {rep.email}
-                          </a>
-                        </div>
+                    {officials.map((o, i) => (
+                      <div key={i} className="home-rep-card" data-party={o.party}>
+                        <div className="home-rep-role">{o.role}</div>
+                        <div className="home-rep-name">{o.name}</div>
+                        {o.since && <div className="home-rep-since">Since {fmtDate(o.since)}</div>}
+                        {(o.phone || o.email) && (
+                          <div className="home-rep-contact-info">
+                            {o.phone && (
+                              <a href={`tel:${o.phone.replace(/\D/g, '')}`} className="home-rep-phone" aria-label={`Call ${o.name}`}>
+                                {o.phone}
+                              </a>
+                            )}
+                            {o.email && (
+                              <a href={`mailto:${o.email}`} className="home-rep-email" aria-label={`Email ${o.name}`}>
+                                {o.email}
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {districtCards.map(d => (
+                      <div key={d.label} className="home-district-id-card">
+                        <div className="home-district-id-label">{d.label}</div>
+                        <div className="home-district-id-value">{d.value}</div>
                       </div>
                     ))}
                   </div>
@@ -714,31 +696,6 @@ export default function Home() {
               })}
             </div>
 
-            {/* All seats in district */}
-            <div className="home-district-seats">
-              <button
-                className="home-seats-toggle"
-                onClick={() => setShowSeats(s => !s)}
-                aria-expanded={showSeats}
-              >
-                {showSeats ? '▾' : '▸'} All Seats in Your District ({ALL_SEATS.length})
-              </button>
-              {showSeats && (
-                <div className="home-seats-list">
-                  {(['local', 'state', 'national'] as const).map(level => (
-                    <div key={level} className="home-seats-group">
-                      <div className="home-seats-group-header">{level.charAt(0).toUpperCase() + level.slice(1)}</div>
-                      {ALL_SEATS.filter(s => s.level === level).map(s => (
-                        <div key={s.seat} className={`home-seat-item${isElectionSoon(s.nextElection) ? ' home-seat-item--soon' : ''}`}>
-                          <span className="home-seat-name">{s.seat}</span>
-                          <span className="home-seat-date">{fmtDate(s.nextElection)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
 
           </section>
         )}

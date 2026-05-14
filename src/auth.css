@@ -976,8 +976,8 @@
   transition: background .13s, color .13s;
 }
 .home-president-toggle button.hpt-active {
-  background: var(--color-bg-primary);
-  color: var(--color-text-primary);
+  background: #B597D5;
+  color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,.2);
 }
 .home-president-info,
@@ -1105,3 +1105,84 @@
 }
 .home-seat-item--soon .home-seat-name { color: var(--color-text-primary); font-weight: 700; }
 .home-seat-item--soon .home-seat-date { color: #E97132; font-weight: 700; }
+
+/* Seat cards inline in district columns */
+.home-seats-col-divider {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--color-text-tertiary);
+  margin-top: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+.home-seat-card {
+  background: var(--color-card, #2a2840);
+  border: 1px dashed var(--color-border-medium);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.home-seat-card--soon { border: 2px dashed #E97132; }
+.home-seat-card-name {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.home-seat-card-election {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+}
+.home-seat-card--soon .home-seat-card-election { color: #E97132; font-weight: 700; }
+
+/* No-profile nudge in rep columns */
+.home-no-profile-msg {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+.home-no-profile-msg button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  color: #B597D5;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* District identifier cards in rep columns */
+.home-district-id-card {
+  background: var(--color-card, #2a2840);
+  border-left: 4px solid #1a7a72;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.home-district-id-label {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: #1a7a72;
+}
+.home-district-id-value {
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}

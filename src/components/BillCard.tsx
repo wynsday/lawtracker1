@@ -17,7 +17,7 @@ const AMEND_TOOLTIPS: Record<string, string> = {
   'speech':       'Press & Speech',
 }
 import type { Bill } from '../types/bill'
-import { policyBarStyle } from '../lib/billUtils'
+import { policyBarStyle, isEnacted } from '../lib/billUtils'
 
 function parseCssStyle(css: string): React.CSSProperties {
   const obj: Record<string, string> = {}
@@ -41,7 +41,8 @@ export default function BillCard({ bill }: { bill: Bill }) {
     ? <span className="tag tag-local">📍 {bill.municipality}</span>
     : <span className="tag tag-mi">Michigan</span>
 
-  const urgTag = bill.urgency === 'urgent'  ? <span className="tag tag-now">Act now</span>
+  const urgTag = isEnacted(bill)             ? null
+               : bill.urgency === 'urgent'  ? <span className="tag tag-now">Act now</span>
                : bill.urgency === 'months'  ? <span className="tag tag-months">Months</span>
                : bill.urgency === 'stalled' ? <span className="tag tag-stalled">Stalled</span>
                :                             <span className="tag tag-year">Session</span>
