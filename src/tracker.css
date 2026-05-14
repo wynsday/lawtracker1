@@ -275,10 +275,10 @@ body {
 .tag-fed     { background: var(--federal-bg);  color: var(--federal-text); }
 .tag-mi      { background: var(--michigan-bg); color: var(--michigan-text); }
 .tag-local   { background: var(--local-bg);    color: var(--local-text); }
-.tag-now     { background: var(--color-bg-danger);  color: var(--color-text-danger); }
-.tag-months  { background: var(--color-bg-warning); color: var(--color-text-warning); }
-.tag-year    { background: var(--color-bg-neutral); color: var(--color-text-neutral); }
-.tag-stalled { background: rgba(51,204,51,0.12); color: #33CC33; }
+.tag-now     { background: #fcebeb; color: #791f1f; }
+.tag-months  { background: #faeeda; color: #633806; }
+.tag-year    { background: #f1efe8; color: #444441; }
+.tag-stalled { background: #e8e6e0; color: #1a7a72; }
 
 .amend-tag {
   font-size: 11px; padding: 1px 6px; border-radius: 8px;
