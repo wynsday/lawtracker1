@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import FeedbackButton from '../components/FeedbackButton'
 
 export default function Administration() {
   const navigate = useNavigate()
@@ -43,6 +44,7 @@ export default function Administration() {
       <p style={{ fontSize: 16, color: 'var(--page-title)', lineHeight: 1.6 }}>
         Cabinet and administration member profiles coming soon.
       </p>
+      <FeedbackButton />
     </div>
   )
 }

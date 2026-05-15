@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { authCheck } from '../lib/authApi'
+import FeedbackButton from '../components/FeedbackButton'
 
 type Step = 'username' | 'credential'
 
@@ -265,6 +266,7 @@ export default function Login() {
         )}
       </div>
     </div>
+    <FeedbackButton />
     </>
   )
 }

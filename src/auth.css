@@ -848,8 +848,8 @@
   border-radius: 22px;
   background: linear-gradient(
     to bottom,
-    #A4E569 0%,
-    #A4E569 50%,
+    #00B050 0%,
+    #00B050 50%,
     #6C300E 75%,
     #6C300E 100%
   );
@@ -866,6 +866,28 @@
 }
 .home-feedback-btn:hover  { opacity: .9; transform: translateY(-1px); }
 .home-feedback-btn:active { transform: translateY(0); }
+
+/* ── Small feedback pill — all pages except Home ── */
+.feedback-btn-sm {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  height: 30px;
+  border-radius: 15px;
+  background: #6C300E;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,.3);
+  transition: opacity .15s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.feedback-btn-sm:hover  { opacity: .9; transform: translateY(-1px); }
+.feedback-btn-sm:active { transform: translateY(0); }
 
 /* ── Feedback floating card ── */
 .home-feedback-card {

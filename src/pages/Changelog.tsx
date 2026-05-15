@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import PageTopBar from '../components/PageTopBar'
+import FeedbackButton from '../components/FeedbackButton'
 
 const ENTRIES = [
   {
@@ -70,6 +71,7 @@ export default function Changelog() {
           </div>
         ))}
       </div>
+      <FeedbackButton />
     </div>
   )
 }

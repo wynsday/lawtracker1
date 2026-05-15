@@ -1,6 +1,7 @@
 import { type FormEvent, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authRegister } from '../lib/authApi'
+import FeedbackButton from '../components/FeedbackButton'
 
 function Eye() {
   return (
@@ -183,6 +184,7 @@ export default function Register() {
         </div>
       </div>
     </div>
+    <FeedbackButton />
     </>
   )
 }

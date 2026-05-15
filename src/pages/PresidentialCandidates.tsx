@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import FeedbackButton from '../components/FeedbackButton'
 
 interface Candidate {
   name:         string
@@ -131,6 +132,7 @@ export default function PresidentialCandidates() {
           </div>
         ))}
       </div>
+      <FeedbackButton />
     </div>
   )
 }

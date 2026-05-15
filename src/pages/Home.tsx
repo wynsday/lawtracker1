@@ -165,7 +165,7 @@ function MarchingBugsIcon() {
       </defs>
 
       {/* ── Bug 1 (lead, red ladybug) — carries flag ── */}
-      <line x1="16" y1="13" x2="16" y2="1" stroke="#5a3a00" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="16" y1="13" x2="16" y2="1" stroke="#1a1a1a" strokeWidth="1.2" strokeLinecap="round"/>
       <rect x="16" y="1" width="11" height="7" rx="1" fill="#B597D5"/>
       {/* 5-pointed pinwheel star — bigger */}
       <polygon points="21.5,2 22.09,3.69 23.88,3.73 22.45,4.81 22.97,6.52 21.5,5.5 20.03,6.52 20.55,4.81 19.12,3.73 20.91,3.69" fill="#FFC000"/>
@@ -187,12 +187,12 @@ function MarchingBugsIcon() {
       <line x1="11.3" y1="13.8" x2="13.5" y2="11" stroke="#333" strokeWidth="0.9" strokeLinecap="round"/>
       <circle cx="6.2" cy="10.7" r="0.8" fill="#333"/>
       <circle cx="13.8" cy="10.7" r="0.8" fill="#333"/>
-      <line x1="4.5" y1="22" x2="1.5" y2="20" stroke="#555" strokeWidth="0.7" strokeLinecap="round"/>
-      <line x1="4.5" y1="24" x2="1.5" y2="24" stroke="#555" strokeWidth="0.7" strokeLinecap="round"/>
-      <line x1="4.5" y1="26" x2="1.5" y2="28" stroke="#555" strokeWidth="0.7" strokeLinecap="round"/>
-      <line x1="15.5" y1="22" x2="18.5" y2="20" stroke="#555" strokeWidth="0.7" strokeLinecap="round"/>
-      <line x1="15.5" y1="24" x2="18.5" y2="24" stroke="#555" strokeWidth="0.7" strokeLinecap="round"/>
-      <line x1="15.5" y1="26" x2="18.5" y2="28" stroke="#555" strokeWidth="0.7" strokeLinecap="round"/>
+      <line x1="4.5" y1="22" x2="1.5" y2="20" stroke="#1a1a1a" strokeWidth="0.7" strokeLinecap="round"/>
+      <line x1="4.5" y1="24" x2="1.5" y2="24" stroke="#1a1a1a" strokeWidth="0.7" strokeLinecap="round"/>
+      <line x1="4.5" y1="26" x2="1.5" y2="28" stroke="#1a1a1a" strokeWidth="0.7" strokeLinecap="round"/>
+      <line x1="15.5" y1="22" x2="18.5" y2="20" stroke="#1a1a1a" strokeWidth="0.7" strokeLinecap="round"/>
+      <line x1="15.5" y1="24" x2="18.5" y2="24" stroke="#1a1a1a" strokeWidth="0.7" strokeLinecap="round"/>
+      <line x1="15.5" y1="26" x2="18.5" y2="28" stroke="#1a1a1a" strokeWidth="0.7" strokeLinecap="round"/>
 
       {/* ── Bug 2 (blue body, orange head) ── */}
       <ellipse cx="37" cy="24" rx="6.5" ry="4.5" fill="url(#mb-b2)"/>
@@ -304,6 +304,7 @@ export default function Home() {
         congressional_district?: string
         state_senate_district?: string
         state_house_district?: string
+        county_commissioner?: string
       } : null
     } catch { return null }
   })()
@@ -399,11 +400,11 @@ export default function Home() {
             aria-label="LawTracker — browse active legislation"
           >
             <div aria-hidden="true" style={{
-              position: 'absolute', inset: 0, background: '#00B0F0',
+              position: 'absolute', inset: 0, background: '#003F87',
               clipPath: 'polygon(0% 0%, 80% 0%, 20% 100%, 0% 100%)',
             }} />
             <div aria-hidden="true" style={{
-              position: 'absolute', inset: 0, background: '#C00000',
+              position: 'absolute', inset: 0, background: '#CC0000',
               clipPath: 'polygon(80% 0%, 100% 0%, 100% 100%, 20% 100%)',
             }} />
             <span className="home-card-label">LawTracker</span>
@@ -554,20 +555,16 @@ export default function Home() {
           </button>
 
           <button
-            className="home-secondary-card" style={{ background: '#00B050' }}
+            className="home-secondary-card" style={{ background: '#4F4262' }}
             onClick={() => navigate('/enacted-legislation')}
             aria-label="Enacted Legislation"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <polyline points="20 6 9 17 4 12"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="11" fill="#00B050"/>
+              <polyline points="7 12.5 10.5 16 17 9" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span className="home-secondary-label">Enacted</span>
-          </button>
-
-          <button className="home-secondary-card" style={{ background: '#4F4262' }}
-            disabled aria-label="Coming Soon">
-            <span className="home-secondary-label">—</span>
-            <span className="home-secondary-badge">Coming Soon</span>
+            <span className="home-secondary-label">Passed Law</span>
+            <span className="home-secondary-badge">5 year History</span>
           </button>
 
           <button
@@ -646,20 +643,20 @@ export default function Home() {
             <div className="home-district-grid">
               {(['local', 'state', 'national'] as const).map(level => {
                 const officials = hasProfileAddr
-                  ? getOfficialsByState(profileAddr?.state ?? '').filter(o => o.level === level)
+                  ? getOfficialsByState(profileAddr?.state ?? '').filter(o => {
+                      if (o.level !== level) return false
+                      if (!o.district) return true  // statewide — always show
+                      if (o.role === 'U.S. Representative')
+                        return o.district === profileAddr?.congressional_district
+                      if (o.role === 'State Senator')
+                        return o.district === profileAddr?.state_senate_district
+                      if (o.role === 'State Representative')
+                        return o.district === profileAddr?.state_house_district
+                      if (o.role === 'County Commissioner')
+                        return o.district === profileAddr?.county_commissioner
+                      return true
+                    })
                   : []
-
-                // District identifiers for this column, ordered highest → lowest level
-                const districtCards: { label: string; value: string }[] = []
-                if (level === 'national' && profileAddr?.congressional_district) {
-                  districtCards.push({ label: 'Congressional District', value: profileAddr.congressional_district })
-                }
-                if (level === 'state') {
-                  if (profileAddr?.state_senate_district)
-                    districtCards.push({ label: 'State Senate District', value: profileAddr.state_senate_district })
-                  if (profileAddr?.state_house_district)
-                    districtCards.push({ label: 'State House District', value: profileAddr.state_house_district })
-                }
 
                 return (
                   <div key={level} className="home-district-col">
@@ -669,7 +666,7 @@ export default function Home() {
                         <div className="home-rep-role">{o.role}</div>
                         <div className="home-rep-name">{o.name}</div>
                         {o.since && <div className="home-rep-since">Since {fmtDate(o.since)}</div>}
-                        {(o.phone || o.email) && (
+                        {(o.phone || o.email || o.contact_url) && (
                           <div className="home-rep-contact-info">
                             {o.phone && (
                               <a href={`tel:${o.phone.replace(/\D/g, '')}`} className="home-rep-phone" aria-label={`Call ${o.name}`}>
@@ -681,14 +678,13 @@ export default function Home() {
                                 {o.email}
                               </a>
                             )}
+                            {o.contact_url && !o.email && (
+                              <a href={o.contact_url} target="_blank" rel="noopener noreferrer" className="home-rep-email" aria-label={`Contact ${o.name}`}>
+                                Contact form
+                              </a>
+                            )}
                           </div>
                         )}
-                      </div>
-                    ))}
-                    {districtCards.map(d => (
-                      <div key={d.label} className="home-district-id-card">
-                        <div className="home-district-id-label">{d.label}</div>
-                        <div className="home-district-id-value">{d.value}</div>
                       </div>
                     ))}
                   </div>

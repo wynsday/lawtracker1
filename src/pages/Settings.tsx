@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import PageTopBar from '../components/PageTopBar'
+import FeedbackButton from '../components/FeedbackButton'
 
 export default function Settings() {
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function Settings() {
       <p style={{ fontSize: 18, color: 'var(--page-title)', lineHeight: 1.6 }}>
         Settings page coming soon.
       </p>
+      <FeedbackButton />
     </div>
   )
 }

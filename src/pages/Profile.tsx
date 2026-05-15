@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import PageTopBar from '../components/PageTopBar'
+import FeedbackButton from '../components/FeedbackButton'
 
 const US_STATES = [
   'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA',
@@ -932,6 +933,7 @@ export default function Profile() {
         </p>
 
       </div>
+      <FeedbackButton />
     </div>
   )
 }
