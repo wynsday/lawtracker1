@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
 import { getOfficialsByState, type Official, type OfficialParty } from '../lib/officials'
 import { supabase } from '../lib/supabase'
+import { getIdsByStatus } from '../lib/billStatus'
 
 interface RepRow {
   bioguide_id: string
@@ -553,12 +554,23 @@ export default function Home() {
   const deleteLocalRep = (id: string) =>
     setCustomLocalReps(prev => prev.filter(r => r.id !== id))
 
+  const [alertCount,   setAlertCount]   = useState(() => getIdsByStatus('alert').size)
+  const [watchCount,   setWatchCount]   = useState(() => getIdsByStatus('watch').size)
+  const [archiveCount, setArchiveCount] = useState(() => getIdsByStatus('archive').size)
+
+  useEffect(() => {
+    function sync() {
+      setAlertCount(getIdsByStatus('alert').size)
+      setWatchCount(getIdsByStatus('watch').size)
+      setArchiveCount(getIdsByStatus('archive').size)
+    }
+    window.addEventListener('bill-status-change', sync)
+    return () => window.removeEventListener('bill-status-change', sync)
+  }, [])
+
   if (!ready) return null
 
-  const isLoggedIn   = !!user
-  const alertCount   = 0
-  const watchCount   = 0
-  const archiveCount = 0
+  const isLoggedIn = !!user
 
   async function handleSignOut() { await signOut() }
 
