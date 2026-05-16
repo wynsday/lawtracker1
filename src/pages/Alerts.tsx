@@ -9,9 +9,18 @@ import { supabase } from '../lib/supabase'
 import Header from '../components/Header'
 import FilterGroups from '../components/FilterGroups'
 import BillCard from '../components/BillCard'
+import BillActivity from '../components/BillActivity'
 import ThemeToggle from '../components/ThemeToggle'
 import FeedbackButton from '../components/FeedbackButton'
 import type React from 'react'
+
+function alertMovementEnabled(): boolean {
+  try {
+    const raw = localStorage.getItem('wsp-alert-settings')
+    if (!raw) return true  // default on
+    return JSON.parse(raw)?.movement?.alerting !== false
+  } catch { return true }
+}
 
 const DEFAULT_FILTERS: ActiveFilters = {
   level: 'all', timing: 'all', impact: 'all', issue: 'all',
@@ -130,8 +139,9 @@ export default function Alerts() {
     setTimeout(() => setCopied(false), 1400)
   }
 
-  const alertBills  = bills.filter(b => alertIds.has(b.id))
-  const filtered    = filterBills(alertBills, active)
+  const alertBills    = bills.filter(b => alertIds.has(b.id))
+  const filtered      = filterBills(alertBills, active)
+  const showActivity  = alertMovementEnabled()
 
   return (
     <div style={{ paddingTop: 44 }}>
@@ -199,6 +209,10 @@ export default function Alerts() {
       />
 
       <FilterGroups active={active} onChange={handleFilterChange} />
+
+      {!loading && showActivity && alertBills.length > 0 && (
+        <BillActivity bills={alertBills} label="Alert Activity" />
+      )}
 
       {loading && <div className="loading">Loading bills…</div>}
       {error   && <div className="empty">Error loading bills: {error}</div>}

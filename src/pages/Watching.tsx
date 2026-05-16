@@ -7,9 +7,18 @@ import { getIdsByStatus } from '../lib/billStatus'
 import Header from '../components/Header'
 import FilterGroups from '../components/FilterGroups'
 import BillCard from '../components/BillCard'
+import BillActivity from '../components/BillActivity'
 import ThemeToggle from '../components/ThemeToggle'
 import FeedbackButton from '../components/FeedbackButton'
 import type React from 'react'
+
+function watchMovementEnabled(): boolean {
+  try {
+    const raw = localStorage.getItem('wsp-alert-settings')
+    if (!raw) return true
+    return JSON.parse(raw)?.movement?.watching !== false
+  } catch { return true }
+}
 
 const DEFAULT_FILTERS: ActiveFilters = {
   level: 'all', timing: 'all', impact: 'all', issue: 'all',
@@ -97,8 +106,9 @@ export default function Watching() {
     setTimeout(() => setCopied(false), 1400)
   }
 
-  const watchBills = bills.filter(b => watchIds.has(b.id))
-  const filtered   = filterBills(watchBills, active)
+  const watchBills   = bills.filter(b => watchIds.has(b.id))
+  const filtered     = filterBills(watchBills, active)
+  const showActivity = watchMovementEnabled()
 
   return (
     <div style={{ paddingTop: 44 }}>
@@ -151,6 +161,10 @@ export default function Watching() {
 
       <Header stateName="Watching" bills={watchBills} onSearch={q => handleFilterChange('search', q)} />
       <FilterGroups active={active} onChange={handleFilterChange} />
+
+      {!loading && showActivity && watchBills.length > 0 && (
+        <BillActivity bills={watchBills} label="Watch Activity" />
+      )}
 
       {loading && <div className="loading">Loading bills…</div>}
       {error   && <div className="empty">Error loading bills: {error}</div>}
