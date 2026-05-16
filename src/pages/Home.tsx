@@ -782,10 +782,11 @@ export default function Home() {
           </button>
 
           <button className="home-secondary-card" style={{ background: '#4F4262' }}
-            disabled aria-label="Candidates — Coming Soon">
-            <CandidatesIcon size={20} color="white" />
+            onClick={() => navigate('/presidential-candidates')}
+            aria-label="Presidential Candidates">
+            <CandidatesIcon size={20} color="#E97132" />
             <span className="home-secondary-label">Candidates</span>
-            <span className="home-secondary-badge">Coming Soon</span>
+            <span className="home-secondary-badge">Placeholder</span>
           </button>
 
           <button className="home-secondary-card" style={{ background: '#4F4262' }}
@@ -818,7 +819,7 @@ export default function Home() {
             onClick={() => navigate('/enacted-legislation')}
             aria-label="Enacted Legislation"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <circle cx="12" cy="12" r="11" fill="#00B050"/>
               <polyline points="7 12.5 10.5 16 17 9" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
@@ -881,7 +882,6 @@ export default function Home() {
                       <span><span className="home-pmeta-lbl">Previous term</span>{fmtDate(PRESIDENT.previousTerm.start)} – {fmtDate(PRESIDENT.previousTerm.end)}</span>
                     </div>
                   )}
-                  <button className="home-district-action-btn" style={{ background: '#4F4262' }} onClick={() => navigate('/administration')}>Administration</button>
                 </div>
               ) : (
                 <div className="home-election-cycle">
@@ -893,9 +893,9 @@ export default function Home() {
                       </div>
                     ))}
                   </div>
-                  <button className="home-district-action-btn" style={{ background: '#4F4262' }} onClick={() => navigate('/presidential-candidates')}>Presidential Candidates</button>
                 </div>
               )}
+              <button className="home-district-action-btn" style={{ background: '#4F4262' }} onClick={() => navigate('/administration')}>Administration</button>
             </div>
             {!hasProfileAddr && (
               <div className="home-no-profile-msg" style={{ marginBottom: 14 }}>

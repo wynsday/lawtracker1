@@ -708,20 +708,21 @@
 
 .home-secondary-card {
   width: 82px;
-  min-height: 88px;
+  height: 88px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 10px 4px;
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 24px 4px 8px;
   border: none;
   cursor: pointer;
   transition: transform .12s ease, box-shadow .12s ease;
   font-family: 'Quicksand', sans-serif;
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
+  overflow: hidden;
 }
 .home-secondary-card:hover:not(:disabled)  { transform: translateY(-2px); box-shadow: 0 5px 16px rgba(0,0,0,.25); }
 .home-secondary-card:active:not(:disabled) { transform: translateY(0); }
@@ -1861,4 +1862,60 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ── Section divider between cabinet and senior admin ── */
+.adm-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 36px 0 22px;
+}
+.adm-section-divider::before,
+.adm-section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border-light);
+}
+.adm-section-divider span {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+}
+
+/* ── Role badge variants ── */
+.adm-role-badge {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 1px 5px;
+  white-space: nowrap;
+  letter-spacing: .02em;
+  flex-shrink: 0;
+  align-self: center;
+}
+.adm-role-badge--independent {
+  color: #00B050;
+  background: rgba(0,176,80,.12);
+  border: 1px solid rgba(0,176,80,.35);
+}
+.adm-role-badge--military {
+  color: #E97132;
+  background: rgba(233,113,50,.12);
+  border: 1px solid rgba(233,113,50,.35);
+}
+
+/* ── Status note (e.g. stepped back date) ── */
+.adm-card-note {
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px;
+  color: #FFC000;
+  font-style: italic;
+  line-height: 1.3;
 }

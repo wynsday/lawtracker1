@@ -7,6 +7,8 @@ interface Member {
   name: string
   date: string
   acting?: boolean
+  badge?: string   // e.g. "Independent", "Military"
+  note?: string    // secondary status note shown below date
   desc: string
   fact: string
 }
@@ -170,9 +172,86 @@ const MEMBERS: Member[] = [
   },
 ]
 
+const SENIOR_MEMBERS: Member[] = [
+  {
+    title: 'National Security Advisor',
+    name: 'Vacant',
+    date: '',
+    acting: true,
+    desc: 'Coordinates national security policy across agencies and serves as the President\'s primary advisor on foreign and defense matters.',
+    fact: 'The NSA role was created in 1953 under Eisenhower; Michael Waltz held the post before becoming UN Ambassador.',
+  },
+  {
+    title: 'White House Counsel',
+    name: 'Bill McGinley',
+    date: 'Jan 20, 2025',
+    desc: 'Advises the President and White House staff on legal matters, ethics rules, and constitutional questions.',
+    fact: 'The White House Counsel represents the Office of the President — not the President personally.',
+  },
+  {
+    title: 'Press Secretary',
+    name: 'Karoline Leavitt',
+    date: 'Jan 20, 2025',
+    desc: 'Serves as the primary spokesperson for the White House and conducts daily press briefings.',
+    fact: 'At 27 years old, Leavitt is the youngest White House Press Secretary in U.S. history.',
+  },
+  {
+    title: 'OMB Director',
+    name: 'Russell Vought',
+    date: 'Jan 20, 2025',
+    desc: 'Prepares the President\'s annual budget and oversees federal agency management and regulation review.',
+    fact: 'OMB reviews every significant federal regulation before it takes effect and manages the $6+ trillion budget process.',
+  },
+  {
+    title: 'US Trade Representative',
+    name: 'Jamieson Greer',
+    date: 'Confirmed 2025',
+    desc: 'Negotiates trade agreements, sets tariff policy, and coordinates U.S. trade relations with 180+ countries.',
+    fact: 'The USTR led implementation of tariffs covering more than $3 trillion in annual U.S. goods trade.',
+  },
+  {
+    title: 'Deputy Chief of Staff',
+    name: 'Stephen Miller',
+    date: 'Jan 20, 2025',
+    desc: 'Coordinates White House domestic policy development and serves as a senior advisor on immigration.',
+    fact: 'Miller has served across both Trump terms as one of the most influential domestic policy architects.',
+  },
+  {
+    title: 'DOGE',
+    name: 'Elon Musk',
+    date: 'Jan 20, 2025',
+    note: 'Stepped back May 2026',
+    desc: 'Led the Department of Government Efficiency, an advisory effort to cut federal spending and reduce regulatory burden.',
+    fact: 'Musk claimed the initiative identified hundreds of billions in potential savings before stepping back in May 2026.',
+  },
+  {
+    title: 'Sr. Counselor for Trade',
+    name: 'Peter Navarro',
+    date: 'Jan 20, 2025',
+    desc: 'Advises the President on trade policy, tariffs, and long-term economic competition with China.',
+    fact: 'One of the few economists who consistently argued for steep tariffs as a tool of economic statecraft.',
+  },
+  {
+    title: 'Federal Reserve Chair',
+    name: 'Jerome Powell',
+    date: 'Term thru May 2026',
+    badge: 'Independent',
+    desc: 'Leads the Federal Reserve\'s Board of Governors and sets U.S. monetary policy including interest rates.',
+    fact: 'The Fed is independent of the executive branch — the President cannot legally remove the Chair over policy disagreements.',
+  },
+  {
+    title: 'Joint Chiefs Chairman',
+    name: 'Gen. Dan Caine',
+    date: 'Confirmed 2025',
+    badge: 'Military',
+    desc: 'Serves as the principal military advisor to the President, the NSC, and the Secretary of Defense.',
+    fact: 'The Chairman does not command troops directly but is the highest-ranking officer in the U.S. Armed Forces.',
+  },
+]
+
 export default function Administration() {
   const navigate = useNavigate()
-  const [flipped, setFlipped] = useState<Set<number>>(new Set())
+  const [flipped, setFlipped] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     const theme = localStorage.getItem('wsp-theme') ?? 'dark'
@@ -180,12 +259,47 @@ export default function Administration() {
     return () => { document.documentElement.removeAttribute('data-theme') }
   }, [])
 
-  const toggle = (i: number) =>
+  const toggle = (key: string) =>
     setFlipped(prev => {
       const s = new Set(prev)
-      s.has(i) ? s.delete(i) : s.add(i)
+      s.has(key) ? s.delete(key) : s.add(key)
       return s
     })
+
+  const renderCard = (m: Member, key: string) => (
+    <div
+      key={key}
+      className={`adm-card-outer${flipped.has(key) ? ' adm-card--flipped' : ''}`}
+      onClick={() => toggle(key)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && toggle(key)}
+      aria-pressed={flipped.has(key)}
+      aria-label={`${m.title}: ${m.name}`}
+    >
+      <div className="adm-card-inner">
+        {/* Front */}
+        <div className="adm-card-front">
+          <div className="adm-card-front-top">
+            <div className="adm-card-title">{m.title}</div>
+            {m.acting && <span className="adm-acting-badge">Acting</span>}
+            {m.badge && <span className={`adm-role-badge adm-role-badge--${m.badge.toLowerCase()}`}>{m.badge}</span>}
+          </div>
+          <div className="adm-card-name">{m.name}</div>
+          {m.date && <div className="adm-card-date">{m.date}</div>}
+          {m.note && <div className="adm-card-note">{m.note}</div>}
+          <div className="adm-card-flip-hint">▸ tap to flip</div>
+        </div>
+
+        {/* Back */}
+        <div className="adm-card-back">
+          <div className="adm-card-back-title">{m.title}</div>
+          <p className="adm-card-back-desc">{m.desc}</p>
+          <p className="adm-card-back-fact">{m.fact}</p>
+        </div>
+      </div>
+    </div>
+  )
 
   return (
     <div className="adm-page">
@@ -204,38 +318,15 @@ export default function Administration() {
       <p className="adm-subtitle">Trump Cabinet · 47th Administration · Tap any card to flip</p>
 
       <div className="adm-grid">
-        {MEMBERS.map((m, i) => (
-          <div
-            key={i}
-            className={`adm-card-outer${flipped.has(i) ? ' adm-card--flipped' : ''}`}
-            onClick={() => toggle(i)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && toggle(i)}
-            aria-pressed={flipped.has(i)}
-            aria-label={`${m.title}: ${m.name}`}
-          >
-            <div className="adm-card-inner">
-              {/* Front */}
-              <div className="adm-card-front">
-                <div className="adm-card-front-top">
-                  <div className="adm-card-title">{m.title}</div>
-                  {m.acting && <span className="adm-acting-badge">Acting</span>}
-                </div>
-                <div className="adm-card-name">{m.name}</div>
-                <div className="adm-card-date">{m.date}</div>
-                <div className="adm-card-flip-hint">▸ tap to flip</div>
-              </div>
+        {MEMBERS.map((m, i) => renderCard(m, `c${i}`))}
+      </div>
 
-              {/* Back */}
-              <div className="adm-card-back">
-                <div className="adm-card-back-title">{m.title}</div>
-                <p className="adm-card-back-desc">{m.desc}</p>
-                <p className="adm-card-back-fact">{m.fact}</p>
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="adm-section-divider" role="separator">
+        <span>Senior Administration</span>
+      </div>
+
+      <div className="adm-grid">
+        {SENIOR_MEMBERS.map((m, i) => renderCard(m, `s${i}`))}
       </div>
 
       <FeedbackButton />
