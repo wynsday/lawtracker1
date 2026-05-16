@@ -754,7 +754,17 @@
   font-size: 22px;
   font-weight: 700;
   color: var(--color-text-primary);
-  margin-bottom: 14px;
+  margin-bottom: 10px;
+}
+
+.home-district-intro {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0 0 14px 0;
+  max-width: 680px;
 }
 
 .home-district-grid {
@@ -1212,6 +1222,15 @@
 }
 .home-add-local-cancel:hover { background: var(--color-bg-secondary); }
 
+.home-local-save-status {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+.home-local-save-status--ok  { color: #00B050; }
+.home-local-save-status--err { color: #C00000; }
+
 .home-rep-no-election {
   font-family: 'Nunito', sans-serif;
   font-size: 12px;
@@ -1480,6 +1499,74 @@
   letter-spacing: .4px;
   color: #1a7a72;
 }
+/* Community verification — dropdown, selected entry, verify button, badge, divider, submit */
+.home-local-dropdown {
+  width: 100%;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border-light);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  margin-top: 6px;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+.home-local-dropdown:focus { outline: 2px solid #4F4262; outline-offset: 1px; }
+
+.home-local-selected-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.home-local-verify-btn {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 10px;
+  border: 1px solid #4F4262;
+  background: transparent;
+  color: #4F4262;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background .15s, color .15s;
+}
+.home-local-verify-btn:hover:not(:disabled) { background: #4F4262; color: white; }
+.home-local-verify-btn:disabled { opacity: .55; cursor: default; }
+
+.home-local-verified-badge {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #00B050;
+  padding: 3px 0;
+}
+
+.home-local-divider {
+  border: none;
+  border-top: 1px solid var(--color-border-light);
+  margin: 8px 0;
+}
+
+.home-local-submit-btn {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #4F4262;
+  color: white;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: opacity .15s;
+}
+.home-local-submit-btn:hover { opacity: .85; }
+
 .home-district-id-value {
   font-family: 'Nunito', sans-serif;
   font-size: 15px;

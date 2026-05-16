@@ -63,38 +63,29 @@ Deno.serve(async (req: Request) => {
     return json({ ok: false, reason: 'missing_fields' }, 400)
   }
 
-  // -- Validate role against reference table ------------------------------------
-
-  const { data: roleRow, error: roleError } = await supabase
-    .from('local_official_roles')
-    .select('id')
-    .eq('state', state)
-    .eq('label', role)
-    .maybeSingle()
-
-  if (roleError) return json({ ok: false, reason: 'db_error' }, 500)
-  if (!roleRow)  return json({ ok: false, reason: 'invalid_role' }, 400)
-
-  // -- Insert -------------------------------------------------------------------
+  // -- Upsert -------------------------------------------------------------------
 
   const { data: inserted, error: insertError } = await supabase
     .from('local_officials')
-    .insert({
-      role,
-      name,
-      state,
-      phone:       phone       || null,
-      email:       email       || null,
-      county:      county      || null,
-      since:       since       || null,
-      term_ends:   term_ends   || null,
-      submitted_by: account.id,
-    })
+    .upsert(
+      {
+        role,
+        name,
+        state,
+        phone:        phone        || null,
+        email:        email        || null,
+        county:       county       || null,
+        since:        since        || null,
+        term_ends:    term_ends    || null,
+        submitted_by: account.id,
+      },
+      { onConflict: 'role,state,submitted_by' },
+    )
     .select('id')
     .single()
 
   if (insertError) {
-    console.error('[local-official-submit] insert error:', insertError.message)
+    console.error('[local-official-submit] upsert error:', insertError.message)
     return json({ ok: false, reason: 'db_error' }, 500)
   }
 

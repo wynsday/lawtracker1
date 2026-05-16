@@ -26,15 +26,7 @@ interface LocalOfficialRow {
   state: string
   since: string | null
   term_ends: string | null
-}
-
-interface LocalRoleEntry {
-  name: string
-  phone: string | null
-  email: string | null
-  since: string | null
-  term_ends: string | null
-  count: number
+  verification_count: number
 }
 
 // ─── Icon components ───────────────────────────────────────────────────────
@@ -321,17 +313,6 @@ const MI_ELECTION_DATES: Record<number, { label: string; date: string }[]> = {
   ],
 }
 
-function aggregateByRole(officials: LocalOfficialRow[], role: string): LocalRoleEntry[] {
-  const map = new Map<string, LocalRoleEntry>()
-  for (const o of officials) {
-    if (o.role !== role) continue
-    const key = o.name.trim().toLowerCase()
-    const existing = map.get(key)
-    if (existing) existing.count++
-    else map.set(key, { name: o.name, phone: o.phone, email: o.email, since: o.since, term_ends: o.term_ends, count: 1 })
-  }
-  return Array.from(map.values()).sort((a, b) => b.count - a.count)
-}
 
 function getRepElectionDates(o: Official): { year: number; dates: { label: string; date: string }[] } | null {
   if (!o.termEnds) return null
@@ -399,10 +380,13 @@ export default function Home() {
   const [localRoles, setLocalRoles]               = useState<string[]>([])
   const [localRolesLoaded, setLocalRolesLoaded]   = useState(false)
   const [localDBOfficials, setLocalDBOfficials]   = useState<LocalOfficialRow[]>([])
-  const [localForms, setLocalForms]               = useState<Record<string, { name: string; phone: string; email: string; since: string; term_ends: string }>>({})
-  const [localFormOpen, setLocalFormOpen]         = useState<Set<string>>(new Set())
-  const [localSubmitting, setLocalSubmitting]     = useState<Set<string>>(new Set())
-  const [localDropdownOpen, setLocalDropdownOpen] = useState<Set<string>>(new Set())
+  const [localForms, setLocalForms]               = useState<Record<string, { name: string; phone: string; email: string; since: string; term_ends: string }>>(() => {
+    try { const r = localStorage.getItem('wsp-local-forms'); return r ? JSON.parse(r) : {} } catch { return {} }
+  })
+  const [localSaveStatus, setLocalSaveStatus]     = useState<Record<string, 'saving' | 'saved' | 'error'>>({})
+  const [localSelectedId, setLocalSelectedId]     = useState<Record<string, string>>({})
+  const [localUserVerified, setLocalUserVerified] = useState<Set<string>>(new Set())
+  const [localVerifying, setLocalVerifying]       = useState<Set<string>>(new Set())
   const [localRefreshKey, setLocalRefreshKey]     = useState(0)
   const [hiddenLocalRoles, setHiddenLocalRoles]   = useState<Set<string>>(() => {
     try {
@@ -456,6 +440,24 @@ export default function Home() {
     localStorage.setItem('wsp-hidden-local-roles', JSON.stringify([...hiddenLocalRoles]))
   }, [hiddenLocalRoles])
 
+  useEffect(() => {
+    localStorage.setItem('wsp-local-forms', JSON.stringify(localForms))
+  }, [localForms])
+
+  useEffect(() => {
+    if (!user?.username) return
+    try {
+      const r = localStorage.getItem(`wsp-verified-${user.username}`)
+      if (r) setLocalUserVerified(new Set(JSON.parse(r) as string[]))
+    } catch {}
+  }, [user?.username])
+
+  useEffect(() => {
+    if (user?.username) {
+      localStorage.setItem(`wsp-verified-${user.username}`, JSON.stringify([...localUserVerified]))
+    }
+  }, [localUserVerified, user?.username])
+
   // Fetch local_official_roles for the user's state
   useEffect(() => {
     if (!user || !profileAddr?.state) { setLocalRoles([]); setLocalRolesLoaded(true); return }
@@ -480,24 +482,26 @@ export default function Home() {
       if (county) {
         const { data } = await supabase
           .from('local_officials')
-          .select('id,role,name,phone,email,county,state,since,term_ends')
+          .select('id,role,name,phone,email,county,state,since,term_ends,verification_count')
           .eq('state', state)
           .eq('county', county)
         setLocalDBOfficials((data ?? []) as LocalOfficialRow[])
       } else {
         const { data } = await supabase
           .from('local_officials')
-          .select('id,role,name,phone,email,county,state,since,term_ends')
+          .select('id,role,name,phone,email,county,state,since,term_ends,verification_count')
           .eq('state', state)
         setLocalDBOfficials((data ?? []) as LocalOfficialRow[])
       }
     })()
   }, [user, profileAddr?.state, profileAddr?.county, localRefreshKey])
 
-  const submitLocalOfficial = async (role: string) => {
-    const form = localForms[role] ?? { name: '', phone: '', email: '', since: '', term_ends: '' }
+  const autoSaveLocalOfficial = async (
+    role: string,
+    form: { name: string; phone: string; email: string; since: string; term_ends: string },
+  ) => {
     if (!form.name.trim()) return
-    setLocalSubmitting(prev => new Set(prev).add(role))
+    setLocalSaveStatus(prev => ({ ...prev, [role]: 'saving' }))
     try {
       const res = await fetch(
         `${import.meta.env.VITE_FUNCTIONS_BASE}/functions/v1/local-official-submit`,
@@ -507,26 +511,44 @@ export default function Home() {
           credentials: 'include',
           body: JSON.stringify({
             role,
-            name:        form.name.trim(),
-            phone:       form.phone.trim()       || undefined,
-            email:       form.email.trim()       || undefined,
-            since:       form.since.trim()       || undefined,
-            term_ends:   form.term_ends.trim()   || undefined,
-            county:      (profileAddr?.county ?? '').trim() || undefined,
-            state:       profileAddr?.state,
+            name:      form.name.trim(),
+            phone:     form.phone.trim()     || undefined,
+            email:     form.email.trim()     || undefined,
+            since:     form.since.trim()     || undefined,
+            term_ends: form.term_ends.trim() || undefined,
+            county:    (profileAddr?.county ?? '').trim() || undefined,
+            state:     profileAddr?.state,
           }),
         },
       )
       const result = await res.json()
       if (result.ok) {
-        setLocalForms(prev => ({ ...prev, [role]: { name: '', phone: '', email: '', since: '', term_ends: '' } }))
-        setLocalFormOpen(prev => { const s = new Set(prev); s.delete(role); return s })
+        setLocalSaveStatus(prev => ({ ...prev, [role]: 'saved' }))
+        setLocalRefreshKey(k => k + 1)
+        setTimeout(() => setLocalSaveStatus(prev => { const n = { ...prev }; delete n[role]; return n }), 2000)
+      } else {
+        setLocalSaveStatus(prev => ({ ...prev, [role]: 'error' }))
+      }
+    } catch {
+      setLocalSaveStatus(prev => ({ ...prev, [role]: 'error' }))
+    }
+  }
+
+  const verifyOfficial = async (officialId: string) => {
+    setLocalVerifying(prev => new Set(prev).add(officialId))
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_FUNCTIONS_BASE}/functions/v1/local-official-verify`,
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+          body: JSON.stringify({ official_id: officialId }) },
+      )
+      const result = await res.json()
+      if (result.ok) {
+        setLocalUserVerified(prev => new Set(prev).add(officialId))
         setLocalRefreshKey(k => k + 1)
       }
-    } catch (e) {
-      console.error('[local-official-submit]', e)
-    } finally {
-      setLocalSubmitting(prev => { const s = new Set(prev); s.delete(role); return s })
+    } catch { /* silent */ } finally {
+      setLocalVerifying(prev => { const s = new Set(prev); s.delete(officialId); return s })
     }
   }
 
@@ -833,6 +855,10 @@ export default function Home() {
             {/* Rep columns — Local | State | National */}
             <h2 className="home-district-heading">Your Representatives</h2>
 
+            <p className="home-district-intro">
+              This is a great way to help each other out. If something autofills or populates, it is because someone else filled it out and yet another person verified the information was correct. If there is an empty field to fill out, no one from that county or district has entered and verified it. You could be the first! Thank you in advance for assisting. If you run into any problems, use the feedback button and the gremlins will gremlin.
+            </p>
+
             {/* President / Election Cycle toggle panel */}
             <div className="home-president-panel">
               <div className="home-president-toggle" role="group" aria-label="View mode">
@@ -1048,17 +1074,21 @@ export default function Home() {
                           : (localRoles.length > 0 ? localRoles : LOCAL_ROLES_FALLBACK)
                               .filter(role => localViewMode === 'show' || !hiddenLocalRoles.has(role))
                               .map(role => {
-                            const entries   = aggregateByRole(localDBOfficials, role)
-                            const maxCnt    = entries[0]?.count ?? 0
-                            const top       = maxCnt > 0 ? entries.filter(e => e.count === maxCnt) : []
-                            const others    = maxCnt > 0 ? entries.filter(e => e.count < maxCnt)  : []
-                            const form      = localForms[role] ?? { name: '', phone: '', email: '', since: '', term_ends: '' }
-                            const formOpen  = localFormOpen.has(role)
-                            const dropOpen  = localDropdownOpen.has(role)
-                            const isSubmit  = localSubmitting.has(role)
-                            const upd = (field: string, val: string) =>
-                              setLocalForms(prev => ({ ...prev, [role]: { ...(prev[role] ?? { name: '', contact_url: '', phone: '', email: '' }), [field]: val } }))
-                            const isHidden = hiddenLocalRoles.has(role)
+                            const form       = localForms[role] ?? { name: '', phone: '', email: '', since: '', term_ends: '' }
+                            const saveStatus = localSaveStatus[role]
+                            const emptyForm  = { name: '', phone: '', email: '', since: '', term_ends: '' }
+                            const upd = (field: string, val: string) => {
+                              const updated = { ...(localForms[role] ?? emptyForm), [field]: val }
+                              setLocalForms(prev => ({ ...prev, [role]: updated }))
+                            }
+                            const allFilled = !!(form.name.trim() && form.phone.trim() && form.email.trim() && form.since.trim() && form.term_ends.trim())
+                            const isHidden  = hiddenLocalRoles.has(role)
+                            const roleEntries = localDBOfficials
+                              .filter(o => o.role === role)
+                              .sort((a, b) => b.verification_count - a.verification_count)
+                            const selectedEntry   = localSelectedId[role] ? (roleEntries.find(e => e.id === localSelectedId[role]) ?? null) : null
+                            const hasVerified     = selectedEntry ? localUserVerified.has(selectedEntry.id) : false
+                            const isVerifyingThis = selectedEntry ? localVerifying.has(selectedEntry.id) : false
                             return (
                               <div key={role} className={`home-rep-card${isHidden ? ' home-local-card--hidden' : ''}`} data-party="other">
                                 <button
@@ -1075,63 +1105,62 @@ export default function Home() {
                                   <span style={{ display: 'block' }}>{role.replace(/^County\s+/i, '')}</span>
                                 </div>
 
-                                {top.length > 0
-                                  ? top.map(e => (
-                                      <div key={e.name} className="home-local-top-entry">
-                                        <div className="home-rep-name">{e.name}</div>
-                                        {(e.since || e.term_ends) && (
-                                          <div className="home-rep-meta">
-                                            {e.since && <span>Elected {fmtDate(e.since)}</span>}
-                                            {e.since && e.term_ends && <span> – </span>}
-                                            {e.term_ends && <span>Term ends {fmtDate(e.term_ends)}</span>}
-                                          </div>
-                                        )}
-                                        {e.phone && <a href={`tel:${e.phone.replace(/\D/g, '')}`} className="home-rep-phone">{e.phone}</a>}
-                                        {e.email && <a href={`mailto:${e.email}`} className="home-rep-email">{e.email}</a>}
-                                      </div>
-                                    ))
-                                  : <div className="home-rep-no-election">No submissions yet</div>
-                                }
+                                {roleEntries.length > 0 ? (
+                                  <select
+                                    className="home-local-dropdown"
+                                    value={localSelectedId[role] ?? ''}
+                                    onChange={e => setLocalSelectedId(prev => ({ ...prev, [role]: e.target.value }))}
+                                  >
+                                    <option value="">Select an entry to verify…</option>
+                                    {roleEntries.map(e => (
+                                      <option key={e.id} value={e.id}>
+                                        {e.name}{e.verification_count > 0 ? ` ✓ ${e.verification_count}` : ''}
+                                      </option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  <div className="home-rep-no-election">No submissions yet — be the first!</div>
+                                )}
 
-                                {others.length > 0 && (
-                                  <div className="home-local-others">
-                                    <button
-                                      className="home-local-others-toggle"
-                                      onClick={() => setLocalDropdownOpen(prev => {
-                                        const s = new Set(prev); s.has(role) ? s.delete(role) : s.add(role); return s
-                                      })}
-                                    >
-                                      Others in your district selected {dropOpen ? '▲' : '▼'}
-                                    </button>
-                                    {dropOpen && (
-                                      <div className="home-local-others-list">
-                                        {others.map(e => <div key={e.name} className="home-local-other-entry">{e.name}</div>)}
+                                {selectedEntry && (
+                                  <div className="home-local-selected-entry">
+                                    {(selectedEntry.since || selectedEntry.term_ends) && (
+                                      <div className="home-rep-meta">
+                                        {selectedEntry.since && <span>Elected {fmtDate(selectedEntry.since)}</span>}
+                                        {selectedEntry.since && selectedEntry.term_ends && <span> – </span>}
+                                        {selectedEntry.term_ends && <span>Term ends {fmtDate(selectedEntry.term_ends)}</span>}
                                       </div>
                                     )}
+                                    {selectedEntry.phone && <a href={`tel:${selectedEntry.phone.replace(/\D/g, '')}`} className="home-rep-phone">{selectedEntry.phone}</a>}
+                                    {selectedEntry.email && <a href={`mailto:${selectedEntry.email}`} className="home-rep-email">{selectedEntry.email}</a>}
+                                    {hasVerified
+                                      ? <div className="home-local-verified-badge">Verified ✓</div>
+                                      : <button
+                                          className="home-local-verify-btn"
+                                          onClick={() => verifyOfficial(selectedEntry.id)}
+                                          disabled={isVerifyingThis}
+                                        >
+                                          {isVerifyingThis ? 'Verifying…' : 'Verify information is correct'}
+                                        </button>
+                                    }
                                   </div>
                                 )}
 
-                                {formOpen ? (
-                                  <div className="home-add-local-form">
-                                    <input className="home-add-local-input" placeholder="Name *" value={form.name} onChange={e => upd('name', e.target.value)} />
-                                    <input className="home-add-local-input" placeholder="Phone" value={form.phone} onChange={e => upd('phone', e.target.value)} />
-                                    <input className="home-add-local-input" placeholder="Email" value={form.email} onChange={e => upd('email', e.target.value)} />
-                                    <input className="home-add-local-input" type="date" placeholder="Date Elected" value={form.since} onChange={e => upd('since', e.target.value)} title="Date Elected" />
-                                    <input className="home-add-local-input" type="date" placeholder="Term Ends" value={form.term_ends} onChange={e => upd('term_ends', e.target.value)} title="Term Ends" />
-                                    <div className="home-add-local-actions">
-                                      <button className="home-add-local-save" onClick={() => submitLocalOfficial(role)} disabled={!form.name.trim() || isSubmit}>
-                                        {isSubmit ? 'Saving...' : 'Save'}
-                                      </button>
-                                      <button className="home-add-local-cancel" onClick={() => setLocalFormOpen(prev => { const s = new Set(prev); s.delete(role); return s })}>
-                                        Cancel
-                                      </button>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <button className="home-add-local-btn" onClick={() => setLocalFormOpen(prev => new Set(prev).add(role))}>
-                                    + Add name
-                                  </button>
-                                )}
+                                <hr className="home-local-divider" />
+
+                                <div className="home-add-local-form">
+                                  <input className="home-add-local-input" placeholder="Official's name" value={form.name} onChange={e => upd('name', e.target.value)} />
+                                  <input className="home-add-local-input" placeholder="Phone" value={form.phone} onChange={e => upd('phone', e.target.value)} />
+                                  <input className="home-add-local-input" placeholder="Email" value={form.email} onChange={e => upd('email', e.target.value)} />
+                                  <input className="home-add-local-input" type="date" value={form.since} onChange={e => upd('since', e.target.value)} title="Date Elected" />
+                                  <input className="home-add-local-input" type="date" value={form.term_ends} onChange={e => upd('term_ends', e.target.value)} title="Term Ends" />
+                                  {allFilled && (
+                                    <button className="home-local-submit-btn" onClick={() => autoSaveLocalOfficial(role, form)}>Submit</button>
+                                  )}
+                                  {saveStatus === 'saving' && <span className="home-local-save-status">Saving…</span>}
+                                  {saveStatus === 'saved'  && <span className="home-local-save-status home-local-save-status--ok">Saved ✓</span>}
+                                  {saveStatus === 'error'  && <span className="home-local-save-status home-local-save-status--err">Error saving</span>}
+                                </div>
                               </div>
                             )
                           })}
