@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
-import PageTopBar from '../components/PageTopBar'
+import { useNavigate } from 'react-router-dom'
+import ThemeToggle from '../components/ThemeToggle'
 import FeedbackButton from '../components/FeedbackButton'
 import { supabase } from '../lib/supabase'
 import { FEDERAL_STAGES, MICHIGAN_STAGES, LOCAL_STAGES, ISSUE_LABELS } from '../lib/constants'
+import type React from 'react'
 
 interface BillUpdate {
   id: number
@@ -90,9 +92,103 @@ function parseName(name: string): { num: string; title: string } {
   return { num: '', title: reduceDash(name) }
 }
 
+function csvEscape(v: string) { return `"${v.replace(/"/g, '""')}"` }
+
+function downloadCsv(updates: BillUpdate[]) {
+  const headers = ['Date Updated', 'Bill Number', 'Title', 'Level', 'Stage', 'Stage Note', 'Urgency', 'Description']
+  const rows = updates.map(b => {
+    const { num, title } = parseName(b.name)
+    return [
+      new Date(b.updated_at).toLocaleString('en-US'),
+      num,
+      title || b.name,
+      LEVEL_LABEL[b.level] ?? b.level,
+      stageName(b.level, b.stage),
+      b.stage_note ?? '',
+      b.urgency ?? '',
+      b.bill_desc ?? '',
+    ].map(csvEscape).join(',')
+  })
+  const csv = [headers.join(','), ...rows].join('\r\n')
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  const d = new Date()
+  const DD = String(d.getDate()).padStart(2, '0')
+  const Mon = d.toLocaleDateString('en-US', { month: 'short' })
+  const YY = String(d.getFullYear()).slice(2)
+  a.href = url; a.download = `Changelog_${DD}_${Mon}_${YY}.csv`; a.click()
+  URL.revokeObjectURL(url)
+}
+
+function downloadHtml(updates: BillUpdate[]) {
+  const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  const rows = updates.map(b => {
+    const { num, title } = parseName(b.name)
+    const bg = LEVEL_BG[b.level] ?? '#333'
+    const fg = LEVEL_FG[b.level] ?? '#eee'
+    const label = LEVEL_LABEL[b.level] ?? b.level
+    const stage = stageName(b.level, b.stage)
+    const urgency = URGENCY_LABEL[b.urgency]
+    return `<tr>
+      <td>${new Date(b.updated_at).toLocaleString('en-US')}</td>
+      <td><span style="background:${bg};color:${fg};padding:2px 6px;border-radius:4px;font-size:11px;font-weight:700">${label}</span></td>
+      <td>${num ? `<strong>${num}</strong> ` : ''}${title || b.name}</td>
+      <td>${stage}${b.stage_note ? ` · <em>${b.stage_note}</em>` : ''}</td>
+      <td style="color:${urgency?.color ?? '#999'}">${urgency?.text ?? ''}</td>
+      <td style="font-size:12px;color:#888">${b.bill_desc ?? ''}</td>
+    </tr>`
+  }).join('\n')
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Change Log · ${today}</title>
+<style>
+  body{font-family:'Segoe UI',sans-serif;background:#1a1830;color:#e0ddf0;margin:0;padding:24px}
+  h1{font-size:22px;margin:0 0 4px}
+  p{font-size:13px;color:#888;margin:0 0 20px}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  th{background:#2a2840;color:#b0a8d8;text-align:left;padding:8px 10px;font-weight:600;border-bottom:2px solid #3a3860}
+  td{padding:8px 10px;border-bottom:1px solid #2a2840;vertical-align:top}
+  tr:hover td{background:#22203a}
+</style>
+</head>
+<body>
+<h1>Change Log</h1>
+<p>Exported ${today} · ${updates.length} update${updates.length !== 1 ? 's' : ''} in the last ${CUTOFF_DAYS} days</p>
+<table>
+  <thead><tr><th>Updated</th><th>Level</th><th>Bill</th><th>Stage</th><th>Urgency</th><th>Description</th></tr></thead>
+  <tbody>${rows}</tbody>
+</table>
+</body>
+</html>`
+
+  const blob = new Blob([html], { type: 'text/html' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  const d = new Date()
+  const DD = String(d.getDate()).padStart(2, '0')
+  const Mon = d.toLocaleDateString('en-US', { month: 'short' })
+  const YY = String(d.getFullYear()).slice(2)
+  a.href = url; a.download = `Changelog_${DD}_${Mon}_${YY}.html`; a.click()
+  URL.revokeObjectURL(url)
+}
+
+const BTN: React.CSSProperties = {
+  background: '#4F4262', color: '#fff',
+  border: 'none', borderRadius: 20, padding: '5px 11px',
+  display: 'flex', alignItems: 'center', gap: 5,
+  cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,.25)',
+  fontSize: 12, fontFamily: 'inherit',
+}
+
 export default function Changelog() {
+  const navigate = useNavigate()
   const [updates, setUpdates]   = useState<BillUpdate[]>([])
   const [loading, setLoading]   = useState(true)
+  const [copied, setCopied]     = useState(false)
 
   useEffect(() => {
     const theme = localStorage.getItem('wsp-theme') ?? 'dark'
@@ -132,6 +228,12 @@ export default function Changelog() {
 
   const totalUpdates = updates.length
 
+  async function handleCopyLink() {
+    await navigator.clipboard.writeText(window.location.href)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1400)
+  }
+
   return (
     <div style={{
       minHeight: '100dvh',
@@ -140,7 +242,58 @@ export default function Changelog() {
       color: 'var(--color-text-primary)',
       fontFamily: "'Nunito', sans-serif",
     }}>
-      <PageTopBar />
+
+      {/* ── Fixed top bar ── */}
+      <div style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '8px 12px',
+        background: 'var(--color-bg-secondary)',
+        borderBottom: '1px solid var(--color-border-light)',
+      }}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              background: '#4F4262', color: '#fff',
+              border: 'none', borderRadius: 20, padding: '5px 9px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,.25)',
+            }}
+            aria-label="Go to home"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </button>
+          <button onClick={() => downloadHtml(updates)} style={BTN} aria-label="Download HTML" disabled={loading}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download HTML
+          </button>
+          <button onClick={() => downloadCsv(updates)} style={BTN} aria-label="Download CSV" disabled={loading}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <line x1="3" y1="9" x2="21" y2="9"/>
+              <line x1="3" y1="15" x2="21" y2="15"/>
+              <line x1="9" y1="3" x2="9" y2="21"/>
+            </svg>
+            Download CSV
+          </button>
+          <button onClick={handleCopyLink} style={BTN} aria-label="Copy share link">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+            {copied ? 'Copied!' : 'Copy Link'}
+          </button>
+        </div>
+        <ThemeToggle />
+      </div>
 
       <div style={{ maxWidth: 600 }}>
         <h1 style={{
