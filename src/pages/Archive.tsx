@@ -134,7 +134,7 @@ export default function Archive() {
           <div style={{ fontSize: 13, color: 'var(--color-text-tertiary)', marginBottom: 20 }}>
             Tap the yellow dot on any bill card to archive it. Archived bills are removed from the main tracker and kept here.
           </div>
-          <button onClick={() => navigate('/')} style={{ ...BTN, margin: '0 auto', fontSize: 13, padding: '7px 18px' }}>
+          <button onClick={() => navigate('/tracker')} style={{ ...BTN, margin: '0 auto', fontSize: 13, padding: '7px 18px' }}>
             Go to tracker
           </button>
         </div>

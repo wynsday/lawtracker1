@@ -161,7 +161,7 @@ export default function Watching() {
           <div style={{ fontSize: 13, color: 'var(--color-text-tertiary)', marginBottom: 20 }}>
             Open any bill card and tap the orange dot to watch it.
           </div>
-          <button onClick={() => navigate('/')} style={{ ...BTN, margin: '0 auto', fontSize: 13, padding: '7px 18px' }}>
+          <button onClick={() => navigate('/tracker')} style={{ ...BTN, margin: '0 auto', fontSize: 13, padding: '7px 18px' }}>
             Go to tracker
           </button>
         </div>

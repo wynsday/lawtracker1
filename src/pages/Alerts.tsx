@@ -209,7 +209,7 @@ export default function Alerts() {
           <div style={{ fontSize: 13, color: 'var(--color-text-tertiary)', marginBottom: 20 }}>
             Open any bill card in the tracker and tap <strong>Alert</strong> to add it here.
           </div>
-          <button onClick={() => navigate('/')} style={{
+          <button onClick={() => navigate('/tracker')} style={{
             ...BTN, margin: '0 auto',
             fontSize: 13, padding: '7px 18px',
           }}>Go to tracker</button>
