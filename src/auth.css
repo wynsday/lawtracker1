@@ -609,24 +609,6 @@
   pointer-events: none;
 }
 
-.home-lock-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,.3);
-  z-index: 3;
-  gap: 10px;
-  pointer-events: none;
-}
-.home-lock-label {
-  font-family: 'Nunito', sans-serif;
-  font-size: 16px;
-  color: rgba(255,255,255,.88);
-  font-weight: 500;
-}
 
 /* Stoplight column — three pills stacked to the right of the grid */
 .home-stoplight-col {

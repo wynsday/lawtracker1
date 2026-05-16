@@ -33,14 +33,6 @@ interface LocalOfficialRow {
 // ─── Icon components ───────────────────────────────────────────────────────
 type IP = { size?: number; color?: string }
 
-function LockIcon({ size = 28, color = 'white' }: IP) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="3" y="11" width="18" height="11" rx="2"/>
-      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-    </svg>
-  )
-}
 
 function ChangeLogIcon({ size = 48, color = 'white' }: IP) {
   return (
@@ -704,13 +696,13 @@ export default function Home() {
 
         </div>{/* end main grid */}
 
-        {/* Stoplight column — 3 pills stacked to the right */}
-        <div className="home-stoplight-col">
+        {/* Stoplight column — 3 pills stacked to the right (logged-in only) */}
+        {isLoggedIn && <div className="home-stoplight-col">
 
           <button
             className="home-stoplight-pill"
             style={{ background: '#C00000' }}
-            onClick={() => navigate(isLoggedIn ? '/alerts' : '/login')}
+            onClick={() => navigate('/alerts')}
             aria-label={`My Alerts: ${alertCount} bills`}
           >
             <div className="home-stoplight-circle">
@@ -725,7 +717,7 @@ export default function Home() {
           <button
             className="home-stoplight-pill"
             style={{ background: '#E97132' }}
-            onClick={() => navigate(isLoggedIn ? '/watching' : '/login')}
+            onClick={() => navigate('/watching')}
             aria-label={`Watching: ${watchCount} bills`}
           >
             <div className="home-stoplight-circle">
@@ -740,7 +732,7 @@ export default function Home() {
           <button
             className="home-stoplight-pill"
             style={{ background: '#FFC000' }}
-            onClick={() => navigate(isLoggedIn ? '/archive' : '/login')}
+            onClick={() => navigate('/archive')}
             aria-label={`Archive: ${archiveCount} bills`}
           >
             <div className="home-stoplight-circle" style={{ background: 'rgba(0,0,0,.14)' }}>
@@ -760,7 +752,7 @@ export default function Home() {
               }
             </div>
           )}
-        </div>{/* end stoplight col */}
+        </div>}{/* end stoplight col */}
         </div>{/* end main row */}
 
         {/* ── Secondary row — 8 tiles ──────────────────── */}
@@ -797,14 +789,16 @@ export default function Home() {
             <span className="home-secondary-label" style={{ color: '#2D1B4E' }}>About W4SP</span>
           </button>
 
-          <button
-            className="home-secondary-card" style={{ background: '#4F4262' }}
-            onClick={() => navigate('/settings')}
-            aria-label="Settings"
-          >
-            <SettingsIcon size={20} color="#03B9D7" />
-            <span className="home-secondary-label">Settings</span>
-          </button>
+          {isLoggedIn && (
+            <button
+              className="home-secondary-card" style={{ background: '#4F4262' }}
+              onClick={() => navigate('/settings')}
+              aria-label="Settings"
+            >
+              <SettingsIcon size={20} color="#03B9D7" />
+              <span className="home-secondary-label">Settings</span>
+            </button>
+          )}
 
           <button
             className="home-secondary-card" style={{ background: '#4F4262' }}
