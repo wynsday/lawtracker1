@@ -10,7 +10,7 @@
  * Secrets (set via `supabase secrets set KEY=value`):
  *   CONGRESS_API_KEY   — Congress.gov API key
  *   SUPABASE_URL       — injected automatically
- *   SUPABASE_SECRET_KEY — service-role key (set manually if not present as SUPABASE_SERVICE_ROLE_KEY)
+ *   SUPABASE_SERVICE_ROLE_KEY — service-role key (set manually if not present as SUPABASE_SERVICE_ROLE_KEY)
  *
  * Deploy:  supabase functions deploy daily-refresh
  */
@@ -18,7 +18,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const supabaseUrl   = Deno.env.get('SUPABASE_URL')!
-const secretKey     = Deno.env.get('SUPABASE_SECRET_KEY')
+const secretKey     = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
   ?? Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
 const CONGRESS_API_KEY  = Deno.env.get('CONGRESS_API_KEY')!
