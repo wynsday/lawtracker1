@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { getStatus, setStatus } from '../lib/billStatus'
 import type { BillStatus } from '../lib/billStatus'
+import { useAuth } from '../contexts/AuthContext'
 
 const AMEND_TOOLTIPS: Record<string, string> = {
   '4th':          '4th Amendment',
@@ -33,14 +34,9 @@ import { OFFICE_META } from '../lib/constants'
 import Pipeline from './Pipeline'
 import Decisions from './Decisions'
 
-const STATUS_CFG: Record<NonNullable<BillStatus>, { label: string; color: string }> = {
-  alert:   { label: 'Alert',   color: '#C00000' },
-  watch:   { label: 'Watch',   color: '#E97132' },
-  archive: { label: 'Archive', color: '#808080' },
-}
-
 export default function BillCard({ bill }: { bill: Bill }) {
   const copyBtnRef = useRef<HTMLButtonElement>(null)
+  const { user } = useAuth()
   const [status, setLocalStatus] = useState<BillStatus>(() => getStatus(bill.id))
 
   function handleStatus(s: NonNullable<BillStatus>) {
@@ -139,9 +135,24 @@ export default function BillCard({ bill }: { bill: Bill }) {
         </svg>
       </button>
 
-      <div className="bill-name">
-        {bill.name}
-        {bill.amend.map(a => <span key={a} className="amend-tag" title={AMEND_TOOLTIPS[a] ?? a}>{a}</span>)}
+      <div className="bill-name-row">
+        <div className="bill-name">
+          {bill.name}
+          {bill.amend.map(a => <span key={a} className="amend-tag" title={AMEND_TOOLTIPS[a] ?? a}>{a}</span>)}
+        </div>
+        {user && (
+          <div className="bill-status-dots">
+            {(['alert', 'watch', 'archive'] as const).map(s => (
+              <button
+                key={s}
+                className={`bill-status-dot bill-status-dot--${s}${status === s ? ' active' : ''}`}
+                onClick={() => handleStatus(s)}
+                data-label={s.charAt(0).toUpperCase() + s.slice(1)}
+                aria-label={status === s ? `Remove from ${s}` : s.charAt(0).toUpperCase() + s.slice(1)}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="bill-desc">{bill.bill_desc}</div>
@@ -178,35 +189,16 @@ export default function BillCard({ bill }: { bill: Bill }) {
             {offMeta.label}
           </span>
         </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          {(['alert', 'watch', 'archive'] as const).map(s => {
-            const cfg = STATUS_CFG[s]
-            const active = status === s
-            return (
-              <button key={s} onClick={() => handleStatus(s)} title={active ? `Remove from ${cfg.label}` : cfg.label} style={{
-                fontSize: 10, fontFamily: 'inherit', fontWeight: 700,
-                padding: '3px 9px', borderRadius: 20,
-                border: `1.5px solid ${active ? cfg.color : 'var(--color-border-light)'}`,
-                background: active ? cfg.color : 'transparent',
-                color: active ? 'white' : 'var(--color-text-tertiary)',
-                cursor: 'pointer', transition: 'all .15s',
-                letterSpacing: '.03em',
-              }}>{cfg.label}</button>
-            )
-          })}
-
-          <button
-            className="bill-scroll-top"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            title="Return to Top"
-            aria-label="Return to Top"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <polyline points="18 15 12 9 6 15"/>
-            </svg>
-          </button>
-        </div>
+        <button
+          className="bill-scroll-top"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          title="Return to Top"
+          aria-label="Return to Top"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="18 15 12 9 6 15"/>
+          </svg>
+        </button>
       </div>
     </div>
   )

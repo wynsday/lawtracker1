@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import type { ActiveFilters, Bill } from '../types/bill'
 import { useBills } from '../hooks/useBills'
 import { filterBills } from '../lib/billUtils'
+import { getIdsByStatus } from '../lib/billStatus'
 import { supabase } from '../lib/supabase'
 import { generateHtml } from '../lib/generateHtml'
 import Header from '../components/Header'
@@ -70,9 +71,16 @@ function openEmailDigest(bills: Bill[]) {
 export default function TrackerPage() {
   const navigate = useNavigate()
   const { bills, loading, error } = useBills(['MI', 'US'])
-  const [active, setActive] = useState<ActiveFilters>(DEFAULT_FILTERS)
-  const [busy, setBusy] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [active, setActive]       = useState<ActiveFilters>(DEFAULT_FILTERS)
+  const [busy, setBusy]           = useState(false)
+  const [copied, setCopied]       = useState(false)
+  const [archivedIds, setArchivedIds] = useState<Set<number>>(() => getIdsByStatus('archive'))
+
+  useEffect(() => {
+    function sync() { setArchivedIds(getIdsByStatus('archive')) }
+    window.addEventListener('bill-status-change', sync)
+    return () => window.removeEventListener('bill-status-change', sync)
+  }, [])
 
   useEffect(() => {
     const theme = localStorage.getItem('wsp-theme') ?? 'dark'
@@ -126,7 +134,8 @@ export default function TrackerPage() {
     setTimeout(() => setCopied(false), 1400)
   }
 
-  const filtered = filterBills(bills, active)
+  const visibleBills = bills.filter(b => !archivedIds.has(b.id))
+  const filtered = filterBills(visibleBills, active)
 
   return (
     <div style={{ paddingTop: 44 }}>
@@ -195,7 +204,7 @@ export default function TrackerPage() {
 
       <Header
         stateName="Michigan"
-        bills={bills}
+        bills={visibleBills}
         onSearch={q => handleFilterChange('search', q)}
       />
 
