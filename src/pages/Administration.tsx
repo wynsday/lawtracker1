@@ -1,32 +1,197 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FeedbackButton from '../components/FeedbackButton'
 
+interface Member {
+  title: string
+  name: string
+  date: string
+  acting?: boolean
+  desc: string
+  fact: string
+}
+
+const MEMBERS: Member[] = [
+  {
+    title: 'Vice President',
+    name: 'JD Vance',
+    date: 'Jan 20, 2025',
+    desc: 'Second-highest elected official in the executive branch. Presides over the Senate and casts tie-breaking votes.',
+    fact: 'Youngest serving VP at 40 years old at inauguration; first millennial elected to the executive branch.',
+  },
+  {
+    title: 'Chief of Staff',
+    name: 'Susie Wiles',
+    date: 'Jan 20, 2025',
+    desc: 'Manages the White House staff, controls the President\'s schedule, and directs policy flow through the West Wing.',
+    fact: 'First woman in U.S. history to serve as White House Chief of Staff.',
+  },
+  {
+    title: 'Secretary of State',
+    name: 'Marco Rubio',
+    date: 'Jan 21, 2025',
+    desc: 'Leads U.S. foreign policy, diplomacy, and manages 275+ embassies and consulates worldwide.',
+    fact: 'Confirmed 99–0 — the only unanimous Senate confirmation in the 47th Administration.',
+  },
+  {
+    title: 'Secretary of Treasury',
+    name: 'Scott Bessent',
+    date: 'Jan 27, 2025',
+    desc: 'Manages federal finances, the national debt, tax policy, and the strength of the U.S. dollar.',
+    fact: 'First openly gay cabinet member confirmed by a Republican president.',
+  },
+  {
+    title: 'Secretary of Defense',
+    name: 'Pete Hegseth',
+    date: 'Feb 4, 2025',
+    desc: 'Oversees the U.S. military, the Pentagon, and America\'s global force posture across all branches.',
+    fact: 'Confirmed 50–50 with Vice President Vance casting the tie-breaking vote.',
+  },
+  {
+    title: 'Attorney General',
+    name: 'Todd Blanche',
+    date: 'Apr 2, 2026',
+    acting: true,
+    desc: 'Heads the Department of Justice and serves as the nation\'s chief law enforcement officer.',
+    fact: 'Blanche was previously Trump\'s personal criminal defense attorney before joining the DOJ.',
+  },
+  {
+    title: 'Secretary of Interior',
+    name: 'Doug Burgum',
+    date: 'Jan 30, 2025',
+    desc: 'Manages 500 million acres of federal land, national parks, wildlife refuges, and natural resources.',
+    fact: 'Former North Dakota Governor who sold a software company to Microsoft for over $1 billion.',
+  },
+  {
+    title: 'Secretary of Agriculture',
+    name: 'Brooke Rollins',
+    date: 'Feb 13, 2025',
+    desc: 'Oversees U.S. farm policy, food safety, rural development, and the SNAP nutrition program.',
+    fact: 'SNAP (food stamps), USDA\'s largest program, serves roughly 42 million Americans annually.',
+  },
+  {
+    title: 'Secretary of Commerce',
+    name: 'Howard Lutnick',
+    date: 'Feb 18, 2025',
+    desc: 'Promotes economic growth and oversees trade policy, patents, weather services, and the Census Bureau.',
+    fact: 'Stepped down as CEO of Cantor Fitzgerald — one of Wall Street\'s largest bond-trading firms — to serve.',
+  },
+  {
+    title: 'Secretary of Labor',
+    name: 'Keith Sonderling',
+    date: 'Apr 20, 2026',
+    acting: true,
+    desc: 'Enforces wage and hour laws, worker safety standards, and administers unemployment and pension programs.',
+    fact: 'Previously served as Vice Chair of the Equal Employment Opportunity Commission (EEOC).',
+  },
+  {
+    title: 'Secretary of HHS',
+    name: 'Robert F. Kennedy Jr.',
+    date: 'Feb 13, 2025',
+    desc: 'Oversees public health agencies including the FDA, CDC, NIH, and administers Medicare and Medicaid.',
+    fact: 'First member of the Kennedy family to serve in a Republican cabinet.',
+  },
+  {
+    title: 'Secretary of HUD',
+    name: 'Scott Turner',
+    date: 'Feb 5, 2025',
+    desc: 'Administers federal housing programs, community development grants, and fair housing enforcement.',
+    fact: 'Former NFL wide receiver who played for five teams across nine professional seasons.',
+  },
+  {
+    title: 'Secretary of Transportation',
+    name: 'Sean Duffy',
+    date: 'Jan 28, 2025',
+    desc: 'Oversees aviation safety, highways, rail, maritime transport, and the nation\'s infrastructure programs.',
+    fact: 'The DOT oversees $1.2 trillion in infrastructure investment under the Bipartisan Infrastructure Law.',
+  },
+  {
+    title: 'Secretary of Energy',
+    name: 'Chris Wright',
+    date: 'Feb 3, 2025',
+    desc: 'Directs U.S. energy policy and maintains stewardship of America\'s nuclear weapons stockpile.',
+    fact: 'The DOE operates 17 national laboratories including Los Alamos, Oak Ridge, and Sandia.',
+  },
+  {
+    title: 'Secretary of Education',
+    name: 'Linda McMahon',
+    date: 'Mar 3, 2025',
+    desc: 'Administers federal education grants and oversees $76 billion in annual student financial aid.',
+    fact: 'Former CEO of WWE professional wrestling; also served as SBA Administrator in Trump\'s first term.',
+  },
+  {
+    title: 'Secretary of Veterans Affairs',
+    name: 'Doug Collins',
+    date: 'Feb 4, 2025',
+    desc: 'Provides healthcare, disability benefits, and services to 9 million enrolled U.S. veterans.',
+    fact: 'The VA is the second-largest federal department by budget, behind only the Department of Defense.',
+  },
+  {
+    title: 'Secretary of Homeland Security',
+    name: 'Markwayne Mullin',
+    date: 'Mar 24, 2026',
+    desc: 'Oversees border security, immigration enforcement, FEMA disaster response, and the Coast Guard.',
+    fact: 'DHS was created after September 11, 2001 by consolidating 22 separate government agencies.',
+  },
+  {
+    title: 'Dir. of National Intelligence',
+    name: 'Tulsi Gabbard',
+    date: 'Feb 12, 2025',
+    desc: 'Coordinates and oversees all 18 U.S. intelligence agencies and advises the President on threats.',
+    fact: 'First woman confirmed as Director of National Intelligence.',
+  },
+  {
+    title: 'CIA Director',
+    name: 'John Ratcliffe',
+    date: 'Jan 23, 2025',
+    desc: 'Leads the CIA\'s foreign intelligence collection, analysis, and covert operations worldwide.',
+    fact: 'Ratcliffe previously served as Director of National Intelligence in Trump\'s first term.',
+  },
+  {
+    title: 'UN Ambassador',
+    name: 'Michael Waltz',
+    date: 'Sep 19, 2025',
+    desc: 'Represents U.S. interests at the United Nations in New York and coordinates multilateral diplomacy.',
+    fact: 'Waltz previously served as National Security Advisor before being nominated for this post.',
+  },
+  {
+    title: 'EPA Administrator',
+    name: 'Lee Zeldin',
+    date: 'Jan 20, 2025',
+    desc: 'Enforces federal environmental laws protecting air quality, water, and land from pollution.',
+    fact: 'The EPA sets and enforces standards affecting nearly every industry in the U.S. economy.',
+  },
+  {
+    title: 'SBA Administrator',
+    name: 'Kelly Loeffler',
+    date: 'Jan 20, 2025',
+    desc: 'Supports small businesses through loan guarantees, federal contracting, and disaster assistance.',
+    fact: 'Former U.S. Senator from Georgia; the SBA portfolio includes over $43 billion in loan guarantees.',
+  },
+]
+
 export default function Administration() {
   const navigate = useNavigate()
+  const [flipped, setFlipped] = useState<Set<number>>(new Set())
+
   useEffect(() => {
     const theme = localStorage.getItem('wsp-theme') ?? 'dark'
     document.documentElement.setAttribute('data-theme', theme)
     return () => { document.documentElement.removeAttribute('data-theme') }
   }, [])
+
+  const toggle = (i: number) =>
+    setFlipped(prev => {
+      const s = new Set(prev)
+      s.has(i) ? s.delete(i) : s.add(i)
+      return s
+    })
+
   return (
-    <div style={{
-      minHeight: '100dvh',
-      background: 'var(--color-bg-secondary)',
-      padding: '32px 28px',
-      color: 'var(--color-text-primary)',
-      fontFamily: "'Nunito', sans-serif",
-    }}>
+    <div className="adm-page">
       <button
+        className="adm-back-btn"
         onClick={() => navigate('/')}
-        style={{
-          position: 'fixed', top: 12, left: 12, zIndex: 100,
-          background: '#4F4262', color: '#fff',
-          border: 'none', borderRadius: 20, padding: '5px 9px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer',
-          boxShadow: '0 2px 8px rgba(0,0,0,.25)',
-        }}
         aria-label="Go to home"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -35,15 +200,44 @@ export default function Administration() {
         </svg>
       </button>
 
-      <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 4, color: 'var(--page-title)' }}>
-        Administration
-      </h1>
-      <p style={{ fontSize: 14, color: 'var(--page-subtitle)', marginBottom: 28 }}>
-        Cabinet members and senior administration officials
-      </p>
-      <p style={{ fontSize: 16, color: 'var(--page-title)', lineHeight: 1.6 }}>
-        Cabinet and administration member profiles coming soon.
-      </p>
+      <h1 className="adm-title">Administration</h1>
+      <p className="adm-subtitle">Trump Cabinet · 47th Administration · Tap any card to flip</p>
+
+      <div className="adm-grid">
+        {MEMBERS.map((m, i) => (
+          <div
+            key={i}
+            className={`adm-card-outer${flipped.has(i) ? ' adm-card--flipped' : ''}`}
+            onClick={() => toggle(i)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && toggle(i)}
+            aria-pressed={flipped.has(i)}
+            aria-label={`${m.title}: ${m.name}`}
+          >
+            <div className="adm-card-inner">
+              {/* Front */}
+              <div className="adm-card-front">
+                <div className="adm-card-front-top">
+                  <div className="adm-card-title">{m.title}</div>
+                  {m.acting && <span className="adm-acting-badge">Acting</span>}
+                </div>
+                <div className="adm-card-name">{m.name}</div>
+                <div className="adm-card-date">{m.date}</div>
+                <div className="adm-card-flip-hint">▸ tap to flip</div>
+              </div>
+
+              {/* Back */}
+              <div className="adm-card-back">
+                <div className="adm-card-back-title">{m.title}</div>
+                <p className="adm-card-back-desc">{m.desc}</p>
+                <p className="adm-card-back-fact">{m.fact}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <FeedbackButton />
     </div>
   )

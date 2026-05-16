@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
@@ -391,11 +391,12 @@ export default function Home() {
   const [localForms, setLocalForms]               = useState<Record<string, { name: string; phone: string; email: string; since: string; term_ends: string }>>(() => {
     try { const r = localStorage.getItem('wsp-local-forms'); return r ? JSON.parse(r) : {} } catch { return {} }
   })
-  const [localSaveStatus, setLocalSaveStatus]     = useState<Record<string, 'saving' | 'saved' | 'error'>>({})
-  const [localSelectedId, setLocalSelectedId]     = useState<Record<string, string>>({})
-  const [localEditMode, setLocalEditMode]         = useState<Set<string>>(new Set())
-  const [localSelfVerified, setLocalSelfVerified] = useState<Set<string>>(new Set())
-  const [localRefreshKey, setLocalRefreshKey]     = useState(0)
+  const [localSaveStatus, setLocalSaveStatus]               = useState<Record<string, 'saving' | 'saved' | 'error'>>({})
+  const [localFromDropdown, setLocalFromDropdown]           = useState<Record<string, Record<string, boolean>>>({})
+  const [localFieldDropdownOpen, setLocalFieldDropdownOpen] = useState<Record<string, string | null>>({})
+  const [localEditMode, setLocalEditMode]                   = useState<Set<string>>(new Set())
+  const [localSelfVerified, setLocalSelfVerified]           = useState<Set<string>>(new Set())
+  const [localRefreshKey, setLocalRefreshKey]               = useState(0)
   const [hiddenLocalRoles, setHiddenLocalRoles]   = useState<Set<string>>(() => {
     try {
       const r = localStorage.getItem('wsp-hidden-local-roles')
@@ -466,6 +467,12 @@ export default function Home() {
     }
   }, [localSelfVerified, user?.username])
 
+  useEffect(() => {
+    const close = () => setLocalFieldDropdownOpen({})
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [])
+
   // Fetch local_official_roles for the user's state
   useEffect(() => {
     if (!user || !profileAddr?.state) { setLocalRoles([]); setLocalRolesLoaded(true); return }
@@ -507,6 +514,7 @@ export default function Home() {
   const autoSaveLocalOfficial = async (
     role: string,
     form: { name: string; phone: string; email: string; since: string; term_ends: string },
+    markVerified?: boolean,
   ) => {
     if (!form.name.trim() || !user) return
     setLocalSaveStatus(prev => ({ ...prev, [role]: 'saving' }))
@@ -527,6 +535,8 @@ export default function Home() {
         { onConflict: 'role,state,submitted_by' },
       )
     if (!error) {
+      if (markVerified) setLocalSelfVerified(prev => new Set(prev).add(role))
+      setLocalFromDropdown(prev => { const n = { ...prev }; delete n[role]; return n })
       setLocalSaveStatus(prev => ({ ...prev, [role]: 'saved' }))
       setLocalEditMode(prev => { const s = new Set(prev); s.delete(role); return s })
       setLocalRefreshKey(k => k + 1)
@@ -1074,8 +1084,59 @@ export default function Home() {
                             const otherEntries = localDBOfficials
                               .filter(o => o.role === role && o.submitted_by !== user?.username)
                               .sort((a, b) => b.verification_count - a.verification_count)
-                            const selectedEntry = localSelectedId[role] ? (otherEntries.find(e => e.id === localSelectedId[role]) ?? null) : null
+                            const hasCommunityEntries = otherEntries.length > 0
                             const isSelfVerified = localSelfVerified.has(role)
+                            const fromDropdown = localFromDropdown[role] ?? {}
+                            const anyFromDropdown = Object.values(fromDropdown).some(Boolean)
+                            const openField = localFieldDropdownOpen[role] ?? null
+                            const uniqueVals = (field: keyof LocalOfficialRow): string[] => {
+                              const map = new Map<string, string>()
+                              for (const e of otherEntries) {
+                                const v = e[field]
+                                if (typeof v !== 'string' || !v) continue
+                                const key = v.toLowerCase()
+                                const existing = map.get(key)
+                                if (!existing || (!existing.match(/[A-Z]/) && v.match(/[A-Z]/))) map.set(key, v)
+                              }
+                              return [...map.values()]
+                            }
+                            const fieldWrap = (field: string, vals: string[], inputEl: React.ReactNode) => (
+                              <div className="home-local-field-wrap" onMouseDown={e => e.stopPropagation()}>
+                                {inputEl}
+                                {vals.length > 0 && (
+                                  <button
+                                    className="home-local-field-arrow"
+                                    type="button"
+                                    aria-label="Show suggestions"
+                                    onClick={() => setLocalFieldDropdownOpen(prev => ({
+                                      ...prev,
+                                      [role]: prev[role] === field ? null : field,
+                                    }))}
+                                  >▾</button>
+                                )}
+                                {openField === field && (
+                                  <div className="home-local-field-dropdown">
+                                    {vals.map(v => (
+                                      <button
+                                        key={v}
+                                        className="home-local-field-option"
+                                        type="button"
+                                        onClick={() => {
+                                          upd(field, v)
+                                          setLocalFromDropdown(prev => ({
+                                            ...prev,
+                                            [role]: { ...(prev[role] ?? {}), [field]: true },
+                                          }))
+                                          setLocalFieldDropdownOpen(prev => ({ ...prev, [role]: null }))
+                                        }}
+                                      >
+                                        {(field === 'since' || field === 'term_ends') && /^\d{4}-\d{2}-\d{2}$/.test(v) ? fmtDate(v) : v}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )
                             return (
                               <div key={role} className={`home-rep-card${isHidden ? ' home-local-card--hidden' : ''}`} data-party="other">
                                 <button
@@ -1091,38 +1152,6 @@ export default function Home() {
                                   <span style={{ display: 'block', paddingRight: '52px' }}>{profileAddr?.state}{profileAddr?.county ? ` ${profileAddr.county} County` : ''}</span>
                                   <span style={{ display: 'block' }}>{role.replace(/^County\s+/i, '')}</span>
                                 </div>
-
-                                {/* Community entries from other users — no verify language */}
-                                {otherEntries.length > 0 && (
-                                  <>
-                                    <select
-                                      className="home-local-dropdown"
-                                      value={localSelectedId[role] ?? ''}
-                                      onChange={e => setLocalSelectedId(prev => ({ ...prev, [role]: e.target.value }))}
-                                    >
-                                      <option value="">See what others submitted…</option>
-                                      {otherEntries.map(e => (
-                                        <option key={e.id} value={e.id}>
-                                          {e.name}{e.verification_count > 0 ? ` ✓ ${e.verification_count}` : ''}
-                                        </option>
-                                      ))}
-                                    </select>
-                                    {selectedEntry && (
-                                      <div className="home-local-selected-entry">
-                                        {(selectedEntry.since || selectedEntry.term_ends) && (
-                                          <div className="home-rep-meta">
-                                            {selectedEntry.since && <span>Elected {fmtDate(selectedEntry.since)}</span>}
-                                            {selectedEntry.since && selectedEntry.term_ends && <span> – </span>}
-                                            {selectedEntry.term_ends && <span>{fmtDate(selectedEntry.term_ends)}</span>}
-                                          </div>
-                                        )}
-                                        {selectedEntry.phone && <a href={`tel:${selectedEntry.phone.replace(/\D/g, '')}`} className="home-rep-phone">{selectedEntry.phone}</a>}
-                                        {selectedEntry.email && <a href={`mailto:${selectedEntry.email}`} className="home-rep-email">{selectedEntry.email}</a>}
-                                      </div>
-                                    )}
-                                    <hr className="home-local-divider" />
-                                  </>
-                                )}
 
                                 {/* User's submitted entry (view mode) or form (edit/new mode) */}
                                 {isViewMode ? (
@@ -1142,6 +1171,7 @@ export default function Home() {
                                       onClick={() => {
                                         setLocalEditMode(prev => new Set(prev).add(role))
                                         setLocalSelfVerified(prev => { const s = new Set(prev); s.delete(role); return s })
+                                        setLocalFromDropdown(prev => { const n = { ...prev }; delete n[role]; return n })
                                         if (userEntry && !localForms[role]?.name) {
                                           setLocalForms(prev => ({ ...prev, [role]: {
                                             name:      userEntry.name,
@@ -1153,25 +1183,92 @@ export default function Home() {
                                         }
                                       }}
                                     >Edit</button>
-                                    {otherEntries.length > 0 && !isSelfVerified && (
+                                    {hasCommunityEntries && !isSelfVerified && (
                                       <label className="home-local-self-verify">
                                         <input
                                           type="checkbox"
                                           onChange={() => setLocalSelfVerified(prev => new Set(prev).add(role))}
                                         />
-                                        Verify this information is correct
+                                        Information is correct
                                       </label>
                                     )}
                                   </div>
                                 ) : (
                                   <div className="home-add-local-form">
-                                    <input className="home-add-local-input" placeholder="Official's name" value={form.name} onChange={e => upd('name', e.target.value)} />
-                                    <input className="home-add-local-input" placeholder="Phone" value={form.phone} onChange={e => upd('phone', fmtPhone(e.target.value))} />
-                                    <input className="home-add-local-input" placeholder="Email" value={form.email} onChange={e => upd('email', e.target.value)} />
-                                    <input className="home-add-local-input" type="date" value={form.since} onChange={e => upd('since', e.target.value)} title="Date Elected" />
-                                    <input className="home-add-local-input" type="date" value={form.term_ends} onChange={e => upd('term_ends', e.target.value)} title="Term Ends" />
+                                    {fieldWrap('name', uniqueVals('name'),
+                                      <input
+                                        className="home-add-local-input"
+                                        placeholder="Official's name"
+                                        value={form.name}
+                                        onChange={e => {
+                                          upd('name', e.target.value)
+                                          if (fromDropdown.name) setLocalFromDropdown(prev => ({ ...prev, [role]: { ...prev[role], name: false } }))
+                                        }}
+                                      />
+                                    )}
+                                    {fieldWrap('phone', uniqueVals('phone'),
+                                      <input
+                                        className="home-add-local-input"
+                                        placeholder="Phone"
+                                        value={form.phone}
+                                        onChange={e => {
+                                          upd('phone', fmtPhone(e.target.value))
+                                          if (fromDropdown.phone) setLocalFromDropdown(prev => ({ ...prev, [role]: { ...prev[role], phone: false } }))
+                                        }}
+                                      />
+                                    )}
+                                    {fieldWrap('email', uniqueVals('email'),
+                                      <input
+                                        className="home-add-local-input"
+                                        placeholder="Email"
+                                        value={form.email}
+                                        onChange={e => {
+                                          upd('email', e.target.value)
+                                          if (fromDropdown.email) setLocalFromDropdown(prev => ({ ...prev, [role]: { ...prev[role], email: false } }))
+                                        }}
+                                      />
+                                    )}
+                                    {fieldWrap('since', uniqueVals('since'),
+                                      <input
+                                        className="home-add-local-input"
+                                        type="date"
+                                        value={form.since}
+                                        onChange={e => {
+                                          upd('since', e.target.value)
+                                          if (fromDropdown.since) setLocalFromDropdown(prev => ({ ...prev, [role]: { ...prev[role], since: false } }))
+                                        }}
+                                        title="Date Elected"
+                                      />
+                                    )}
+                                    {fieldWrap('term_ends', uniqueVals('term_ends'),
+                                      <input
+                                        className="home-add-local-input"
+                                        type="date"
+                                        value={form.term_ends}
+                                        onChange={e => {
+                                          upd('term_ends', e.target.value)
+                                          if (fromDropdown.term_ends) setLocalFromDropdown(prev => ({ ...prev, [role]: { ...prev[role], term_ends: false } }))
+                                        }}
+                                        title="Term Ends"
+                                      />
+                                    )}
                                     {allFilled && (
-                                      <button className="home-local-submit-btn" onClick={() => autoSaveLocalOfficial(role, form)}>Submit</button>
+                                      anyFromDropdown
+                                        ? (
+                                          <label className="home-local-self-verify">
+                                            <input
+                                              type="checkbox"
+                                              onChange={() => { void autoSaveLocalOfficial(role, form, true) }}
+                                            />
+                                            Information is correct
+                                          </label>
+                                        )
+                                        : (
+                                          <button
+                                            className="home-local-submit-btn"
+                                            onClick={() => { void autoSaveLocalOfficial(role, form) }}
+                                          >Submit</button>
+                                        )
                                     )}
                                     {saveStatus === 'saving' && <span className="home-local-save-status">Saving…</span>}
                                     {saveStatus === 'saved'  && <span className="home-local-save-status home-local-save-status--ok">Saved ✓</span>}
