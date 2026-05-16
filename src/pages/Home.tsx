@@ -662,53 +662,45 @@ export default function Home() {
             <span className="home-card-desc">Browse active legislation</span>
           </button>
 
-          {/* Top-right: Change Logs */}
+          {/* Top-right: Change Log */}
           <button
             className="home-main-card"
             style={{ background: '#03B9D7' }}
             onClick={() => navigate('/changelog')}
-            aria-label="Change Logs — bills updated in the last 24 hours"
+            aria-label="Change Log — update capture"
           >
             <div className="home-card-icon-wrap"><ChangeLogIcon size={34} /></div>
-            <span className="home-card-label">Change Logs</span>
-            <span className="home-card-desc">Bills updated in last 24 hrs</span>
+            <span className="home-card-label">Change Log</span>
+            <span className="home-card-desc">Update capture · last 30 days</span>
           </button>
 
-          {/* Bottom-left: Alert Settings */}
-          <button
-            className="home-main-card"
-            style={{ background: '#C00000' }}
-            onClick={() => navigate(isLoggedIn ? '/alerts/settings' : '/login')}
-            aria-label={isLoggedIn ? 'Alert Settings — configure your alerts' : 'Sign in to access Alert Settings'}
-          >
-            {!isLoggedIn && (
-              <div className="home-lock-overlay" aria-hidden="true">
-                <LockIcon size={34} />
-                <span className="home-lock-label">Sign in</span>
-              </div>
-            )}
-            <div className="home-card-icon-wrap"><AlertSettingsIcon size={34} /></div>
-            <span className="home-card-label">Alert Settings</span>
-            <span className="home-card-desc">Configure your alerts</span>
-          </button>
+          {/* Bottom-left: Alert Settings (logged-in only) */}
+          {isLoggedIn && (
+            <button
+              className="home-main-card"
+              style={{ background: '#C00000' }}
+              onClick={() => navigate('/alerts/settings')}
+              aria-label="Alert Settings — configure your alerts"
+            >
+              <div className="home-card-icon-wrap"><AlertSettingsIcon size={34} /></div>
+              <span className="home-card-label">Alert Settings</span>
+              <span className="home-card-desc">Configure your alerts</span>
+            </button>
+          )}
 
-          {/* Bottom-right: My Profile */}
-          <button
-            className="home-main-card"
-            style={{ background: '#00B050' }}
-            onClick={() => navigate(isLoggedIn ? '/profile' : '/login')}
-            aria-label={isLoggedIn ? 'My Profile — your account and preferences' : 'Sign in to access My Profile'}
-          >
-            {!isLoggedIn && (
-              <div className="home-lock-overlay" aria-hidden="true">
-                <LockIcon size={34} />
-                <span className="home-lock-label">Sign in</span>
-              </div>
-            )}
-            <div className="home-card-icon-wrap"><ProfileCardIcon size={34} /></div>
-            <span className="home-card-label">My Profile</span>
-            <span className="home-card-desc">Your account &amp; preferences</span>
-          </button>
+          {/* Bottom-right: My Profile (logged-in only) */}
+          {isLoggedIn && (
+            <button
+              className="home-main-card"
+              style={{ background: '#00B050' }}
+              onClick={() => navigate('/profile')}
+              aria-label="My Profile — your account and preferences"
+            >
+              <div className="home-card-icon-wrap"><ProfileCardIcon size={34} /></div>
+              <span className="home-card-label">My Profile</span>
+              <span className="home-card-desc">Your account &amp; preferences</span>
+            </button>
+          )}
 
         </div>{/* end main grid */}
 
