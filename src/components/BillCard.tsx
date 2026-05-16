@@ -1,4 +1,6 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
+import { getStatus, setStatus } from '../lib/billStatus'
+import type { BillStatus } from '../lib/billStatus'
 
 const AMEND_TOOLTIPS: Record<string, string> = {
   '4th':          '4th Amendment',
@@ -31,8 +33,21 @@ import { OFFICE_META } from '../lib/constants'
 import Pipeline from './Pipeline'
 import Decisions from './Decisions'
 
+const STATUS_CFG: Record<NonNullable<BillStatus>, { label: string; color: string }> = {
+  alert:   { label: 'Alert',   color: '#C00000' },
+  watch:   { label: 'Watch',   color: '#E97132' },
+  archive: { label: 'Archive', color: '#808080' },
+}
+
 export default function BillCard({ bill }: { bill: Bill }) {
   const copyBtnRef = useRef<HTMLButtonElement>(null)
+  const [status, setLocalStatus] = useState<BillStatus>(() => getStatus(bill.id))
+
+  function handleStatus(s: NonNullable<BillStatus>) {
+    const next: BillStatus = status === s ? null : s
+    setStatus(bill.id, next)
+    setLocalStatus(next)
+  }
   const offMeta = OFFICE_META[bill.ratify_office] ?? { label: bill.ratify_office, dotCls: 'od-com' }
 
   const lvlTag = bill.level === 'federal'
@@ -164,16 +179,34 @@ export default function BillCard({ bill }: { bill: Bill }) {
           </span>
         </div>
 
-        <button
-          className="bill-scroll-top"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          title="Return to Top"
-          aria-label="Return to Top"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <polyline points="18 15 12 9 6 15"/>
-          </svg>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          {(['alert', 'watch', 'archive'] as const).map(s => {
+            const cfg = STATUS_CFG[s]
+            const active = status === s
+            return (
+              <button key={s} onClick={() => handleStatus(s)} title={active ? `Remove from ${cfg.label}` : cfg.label} style={{
+                fontSize: 10, fontFamily: 'inherit', fontWeight: 700,
+                padding: '3px 9px', borderRadius: 20,
+                border: `1.5px solid ${active ? cfg.color : 'var(--color-border-light)'}`,
+                background: active ? cfg.color : 'transparent',
+                color: active ? 'white' : 'var(--color-text-tertiary)',
+                cursor: 'pointer', transition: 'all .15s',
+                letterSpacing: '.03em',
+              }}>{cfg.label}</button>
+            )
+          })}
+
+          <button
+            className="bill-scroll-top"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            title="Return to Top"
+            aria-label="Return to Top"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="18 15 12 9 6 15"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   )
