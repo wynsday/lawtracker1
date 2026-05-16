@@ -323,6 +323,13 @@ function getRepElectionDates(o: Official): { year: number; dates: { label: strin
 }
 
 
+function fmtPhone(val: string): string {
+  const d = val.replace(/\D/g, '').slice(0, 10)
+  if (d.length <= 3) return d
+  if (d.length <= 6) return `(${d.slice(0, 3)}) ${d.slice(3)}`
+  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`
+}
+
 function fmtDate(iso: string): string {
   const [y, m, d] = iso.split('-').map(Number)
   return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -1159,7 +1166,7 @@ export default function Home() {
                                 ) : (
                                   <div className="home-add-local-form">
                                     <input className="home-add-local-input" placeholder="Official's name" value={form.name} onChange={e => upd('name', e.target.value)} />
-                                    <input className="home-add-local-input" placeholder="Phone" value={form.phone} onChange={e => upd('phone', e.target.value)} />
+                                    <input className="home-add-local-input" placeholder="Phone" value={form.phone} onChange={e => upd('phone', fmtPhone(e.target.value))} />
                                     <input className="home-add-local-input" placeholder="Email" value={form.email} onChange={e => upd('email', e.target.value)} />
                                     <input className="home-add-local-input" type="date" value={form.since} onChange={e => upd('since', e.target.value)} title="Date Elected" />
                                     <input className="home-add-local-input" type="date" value={form.term_ends} onChange={e => upd('term_ends', e.target.value)} title="Term Ends" />
