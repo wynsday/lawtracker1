@@ -6,26 +6,26 @@ import { ISSUE_LABELS } from '../lib/constants'
 
 // ── Types ──────────────────────────────────────────────────────────────
 interface AlertConfig {
-  enabled:           boolean
-  delivery:          'in-app' | 'email' | 'both'
-  timing:            'morning' | 'evening' | 'both'
-  issues:            string[]
-  keywords:          string[]
-  movement:          { anyBill: boolean; watching: boolean; alerting: boolean }
-  actNow:            { urgent: boolean; movingSoon: boolean }
-  civicDates:        {
+  enabled:     boolean
+  channels:    { inApp: boolean; email: boolean; push: boolean }
+  timing:      'morning' | 'evening' | 'both'
+  issues:      string[]
+  keywords:    string[]
+  movement:    { anyBill: boolean; watching: boolean; alerting: boolean }
+  actNow:      { urgent: boolean; movingSoon: boolean }
+  civicDates:  {
     voterReg:         boolean
     voterRegLeadDays: 7 | 14 | 30
     election:         boolean
     electionLeadDays: 0 | 1 | 7
   }
-  visualStyle:       'subtle' | 'standard' | 'bold'
-  sound:             'off' | 'soft' | 'standard'
+  visualStyle: 'subtle' | 'standard' | 'bold'
+  sound:       'off' | 'soft' | 'standard'
 }
 
 const DEFAULT: AlertConfig = {
   enabled:     true,
-  delivery:    'in-app',
+  channels:    { inApp: true, email: false, push: false },
   timing:      'morning',
   issues:      [],
   keywords:    [],
@@ -36,10 +36,28 @@ const DEFAULT: AlertConfig = {
   sound:       'soft',
 }
 
+type PushPermission = 'unsupported' | 'default' | 'granted' | 'denied'
+
+function getPushStatus(): PushPermission {
+  if (typeof window === 'undefined' || !('Notification' in window)) return 'unsupported'
+  return Notification.permission as PushPermission
+}
+
 function load(): AlertConfig {
   try {
     const raw = localStorage.getItem('wsp-alert-settings')
-    if (raw) return { ...DEFAULT, ...JSON.parse(raw) }
+    if (!raw) return DEFAULT
+    const parsed = JSON.parse(raw)
+    // migrate old delivery field to channels
+    if (parsed.delivery && !parsed.channels) {
+      parsed.channels = {
+        inApp: parsed.delivery !== 'email',
+        email: parsed.delivery === 'email' || parsed.delivery === 'both',
+        push:  false,
+      }
+      delete parsed.delivery
+    }
+    return { ...DEFAULT, ...parsed }
   } catch { /* ignore */ }
   return DEFAULT
 }
@@ -208,9 +226,29 @@ function NotifPreview({ style: visualStyle }: { style: 'subtle' | 'standard' | '
 // ── Main page ───────────────────────────────────────────────────────────
 export default function AlertSettings() {
   const navigate  = useNavigate()
-  const [cfg, setCfg] = useState<AlertConfig>(load)
-  const [kwInput, setKwInput] = useState('')
+  const [cfg, setCfg]           = useState<AlertConfig>(load)
+  const [kwInput, setKwInput]   = useState('')
+  const [pushStatus, setPushStatus] = useState<PushPermission>(getPushStatus)
   const kwRef = useRef<HTMLInputElement>(null)
+
+  async function handlePushToggle(on: boolean) {
+    if (!on) {
+      patch({ channels: { ...cfg.channels, push: false } })
+      return
+    }
+    if (pushStatus === 'unsupported') return
+    if (pushStatus === 'granted') {
+      patch({ channels: { ...cfg.channels, push: true } })
+      return
+    }
+    if (pushStatus === 'denied') return   // user must fix in browser settings
+    // 'default' — ask
+    const result = await Notification.requestPermission()
+    setPushStatus(result as PushPermission)
+    if (result === 'granted') {
+      patch({ channels: { ...cfg.channels, push: true } })
+    }
+  }
 
   useEffect(() => {
     const theme = localStorage.getItem('wsp-theme') ?? 'dark'
@@ -316,30 +354,75 @@ export default function AlertSettings() {
 
         {/* ── Delivery ── */}
         <Section title="Delivery" dim={dim}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <p style={{ fontFamily: "'Nunito', sans-serif", fontSize: 13, color: 'var(--color-text-secondary)', margin: '0 0 14px', lineHeight: 1.5 }}>
+            Choose where your alerts are delivered. You can enable multiple channels at once.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+            <Toggle on={cfg.channels.inApp} label="In-app" onChange={v => patch({ channels: { ...cfg.channels, inApp: v } })} />
+
+            <Toggle on={cfg.channels.email} label="Email" onChange={v => patch({ channels: { ...cfg.channels, email: v } })} />
+
+            {/* Push / phone */}
+            <div>
+              <Toggle
+                on={cfg.channels.push && pushStatus === 'granted'}
+                label="Push to phone"
+                onChange={handlePushToggle}
+              />
+              {/* Status feedback */}
+              {cfg.channels.push && pushStatus === 'granted' && (
+                <div style={{
+                  fontFamily: "'Nunito', sans-serif", fontSize: 12,
+                  color: '#00B050', marginTop: 6, marginLeft: 50,
+                  display: 'flex', alignItems: 'center', gap: 5,
+                }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Notifications enabled on this device
+                </div>
+              )}
+              {pushStatus === 'denied' && (
+                <div style={{
+                  fontFamily: "'Nunito', sans-serif", fontSize: 12,
+                  color: '#E97132', marginTop: 6, marginLeft: 50, lineHeight: 1.5,
+                }}>
+                  Notifications are blocked. Open your browser settings and allow notifications for this site, then try again.
+                </div>
+              )}
+              {pushStatus === 'unsupported' && (
+                <div style={{
+                  fontFamily: "'Nunito', sans-serif", fontSize: 12,
+                  color: 'var(--color-text-tertiary)', marginTop: 6, marginLeft: 50,
+                }}>
+                  Push notifications are not supported on this browser.
+                </div>
+              )}
+              {pushStatus === 'default' && !cfg.channels.push && (
+                <div style={{
+                  fontFamily: "'Nunito', sans-serif", fontSize: 12,
+                  color: 'var(--color-text-tertiary)', marginTop: 6, marginLeft: 50,
+                }}>
+                  Works on mobile when this site is saved to your home screen.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div style={{ borderTop: '1px solid var(--color-border-light)', paddingTop: 14, marginTop: 16 }}>
+            <div style={{ fontFamily: "'Nunito', sans-serif", fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 10 }}>
+              Digest timing
+            </div>
             <RadioGroup
-              value={cfg.delivery}
-              onChange={v => patch({ delivery: v })}
+              value={cfg.timing}
+              onChange={v => patch({ timing: v })}
               options={[
-                { value: 'in-app',  label: 'In-app only',     desc: 'Shows inside the app when you visit.' },
-                { value: 'email',   label: 'Email only',      desc: 'Sent to your registered email address.' },
-                { value: 'both',    label: 'In-app + email',  desc: 'Both channels — best for time-sensitive items.' },
+                { value: 'morning', label: 'Morning digest', desc: '8:00 AM — start your day informed.' },
+                { value: 'evening', label: 'Evening digest', desc: '6:00 PM — review what moved today.' },
+                { value: 'both',    label: 'Morning + Evening' },
               ]}
             />
-            <div style={{ borderTop: '1px solid var(--color-border-light)', paddingTop: 12 }}>
-              <div style={{ fontFamily: "'Nunito', sans-serif", fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 8 }}>
-                Daily digest timing
-              </div>
-              <RadioGroup
-                value={cfg.timing}
-                onChange={v => patch({ timing: v })}
-                options={[
-                  { value: 'morning', label: 'Morning digest', desc: '8:00 AM — start your day informed.' },
-                  { value: 'evening', label: 'Evening digest', desc: '6:00 PM — review what moved today.' },
-                  { value: 'both',    label: 'Morning + Evening' },
-                ]}
-              />
-            </div>
           </div>
         </Section>
 
