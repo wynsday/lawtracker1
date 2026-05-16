@@ -500,36 +500,30 @@ export default function Home() {
     role: string,
     form: { name: string; phone: string; email: string; since: string; term_ends: string },
   ) => {
-    if (!form.name.trim()) return
+    if (!form.name.trim() || !user) return
     setLocalSaveStatus(prev => ({ ...prev, [role]: 'saving' }))
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_FUNCTIONS_BASE}/functions/v1/local-official-submit`,
+    const { error } = await supabase
+      .from('local_officials')
+      .upsert(
         {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
-            role,
-            name:      form.name.trim(),
-            phone:     form.phone.trim()     || undefined,
-            email:     form.email.trim()     || undefined,
-            since:     form.since.trim()     || undefined,
-            term_ends: form.term_ends.trim() || undefined,
-            county:    (profileAddr?.county ?? '').trim() || undefined,
-            state:     profileAddr?.state,
-          }),
+          role,
+          name:         form.name.trim(),
+          phone:        form.phone.trim()     || null,
+          email:        form.email.trim()     || null,
+          since:        form.since.trim()     || null,
+          term_ends:    form.term_ends.trim() || null,
+          county:       (profileAddr?.county ?? '').trim() || null,
+          state:        (profileAddr?.state ?? '').toUpperCase(),
+          submitted_by: user.username,
         },
+        { onConflict: 'role,state,submitted_by' },
       )
-      const result = await res.json()
-      if (result.ok) {
-        setLocalSaveStatus(prev => ({ ...prev, [role]: 'saved' }))
-        setLocalRefreshKey(k => k + 1)
-        setTimeout(() => setLocalSaveStatus(prev => { const n = { ...prev }; delete n[role]; return n }), 2000)
-      } else {
-        setLocalSaveStatus(prev => ({ ...prev, [role]: 'error' }))
-      }
-    } catch {
+    if (!error) {
+      setLocalSaveStatus(prev => ({ ...prev, [role]: 'saved' }))
+      setLocalRefreshKey(k => k + 1)
+      setTimeout(() => setLocalSaveStatus(prev => { const n = { ...prev }; delete n[role]; return n }), 2000)
+    } else {
+      console.error('[local_officials] upsert error:', error.message)
       setLocalSaveStatus(prev => ({ ...prev, [role]: 'error' }))
     }
   }
