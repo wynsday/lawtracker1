@@ -43,7 +43,7 @@ interface CongressMember {
   district?: number
   url?: string
   depiction?: { imageUrl?: string }
-  terms?: { item?: Array<{ chamber?: string; district?: number; stateCode?: string }> }
+  terms?: { item?: Array<{ chamber?: string; district?: number; stateCode?: string; stateName?: string }> }
 }
 
 function getChamber(member: CongressMember): 'Senate' | 'House' | null {
@@ -64,13 +64,25 @@ function getDistrict(member: CongressMember): string | null {
   return String(d)
 }
 
+const STATE_NAME_TO_CODE: Record<string, string> = {
+  'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
+  'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
+  'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
+  'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
+  'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS',
+  'Missouri': 'MO', 'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH',
+  'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC',
+  'North Dakota': 'ND', 'Ohio': 'OH', 'Oklahoma': 'OK', 'Oregon': 'OR', 'Pennsylvania': 'PA',
+  'Rhode Island': 'RI', 'South Carolina': 'SC', 'South Dakota': 'SD', 'Tennessee': 'TN',
+  'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT', 'Virginia': 'VA', 'Washington': 'WA',
+  'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY',
+  'District of Columbia': 'DC', 'Puerto Rico': 'PR', 'Virgin Islands': 'VI',
+  'Guam': 'GU', 'American Samoa': 'AS', 'Northern Mariana Islands': 'MP',
+}
+
 function getState(member: CongressMember): string | null {
-  const terms = member.terms?.item ?? []
-  const latest = terms[0]
-  // stateCode on the term is most reliable
-  if (latest?.stateCode) return latest.stateCode.toUpperCase()
-  if (member.state)       return member.state.toUpperCase()
-  return null
+  if (!member.state) return null
+  return STATE_NAME_TO_CODE[member.state] ?? null
 }
 
 async function fetchAllMembers(): Promise<CongressMember[]> {

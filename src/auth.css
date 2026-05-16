@@ -464,17 +464,18 @@
 
 .home-header-org {
   font-family: 'Quicksand', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 400;
   color: var(--color-text-secondary);
-  margin: 0;
+  margin: -4px 0 0 0;
   letter-spacing: -.01em;
 }
 
 .home-header-title {
   font-family: 'Saira Stencil One', sans-serif;
-  font-size: 40px;
+  font-size: 42px;
   font-weight: 400;
+  line-height: 1;
   color: white;
   text-shadow: 0 2px 14px rgba(0,0,0,.5);
   margin: 0;
@@ -487,14 +488,25 @@
   text-shadow: 0 2px 14px rgba(255,255,255,.7);
 }
 
+.home-header-title-group {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
 .home-header-tagline {
   font-family: 'Quicksand', sans-serif;
   font-size: 18px;
   font-weight: 600;
   color: var(--color-text-secondary);
-  margin: 0;
-  letter-spacing: .07em;
+  margin: -10px 0 0 0;
+  letter-spacing: .049em;
   text-transform: uppercase;
+  display: flex;
+  justify-content: center;
+  gap: 0.8em;
+  transform: translateX(0);
 }
 
 .home-theme-toggle {
@@ -675,6 +687,17 @@
   line-height: 1;
 }
 
+.home-stoplight-greeting {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding-top: 6px;
+  letter-spacing: .03em;
+  white-space: nowrap;
+}
+
 /* Secondary row — 8 small squares */
 .home-secondary-row {
   display: flex;
@@ -758,6 +781,7 @@
 }
 
 .home-rep-card {
+  position: relative;
   background: var(--color-card, #2a2840);
   border-left: 4px solid #808080;
   border-radius: 10px;
@@ -960,12 +984,266 @@
 }
 .home-feedback-cancel:hover { color: var(--color-text-primary); border-color: var(--color-text-tertiary); }
 
-/* ── Rep since date ── */
-.home-rep-since {
+/* ── Rep card fields ── */
+.home-rep-since,
+.home-rep-district,
+.home-rep-meta {
   font-family: 'Nunito', sans-serif;
   font-size: 11px;
   color: var(--color-text-tertiary);
   margin-top: -2px;
+}
+.home-rep-contact-btn {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-medium);
+  color: var(--color-text-primary);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .12s;
+}
+.home-rep-contact-btn:hover { background: var(--color-border-light); }
+
+/* User-added local rep card */
+.home-rep-card--user {
+  position: relative;
+  border-left-style: dashed;
+}
+.home-rep-delete-btn {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--color-text-tertiary);
+  padding: 0 2px;
+  transition: color .12s;
+}
+.home-rep-delete-btn:hover { color: #C00000; }
+
+/* Add manually button */
+.home-local-top-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.home-local-others {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+.home-local-others-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  text-align: left;
+  padding: 0;
+  transition: color .12s;
+}
+.home-local-others-toggle:hover { color: #B597D5; }
+.home-local-others-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-left: 8px;
+  border-left: 2px solid var(--color-border-light);
+}
+.home-local-other-entry {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+/* Local column — view mode pill toggle */
+.home-local-view-toggle {
+  display: flex;
+  gap: 2px;
+  background: rgba(255,255,255,.07);
+  border-radius: 20px;
+  padding: 3px;
+  margin-bottom: 6px;
+  align-self: flex-start;
+}
+.home-local-view-toggle button {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  border: none;
+  background: none;
+  color: var(--color-text-secondary);
+  border-radius: 16px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.home-local-view-toggle button.hlvt-active {
+  background: #4F4262;
+  color: white;
+}
+
+/* Per-card hide button */
+.home-local-hide-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.07);
+  color: var(--color-text-secondary);
+  border-radius: 10px;
+  padding: 2px 7px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  line-height: 1.4;
+}
+.home-local-hide-btn:hover { background: rgba(255,255,255,.14); }
+.home-local-hide-btn--active {
+  background: #4F4262;
+  color: white;
+  border-color: #4F4262;
+}
+
+/* Muted style for hidden cards (shown in Show mode) */
+.home-local-card--hidden {
+  opacity: .45;
+}
+
+.home-add-local-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px dashed var(--color-border-medium);
+  background: none;
+  color: var(--color-text-tertiary);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  transition: border-color .12s, color .12s;
+}
+.home-add-local-btn:hover {
+  border-color: #B597D5;
+  color: #B597D5;
+}
+
+/* Add manually form */
+.home-add-local-form {
+  background: var(--color-card);
+  border: 1px solid var(--color-border-medium);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.home-add-local-title {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+.home-add-local-input {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border-medium);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  width: 100%;
+  box-sizing: border-box;
+}
+.home-add-local-input:focus {
+  outline: none;
+  border-color: #B597D5;
+}
+.home-add-local-input::placeholder { color: var(--color-text-tertiary); }
+.home-add-local-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+.home-add-local-save {
+  flex: 1;
+  padding: 6px 0;
+  border-radius: 6px;
+  border: none;
+  background: #B597D5;
+  color: #fff;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .12s;
+}
+.home-add-local-save:disabled { opacity: .45; cursor: default; }
+.home-add-local-save:not(:disabled):hover { opacity: .85; }
+.home-add-local-cancel {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border-medium);
+  background: none;
+  color: var(--color-text-secondary);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .12s;
+}
+.home-add-local-cancel:hover { background: var(--color-bg-secondary); }
+
+.home-rep-no-election {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  padding: 4px 0;
+}
+
+.home-rep-card-toggle {
+  display: flex;
+  gap: 2px;
+  background: var(--color-bg-secondary);
+  border-radius: 6px;
+  padding: 2px;
+  width: fit-content;
+  margin-bottom: 8px;
+}
+.home-rep-card-toggle button {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  background: none;
+  color: var(--color-text-secondary);
+  transition: background .13s, color .13s;
+}
+.home-rep-card-toggle button.hrct-active {
+  background: #B597D5;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.18);
 }
 
 /* ── President / election toggle panel ── */

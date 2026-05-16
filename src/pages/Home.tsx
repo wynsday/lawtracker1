@@ -2,7 +2,40 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
-import { getOfficialsByState } from '../lib/officials'
+import { getOfficialsByState, type Official, type OfficialParty } from '../lib/officials'
+import { supabase } from '../lib/supabase'
+
+interface RepRow {
+  bioguide_id: string
+  name: string
+  party: string
+  state: string
+  district: string | null
+  chamber: 'Senate' | 'House'
+  url: string | null
+  email: string | null
+}
+
+interface LocalOfficialRow {
+  id: string
+  role: string
+  name: string
+  phone: string | null
+  email: string | null
+  county: string | null
+  state: string
+  since: string | null
+  term_ends: string | null
+}
+
+interface LocalRoleEntry {
+  name: string
+  phone: string | null
+  email: string | null
+  since: string | null
+  term_ends: string | null
+  count: number
+}
 
 // ─── Icon components ───────────────────────────────────────────────────────
 type IP = { size?: number; color?: string }
@@ -260,9 +293,63 @@ const ELECTION_DATES = [
   { label: 'General Election',            date: '2026-11-03' },
 ]
 
+const LOCAL_ROLES_FALLBACK = [
+  'County Sheriff', 'County Prosecutor', 'County Clerk', 'County Treasurer',
+  'County Commissioner', 'County Drain Commissioner', 'Register of Deeds',
+  'Mayor', 'Township Supervisor', 'City Council Member', 'Township Council Member',
+  'City Clerk', 'Township Clerk', 'City Treasurer', 'Township Treasurer',
+  'School Board Member', 'District Court Judge', 'Circuit Court Judge',
+  'Community College Board Member',
+]
+
+// Michigan election dates by cycle year (year the seat is on the ballot)
+const MI_ELECTION_DATES: Record<number, { label: string; date: string }[]> = {
+  2026: [
+    { label: 'Voter Registration Deadline', date: '2026-10-19' },
+    { label: 'Primary Election',            date: '2026-08-04' },
+    { label: 'General Election',            date: '2026-11-03' },
+  ],
+  2028: [
+    { label: 'Voter Registration Deadline', date: '2028-10-23' },
+    { label: 'Primary Election',            date: '2028-08-01' },
+    { label: 'General Election',            date: '2028-11-07' },
+  ],
+  2030: [
+    { label: 'Voter Registration Deadline', date: '2030-10-21' },
+    { label: 'Primary Election',            date: '2030-08-06' },
+    { label: 'General Election',            date: '2030-11-05' },
+  ],
+}
+
+function aggregateByRole(officials: LocalOfficialRow[], role: string): LocalRoleEntry[] {
+  const map = new Map<string, LocalRoleEntry>()
+  for (const o of officials) {
+    if (o.role !== role) continue
+    const key = o.name.trim().toLowerCase()
+    const existing = map.get(key)
+    if (existing) existing.count++
+    else map.set(key, { name: o.name, phone: o.phone, email: o.email, since: o.since, term_ends: o.term_ends, count: 1 })
+  }
+  return Array.from(map.values()).sort((a, b) => b.count - a.count)
+}
+
+function getRepElectionDates(o: Official): { year: number; dates: { label: string; date: string }[] } | null {
+  if (!o.termEnds) return null
+  const termYear = parseInt(o.termEnds.split('-')[0], 10)
+  const year = termYear - 1
+  return { year, dates: MI_ELECTION_DATES[year] ?? [] }
+}
+
 
 function fmtDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  const [y, m, d] = iso.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+function normalizeName(raw: string): string {
+  if (!raw.includes(',')) return raw
+  const [last, rest] = raw.split(',', 2)
+  return `${rest.trim()} ${last.trim()}`
 }
 
 function parseBrowser(ua: string): string {
@@ -295,12 +382,41 @@ export default function Home() {
   const [feedbackText, setFeedbackText]   = useState('')
   const [submitting, setSubmitting]       = useState(false)
   const sessionStartRef                   = useRef<number>(Date.now())
+  const [dbReps, setDbReps]               = useState<RepRow[]>([])
+  const [repElectionKeys, setRepElectionKeys] = useState<Set<string>>(new Set())
+  const toggleRepElection = (key: string) =>
+    setRepElectionKeys(prev => { const s = new Set(prev); s.has(key) ? s.delete(key) : s.add(key); return s })
+
+  const [customLocalReps, setCustomLocalReps] = useState<Official[]>(() => {
+    try {
+      const r = localStorage.getItem('wsp-local-reps')
+      return r ? JSON.parse(r) as Official[] : []
+    } catch { return [] }
+  })
+  const [showAddLocal, setShowAddLocal]   = useState(false)
+  const [addLocalForm, setAddLocalForm]   = useState({ name: '', role: '', phone: '', email: '', contact_url: '' })
+
+  const [localRoles, setLocalRoles]               = useState<string[]>([])
+  const [localRolesLoaded, setLocalRolesLoaded]   = useState(false)
+  const [localDBOfficials, setLocalDBOfficials]   = useState<LocalOfficialRow[]>([])
+  const [localForms, setLocalForms]               = useState<Record<string, { name: string; phone: string; email: string; since: string; term_ends: string }>>({})
+  const [localFormOpen, setLocalFormOpen]         = useState<Set<string>>(new Set())
+  const [localSubmitting, setLocalSubmitting]     = useState<Set<string>>(new Set())
+  const [localDropdownOpen, setLocalDropdownOpen] = useState<Set<string>>(new Set())
+  const [localRefreshKey, setLocalRefreshKey]     = useState(0)
+  const [hiddenLocalRoles, setHiddenLocalRoles]   = useState<Set<string>>(() => {
+    try {
+      const r = localStorage.getItem('wsp-hidden-local-roles')
+      return r ? new Set(JSON.parse(r) as string[]) : new Set()
+    } catch { return new Set() }
+  })
+  const [localViewMode, setLocalViewMode]         = useState<'show' | 'hide'>('show')
 
   const profileAddr = (() => {
     try {
       const r = localStorage.getItem('wsp-profile')
       return r ? JSON.parse(r) as {
-        state?: string; city?: string; zip?: string
+        state?: string; city?: string; zip?: string; county?: string
         congressional_district?: string
         state_senate_district?: string
         state_house_district?: string
@@ -319,6 +435,122 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem('wsp-president-mode', presidentMode)
   }, [presidentMode])
+
+  useEffect(() => {
+    const state = profileAddr?.state?.toUpperCase()
+    if (!state) { setDbReps([]); return }
+    supabase
+      .from('representatives')
+      .select('bioguide_id,name,party,state,district,chamber,url,email')
+      .eq('state', state)
+      .then(({ data, error }) => {
+        if (!error) setDbReps((data ?? []) as RepRow[])
+      })
+  }, [profileAddr?.state])
+
+  useEffect(() => {
+    localStorage.setItem('wsp-local-reps', JSON.stringify(customLocalReps))
+  }, [customLocalReps])
+
+  useEffect(() => {
+    localStorage.setItem('wsp-hidden-local-roles', JSON.stringify([...hiddenLocalRoles]))
+  }, [hiddenLocalRoles])
+
+  // Fetch local_official_roles for the user's state
+  useEffect(() => {
+    if (!user || !profileAddr?.state) { setLocalRoles([]); setLocalRolesLoaded(true); return }
+    supabase
+      .from('local_official_roles')
+      .select('label')
+      .eq('state', profileAddr.state.toUpperCase())
+      .order('label')
+      .then(({ data, error }) => {
+        if (error) console.error('[local_official_roles] fetch error:', error.message)
+        setLocalRoles((data ?? []).map(r => r.label as string))
+        setLocalRolesLoaded(true)
+      })
+  }, [user, profileAddr?.state])
+
+  // Fetch submitted local officials for state + optional county
+  useEffect(() => {
+    if (!user || !profileAddr?.state) { setLocalDBOfficials([]); return }
+    const state = profileAddr.state.toUpperCase()
+    const county = (profileAddr.county ?? '').trim()
+    ;(async () => {
+      if (county) {
+        const { data } = await supabase
+          .from('local_officials')
+          .select('id,role,name,phone,email,county,state,since,term_ends')
+          .eq('state', state)
+          .eq('county', county)
+        setLocalDBOfficials((data ?? []) as LocalOfficialRow[])
+      } else {
+        const { data } = await supabase
+          .from('local_officials')
+          .select('id,role,name,phone,email,county,state,since,term_ends')
+          .eq('state', state)
+        setLocalDBOfficials((data ?? []) as LocalOfficialRow[])
+      }
+    })()
+  }, [user, profileAddr?.state, profileAddr?.county, localRefreshKey])
+
+  const submitLocalOfficial = async (role: string) => {
+    const form = localForms[role] ?? { name: '', phone: '', email: '', since: '', term_ends: '' }
+    if (!form.name.trim()) return
+    setLocalSubmitting(prev => new Set(prev).add(role))
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_FUNCTIONS_BASE}/functions/v1/local-official-submit`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            role,
+            name:        form.name.trim(),
+            phone:       form.phone.trim()       || undefined,
+            email:       form.email.trim()       || undefined,
+            since:       form.since.trim()       || undefined,
+            term_ends:   form.term_ends.trim()   || undefined,
+            county:      (profileAddr?.county ?? '').trim() || undefined,
+            state:       profileAddr?.state,
+          }),
+        },
+      )
+      const result = await res.json()
+      if (result.ok) {
+        setLocalForms(prev => ({ ...prev, [role]: { name: '', phone: '', email: '', since: '', term_ends: '' } }))
+        setLocalFormOpen(prev => { const s = new Set(prev); s.delete(role); return s })
+        setLocalRefreshKey(k => k + 1)
+      }
+    } catch (e) {
+      console.error('[local-official-submit]', e)
+    } finally {
+      setLocalSubmitting(prev => { const s = new Set(prev); s.delete(role); return s })
+    }
+  }
+
+  const saveLocalRep = () => {
+    const name = addLocalForm.name.trim()
+    const role = addLocalForm.role.trim()
+    if (!name || !role) return
+    const rep: Official = {
+      level: 'local',
+      role,
+      name,
+      party: 'other',
+      phone:       addLocalForm.phone.trim()       || undefined,
+      email:       addLocalForm.email.trim()       || undefined,
+      contact_url: addLocalForm.contact_url.trim() || undefined,
+      source: 'user',
+      id: crypto.randomUUID(),
+    }
+    setCustomLocalReps(prev => [...prev, rep])
+    setAddLocalForm({ name: '', role: '', phone: '', email: '', contact_url: '' })
+    setShowAddLocal(false)
+  }
+  const deleteLocalRep = (id: string) =>
+    setCustomLocalReps(prev => prev.filter(r => r.id !== id))
 
   if (!ready) return null
 
@@ -379,9 +611,11 @@ export default function Home() {
 
       {/* ── Header ─────────────────────────────────────── */}
       <header className="home-header-bar" aria-label="3AM Pipeline site header">
-        <p className="home-header-org">Women for Shared Progress</p>
-        <h1 className="home-header-title">3AM Pipeline</h1>
-        <p className="home-header-tagline">Legislation Matters</p>
+        <div className="home-header-title-group">
+          <h1 className="home-header-title">3AM Pipeline</h1>
+          <p className="home-header-tagline"><span>Legislation</span><span>Matters</span></p>
+        </div>
+        <p className="home-header-org">by Women for Shared Progress (W4SP)</p>
       </header>
       <div style={{ position: 'fixed', top: 8, right: 12, zIndex: 100 }}>
         <ThemeToggle />
@@ -509,6 +743,14 @@ export default function Home() {
             </div>
           </button>
 
+          {isLoggedIn && (
+            <div className="home-stoplight-greeting">
+              {user!.username.length > 8
+                ? <><span>Hello,</span><br /><span>{user!.username}</span></>
+                : `Hello, ${user!.username}`
+              }
+            </div>
+          )}
         </div>{/* end stoplight col */}
         </div>{/* end main row */}
 
@@ -546,11 +788,11 @@ export default function Home() {
           </button>
 
           <button
-            className="home-secondary-card" style={{ background: '#00B050' }}
+            className="home-secondary-card" style={{ background: '#4F4262' }}
             onClick={() => navigate('/settings')}
             aria-label="Settings"
           >
-            <SettingsIcon size={20} color="white" />
+            <SettingsIcon size={20} color="#03B9D7" />
             <span className="home-secondary-label">Settings</span>
           </button>
 
@@ -612,10 +854,12 @@ export default function Home() {
                   <div className="home-president-meta">
                     <span><span className="home-pmeta-lbl">Elected</span>{fmtDate(PRESIDENT.dateElected)}</span>
                     <span><span className="home-pmeta-lbl">Term ends</span>{fmtDate(PRESIDENT.termEnds)}</span>
-                    {PRESIDENT.previousTerm && (
-                      <span><span className="home-pmeta-lbl">Previous term</span>{fmtDate(PRESIDENT.previousTerm.start)} – {fmtDate(PRESIDENT.previousTerm.end)}</span>
-                    )}
                   </div>
+                  {PRESIDENT.previousTerm && (
+                    <div className="home-president-meta">
+                      <span><span className="home-pmeta-lbl">Previous term</span>{fmtDate(PRESIDENT.previousTerm.start)} – {fmtDate(PRESIDENT.previousTerm.end)}</span>
+                    </div>
+                  )}
                   <button className="home-district-action-btn" style={{ background: '#4F4262' }} onClick={() => navigate('/administration')}>Administration</button>
                 </div>
               ) : (
@@ -642,51 +886,340 @@ export default function Home() {
 
             <div className="home-district-grid">
               {(['local', 'state', 'national'] as const).map(level => {
-                const officials = hasProfileAddr
-                  ? getOfficialsByState(profileAddr?.state ?? '').filter(o => {
-                      if (o.level !== level) return false
-                      if (!o.district) return true  // statewide — always show
-                      if (o.role === 'U.S. Representative')
-                        return o.district === profileAddr?.congressional_district
-                      if (o.role === 'State Senator')
-                        return o.district === profileAddr?.state_senate_district
-                      if (o.role === 'State Representative')
-                        return o.district === profileAddr?.state_house_district
-                      if (o.role === 'County Commissioner')
-                        return o.district === profileAddr?.county_commissioner
-                      return true
-                    })
-                  : []
+                const officials = (() => {
+                  if (!hasProfileAddr) return []
+                  if (level === 'national') {
+                    const normDist = (d: string | null | undefined) => {
+                      const n = parseInt((d ?? '').replace(/\D/g, ''), 10)
+                      return isNaN(n) ? '' : String(n)
+                    }
+                    const userDistrictNorm = normDist(profileAddr?.congressional_district ?? '')
+                    const stateOfficials = getOfficialsByState(profileAddr?.state ?? '')
+
+                    const toOfficial = (r: RepRow): Official => {
+                      const lastName = r.name.split(',')[0].trim().toLowerCase()
+                      const isSenate = r.chamber === 'Senate'
+                      const s = stateOfficials.find(o =>
+                        isSenate
+                          ? o.role === 'U.S. Senator' && o.name.toLowerCase().split(/\s+/).some(p => p === lastName)
+                          : o.role === 'U.S. Representative' && normDist(o.district) === normDist(r.district)
+                      )
+                      return {
+                        level: 'national',
+                        role: isSenate ? 'U.S. Senator' : 'U.S. Representative',
+                        name: normalizeName(r.name),
+                        party: r.party.toLowerCase() as OfficialParty,
+                        district: r.district ?? undefined,
+                        contact_url: s?.contact_url ?? r.url ?? undefined,
+                        since: s?.since,
+                        termEnds: s?.termEnds,
+                        phone: s?.phone,
+                        email: r.email ?? s?.email,
+                      }
+                    }
+
+                    // Senators: prefer live DB rows; fall back to officials.ts while DB loads
+                    const dbSenators = dbReps.filter(r => r.chamber === 'Senate')
+                    const senators: Official[] = dbSenators.length > 0
+                      ? dbSenators.map(toOfficial)
+                      : stateOfficials.filter(o => o.role === 'U.S. Senator')
+
+                    // House: only from DB, matched to user's district
+                    const houseReps: Official[] = userDistrictNorm
+                      ? dbReps
+                          .filter(r => r.chamber === 'House' && normDist(r.district) === userDistrictNorm)
+                          .map(toOfficial)
+                      : []
+
+                    return [...senators, ...houseReps]
+                  }
+                  return getOfficialsByState(profileAddr?.state ?? '').filter(o => {
+                    if (o.level !== level) return false
+                    if (level === 'local' && o.city) {
+                      const userCity = (profileAddr?.city ?? '').trim().toUpperCase()
+                      if (!userCity || o.city.toUpperCase() !== userCity) return false
+                    }
+                    if (!o.district) return true
+                    if (o.role === 'State Senator')
+                      return o.district === profileAddr?.state_senate_district
+                    if (o.role === 'State Representative')
+                      return o.district === profileAddr?.state_house_district
+                    if (o.role === 'County Commissioner')
+                      return o.district === profileAddr?.county_commissioner
+                    return true
+                  })
+                })()
 
                 return (
                   <div key={level} className="home-district-col">
-                    <div className="home-district-col-header">{level.charAt(0).toUpperCase() + level.slice(1)}</div>
-                    {officials.map((o, i) => (
-                      <div key={i} className="home-rep-card" data-party={o.party}>
-                        <div className="home-rep-role">{o.role}</div>
-                        <div className="home-rep-name">{o.name}</div>
-                        {o.since && <div className="home-rep-since">Since {fmtDate(o.since)}</div>}
-                        {(o.phone || o.email || o.contact_url) && (
-                          <div className="home-rep-contact-info">
-                            {o.phone && (
-                              <a href={`tel:${o.phone.replace(/\D/g, '')}`} className="home-rep-phone" aria-label={`Call ${o.name}`}>
-                                {o.phone}
-                              </a>
-                            )}
-                            {o.email && (
-                              <a href={`mailto:${o.email}`} className="home-rep-email" aria-label={`Email ${o.name}`}>
-                                {o.email}
-                              </a>
-                            )}
-                            {o.contact_url && !o.email && (
-                              <a href={o.contact_url} target="_blank" rel="noopener noreferrer" className="home-rep-email" aria-label={`Contact ${o.name}`}>
-                                Contact form
-                              </a>
-                            )}
+                    <div className="home-district-col-header">
+                      {level === 'local' && profileAddr?.city
+                        ? `Local — ${profileAddr.city.split(' ').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ')}`
+                        : level.charAt(0).toUpperCase() + level.slice(1)}
+                    </div>
+                    {(level !== 'local' || !isLoggedIn || !hasProfileAddr || !profileAddr?.state) && officials.map((o, i) => {
+                      const cardKey = `${level}-${i}`
+                      const showElection = repElectionKeys.has(cardKey)
+                      return (
+                        <div key={i} className="home-rep-card" data-party={o.party}>
+                          <div className="home-rep-card-toggle" role="group" aria-label="Card view mode">
+                            <button
+                              className={!showElection ? 'hrct-active' : ''}
+                              onClick={() => showElection && toggleRepElection(cardKey)}
+                              aria-pressed={!showElection}
+                            >Info</button>
+                            <button
+                              className={showElection ? 'hrct-active' : ''}
+                              onClick={() => !showElection && toggleRepElection(cardKey)}
+                              aria-pressed={showElection}
+                            >Election</button>
                           </div>
-                        )}
+
+                          {!showElection ? (
+                            <>
+                              <div className="home-rep-role">
+                                {profileAddr?.state ? `${profileAddr.state} ${o.role}` : o.role}
+                              </div>
+                              {o.district && (
+                                <div className="home-rep-district">District {o.district}</div>
+                              )}
+                              <div className="home-rep-name">{o.name}</div>
+                              {o.since && (
+                                <div className="home-rep-meta">
+                                  Elected {fmtDate(o.since)}{o.termEnds ? `–${fmtDate(o.termEnds)}` : ''}
+                                </div>
+                              )}
+                              {o.phone && (
+                                <a href={`tel:${o.phone.replace(/\D/g, '')}`} className="home-rep-phone" aria-label={`Call ${o.name}`}>
+                                  {o.phone}
+                                </a>
+                              )}
+                              {o.email && (
+                                <a href={`mailto:${o.email}`} className="home-rep-email" aria-label={`Email ${o.name}`}>
+                                  {o.email}
+                                </a>
+                              )}
+                              {o.contact_url && (
+                                <a href={o.contact_url} target="_blank" rel="noopener noreferrer" className="home-rep-contact-btn" aria-label={`Contact ${o.name}`}>
+                                  Contact
+                                </a>
+                              )}
+                            </>
+                          ) : (() => {
+                            const cycle = getRepElectionDates(o)
+                            if (!cycle) return (
+                              <div className="home-rep-no-election">Election dates unavailable</div>
+                            )
+                            if (cycle.dates.length === 0) return (
+                              <div className="home-rep-no-election">Next election: {cycle.year}</div>
+                            )
+                            return (
+                              <div className="home-election-dates">
+                                {cycle.dates.map(d => (
+                                  <div key={d.label} className="home-election-date-item">
+                                    <span className="home-election-date-label">{d.label}</span>
+                                    <span className="home-election-date-val">{fmtDate(d.date)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )
+                          })()}
+                        </div>
+                      )
+                    })}
+
+                    {/* ── DB-backed local role cards ── */}
+                    {level === 'local' && isLoggedIn && hasProfileAddr && !!profileAddr?.state && (
+                      <>
+                        <div className="home-local-view-toggle" role="group" aria-label="Local view mode">
+                          <button
+                            className={localViewMode === 'show' ? 'hlvt-active' : ''}
+                            onClick={() => setLocalViewMode('show')}
+                            aria-pressed={localViewMode === 'show'}
+                          >Show</button>
+                          <button
+                            className={localViewMode === 'hide' ? 'hlvt-active' : ''}
+                            onClick={() => setLocalViewMode('hide')}
+                            aria-pressed={localViewMode === 'hide'}
+                          >Hide</button>
+                        </div>
+                        {!localRolesLoaded
+                          ? <div className="home-rep-no-election">Loading...</div>
+                          : (localRoles.length > 0 ? localRoles : LOCAL_ROLES_FALLBACK)
+                              .filter(role => localViewMode === 'show' || !hiddenLocalRoles.has(role))
+                              .map(role => {
+                            const entries   = aggregateByRole(localDBOfficials, role)
+                            const maxCnt    = entries[0]?.count ?? 0
+                            const top       = maxCnt > 0 ? entries.filter(e => e.count === maxCnt) : []
+                            const others    = maxCnt > 0 ? entries.filter(e => e.count < maxCnt)  : []
+                            const form      = localForms[role] ?? { name: '', phone: '', email: '', since: '', term_ends: '' }
+                            const formOpen  = localFormOpen.has(role)
+                            const dropOpen  = localDropdownOpen.has(role)
+                            const isSubmit  = localSubmitting.has(role)
+                            const upd = (field: string, val: string) =>
+                              setLocalForms(prev => ({ ...prev, [role]: { ...(prev[role] ?? { name: '', contact_url: '', phone: '', email: '' }), [field]: val } }))
+                            const isHidden = hiddenLocalRoles.has(role)
+                            return (
+                              <div key={role} className={`home-rep-card${isHidden ? ' home-local-card--hidden' : ''}`} data-party="other">
+                                <button
+                                  className={`home-local-hide-btn${isHidden ? ' home-local-hide-btn--active' : ''}`}
+                                  onClick={() => {
+                                    const isCurrentlyHidden = hiddenLocalRoles.has(role)
+                                    setHiddenLocalRoles(prev => { const s = new Set(prev); s.has(role) ? s.delete(role) : s.add(role); return s })
+                                    if (!isCurrentlyHidden) setLocalViewMode('hide')
+                                  }}
+                                  aria-label={isHidden ? `Show ${role}` : `Hide ${role}`}
+                                >{isHidden ? 'Show' : 'Hide'}</button>
+                                <div className="home-rep-role">
+                                  <span style={{ display: 'block', paddingRight: '52px' }}>{profileAddr?.state}{profileAddr?.county ? ` ${profileAddr.county} County` : ''}</span>
+                                  <span style={{ display: 'block' }}>{role.replace(/^County\s+/i, '')}</span>
+                                </div>
+
+                                {top.length > 0
+                                  ? top.map(e => (
+                                      <div key={e.name} className="home-local-top-entry">
+                                        <div className="home-rep-name">{e.name}</div>
+                                        {(e.since || e.term_ends) && (
+                                          <div className="home-rep-meta">
+                                            {e.since && <span>Elected {fmtDate(e.since)}</span>}
+                                            {e.since && e.term_ends && <span> – </span>}
+                                            {e.term_ends && <span>Term ends {fmtDate(e.term_ends)}</span>}
+                                          </div>
+                                        )}
+                                        {e.phone && <a href={`tel:${e.phone.replace(/\D/g, '')}`} className="home-rep-phone">{e.phone}</a>}
+                                        {e.email && <a href={`mailto:${e.email}`} className="home-rep-email">{e.email}</a>}
+                                      </div>
+                                    ))
+                                  : <div className="home-rep-no-election">No submissions yet</div>
+                                }
+
+                                {others.length > 0 && (
+                                  <div className="home-local-others">
+                                    <button
+                                      className="home-local-others-toggle"
+                                      onClick={() => setLocalDropdownOpen(prev => {
+                                        const s = new Set(prev); s.has(role) ? s.delete(role) : s.add(role); return s
+                                      })}
+                                    >
+                                      Others in your district selected {dropOpen ? '▲' : '▼'}
+                                    </button>
+                                    {dropOpen && (
+                                      <div className="home-local-others-list">
+                                        {others.map(e => <div key={e.name} className="home-local-other-entry">{e.name}</div>)}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {formOpen ? (
+                                  <div className="home-add-local-form">
+                                    <input className="home-add-local-input" placeholder="Name *" value={form.name} onChange={e => upd('name', e.target.value)} />
+                                    <input className="home-add-local-input" placeholder="Phone" value={form.phone} onChange={e => upd('phone', e.target.value)} />
+                                    <input className="home-add-local-input" placeholder="Email" value={form.email} onChange={e => upd('email', e.target.value)} />
+                                    <input className="home-add-local-input" type="date" placeholder="Date Elected" value={form.since} onChange={e => upd('since', e.target.value)} title="Date Elected" />
+                                    <input className="home-add-local-input" type="date" placeholder="Term Ends" value={form.term_ends} onChange={e => upd('term_ends', e.target.value)} title="Term Ends" />
+                                    <div className="home-add-local-actions">
+                                      <button className="home-add-local-save" onClick={() => submitLocalOfficial(role)} disabled={!form.name.trim() || isSubmit}>
+                                        {isSubmit ? 'Saving...' : 'Save'}
+                                      </button>
+                                      <button className="home-add-local-cancel" onClick={() => setLocalFormOpen(prev => { const s = new Set(prev); s.delete(role); return s })}>
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <button className="home-add-local-btn" onClick={() => setLocalFormOpen(prev => new Set(prev).add(role))}>
+                                    + Add name
+                                  </button>
+                                )}
+                              </div>
+                            )
+                          })}
+                      </>
+                    )}
+
+                    {/* ── User-added local reps (shown only when not in DB mode) ── */}
+                    {level === 'local' && !(isLoggedIn && hasProfileAddr && profileAddr?.state) && customLocalReps.map(r => {
+                      const cardKey = `local-user-${r.id}`
+                      const showElection = repElectionKeys.has(cardKey)
+                      return (
+                        <div key={r.id} className="home-rep-card home-rep-card--user" data-party="other">
+                          <button
+                            className="home-rep-delete-btn"
+                            onClick={() => deleteLocalRep(r.id!)}
+                            aria-label={`Remove ${r.name}`}
+                          >×</button>
+                          <div className="home-rep-card-toggle" role="group" aria-label="Card view mode">
+                            <button className={!showElection ? 'hrct-active' : ''} onClick={() => showElection && toggleRepElection(cardKey)} aria-pressed={!showElection}>Info</button>
+                            <button className={showElection ? 'hrct-active' : ''} onClick={() => !showElection && toggleRepElection(cardKey)} aria-pressed={showElection}>Election</button>
+                          </div>
+                          {!showElection ? (
+                            <>
+                              <div className="home-rep-role">
+                                {profileAddr?.state ? `${profileAddr.state} ${r.role}` : r.role}
+                              </div>
+                              <div className="home-rep-name">{r.name}</div>
+                              {r.phone && <a href={`tel:${r.phone.replace(/\D/g, '')}`} className="home-rep-phone" aria-label={`Call ${r.name}`}>{r.phone}</a>}
+                              {r.email && <a href={`mailto:${r.email}`} className="home-rep-email" aria-label={`Email ${r.name}`}>{r.email}</a>}
+                              {r.contact_url && <a href={r.contact_url} target="_blank" rel="noopener noreferrer" className="home-rep-contact-btn" aria-label={`Contact ${r.name}`}>Contact</a>}
+                            </>
+                          ) : (
+                            <div className="home-rep-no-election">Election dates unavailable</div>
+                          )}
+                        </div>
+                      )
+                    })}
+
+                    {/* ── Add manually (shown only when not in DB mode) ── */}
+                    {level === 'local' && !(isLoggedIn && hasProfileAddr && profileAddr?.state) && !showAddLocal && (
+                      <button className="home-add-local-btn" onClick={() => setShowAddLocal(true)}>+ Add manually</button>
+                    )}
+                    {level === 'local' && !(isLoggedIn && hasProfileAddr && profileAddr?.state) && showAddLocal && (
+                      <div className="home-add-local-form">
+                        <div className="home-add-local-title">Add representative</div>
+                        <input
+                          className="home-add-local-input"
+                          placeholder="Name *"
+                          value={addLocalForm.name}
+                          onChange={e => setAddLocalForm(f => ({ ...f, name: e.target.value }))}
+                        />
+                        <input
+                          className="home-add-local-input"
+                          placeholder="Role * (e.g. Mayor, City Council)"
+                          value={addLocalForm.role}
+                          onChange={e => setAddLocalForm(f => ({ ...f, role: e.target.value }))}
+                        />
+                        <input
+                          className="home-add-local-input"
+                          placeholder="Phone"
+                          value={addLocalForm.phone}
+                          onChange={e => setAddLocalForm(f => ({ ...f, phone: e.target.value }))}
+                        />
+                        <input
+                          className="home-add-local-input"
+                          placeholder="Email"
+                          value={addLocalForm.email}
+                          onChange={e => setAddLocalForm(f => ({ ...f, email: e.target.value }))}
+                        />
+                        <input
+                          className="home-add-local-input"
+                          placeholder="Contact URL"
+                          value={addLocalForm.contact_url}
+                          onChange={e => setAddLocalForm(f => ({ ...f, contact_url: e.target.value }))}
+                        />
+                        <div className="home-add-local-actions">
+                          <button
+                            className="home-add-local-save"
+                            onClick={saveLocalRep}
+                            disabled={!addLocalForm.name.trim() || !addLocalForm.role.trim()}
+                          >Save</button>
+                          <button
+                            className="home-add-local-cancel"
+                            onClick={() => { setShowAddLocal(false); setAddLocalForm({ name: '', role: '', phone: '', email: '', contact_url: '' }) }}
+                          >Cancel</button>
+                        </div>
                       </div>
-                    ))}
+                    )}
                   </div>
                 )
               })}

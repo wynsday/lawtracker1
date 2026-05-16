@@ -5,14 +5,16 @@ export interface Official {
   role: string
   name: string
   party: OfficialParty
+  city?: string           // for local officials — uppercase, matches profileAddr.city
   district?: string       // district number string, matches Census API BASENAME output
   since?: string
   termEnds?: string
   phone?: string
   email?: string
   contact_url?: string
-  source?: string         // 'manual' | 'api'
+  source?: string         // 'manual' | 'api' | 'user'
   verified?: boolean      // false = needs human review
+  id?: string             // only set for user-added reps
 }
 
 const BY_STATE: Record<string, Official[]> = {

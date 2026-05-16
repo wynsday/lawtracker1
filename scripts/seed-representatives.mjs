@@ -89,6 +89,28 @@ function getDistrict(member) {
   return String(d)
 }
 
+const STATE_NAME_TO_CODE = {
+  'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
+  'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
+  'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
+  'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
+  'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS',
+  'Missouri': 'MO', 'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH',
+  'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC',
+  'North Dakota': 'ND', 'Ohio': 'OH', 'Oklahoma': 'OK', 'Oregon': 'OR', 'Pennsylvania': 'PA',
+  'Rhode Island': 'RI', 'South Carolina': 'SC', 'South Dakota': 'SD', 'Tennessee': 'TN',
+  'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT', 'Virginia': 'VA', 'Washington': 'WA',
+  'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY',
+  'District of Columbia': 'DC', 'Puerto Rico': 'PR', 'Virgin Islands': 'VI',
+  'Guam': 'GU', 'American Samoa': 'AS', 'Northern Mariana Islands': 'MP',
+}
+
+// Extract 2-letter state code from the member's state field.
+function getMemberState(member) {
+  if (!member.state) return null
+  return STATE_NAME_TO_CODE[member.state] ?? null
+}
+
 async function main() {
   console.log(`\nFetching current Michigan members from Congress.gov…\n`)
 
@@ -106,11 +128,17 @@ async function main() {
       continue
     }
 
+    const state = getMemberState(m)
+    if (!state) {
+      console.warn(`  Skipping ${m.name} — no stateCode in terms`)
+      continue
+    }
+
     const row = {
       bioguide_id: m.bioguideId,
       name:        m.name,
       party:       normalizeParty(m.partyName),
-      state:       STATE_CODE,
+      state,
       district:    chamber === 'House' ? getDistrict(m) : null,
       chamber,
       url:         m.url ?? null,

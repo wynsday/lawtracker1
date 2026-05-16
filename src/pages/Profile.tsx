@@ -664,6 +664,10 @@ export default function Profile() {
             </div>
           </div>
 
+          <p style={{ fontSize: 13, color: 'var(--color-text-tertiary)', margin: '12px 0', lineHeight: 1.6, fontFamily: "'Nunito', sans-serif" }}>
+            Your address is used for district lookups and is stored only on this device.
+          </p>
+
           {/* ── My District Information ── */}
           <div style={{ flex: '0 1 380px', minWidth: 260 }}>
             <div style={{
@@ -928,9 +932,6 @@ export default function Profile() {
 
         </div>
 
-        <p style={{ fontSize: 14, color: 'var(--page-title)', marginTop: 16, lineHeight: 1.6, maxWidth: 480 }}>
-          Your address is used for district lookups and is stored only on this device.
-        </p>
 
       </div>
       <FeedbackButton />
