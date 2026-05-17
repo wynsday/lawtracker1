@@ -1,5 +1,4 @@
 {
-  "rewrites": [{ "source": "/((?!functions/).*)", "destination": "/index.html" }],
   "headers": [
     {
       "source": "/index.html",
