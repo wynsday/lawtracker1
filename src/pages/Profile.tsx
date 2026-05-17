@@ -470,11 +470,13 @@ export default function Profile() {
 
     try {
       console.log('[geo] runGeocode start — street:', JSON.stringify(street), 'zip:', zip, 'refreshDistricts:', refreshDistricts)
-      // Try Census address geocoder first; fall back to Nominatim (OSM) + Census coords
-      let fields = await tryCensusAddress(ctrl.signal, street, zip)
+      // With a street: Census address geocoder first, Nominatim as fallback.
+      // ZIP-only: skip Census address (it omits districts without a street) and go straight to Nominatim,
+      // which fetches coordinates and asks Census for district data.
+      let fields = street.trim() ? await tryCensusAddress(ctrl.signal, street, zip) : null
       console.log('[geo] after Census:', fields)
       if (!fields) {
-        console.log('[geo] Census returned null, trying Nominatim…')
+        console.log('[geo] Census returned null or skipped, trying Nominatim…')
         fields = await tryNominatim(ctrl.signal, street, zip)
         console.log('[geo] after Nominatim:', fields)
       }
