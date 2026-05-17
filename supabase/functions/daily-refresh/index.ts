@@ -197,6 +197,17 @@ Deno.serve(async (_req: Request) => {
   // 2. Representatives refresh
   const repResult = await refreshRepresentatives(supabase)
 
+  // Trigger notification generation asynchronously (fire-and-forget)
+  const notifyUrl = `${supabaseUrl}/functions/v1/notify-send`
+  fetch(notifyUrl, {
+    method:  'POST',
+    headers: {
+      'Authorization': `Bearer ${secretKey}`,
+      'Content-Type':  'application/json',
+    },
+    body: '{}',
+  }).catch(e => console.error('[daily-refresh] notify-send trigger failed:', e))
+
   const ok = !billsError && !repResult.error
   return new Response(
     JSON.stringify({

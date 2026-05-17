@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import ThemeToggle from '../components/ThemeToggle'
 import FeedbackButton from '../components/FeedbackButton'
 import { ISSUE_LABELS } from '../lib/constants'
+import { useAuth } from '../contexts/AuthContext'
+import { syncAlertSettings, subscribeToPush, unsubscribeFromPush } from '../lib/notificationClient'
 
 // ── Types ──────────────────────────────────────────────────────────────
 interface AlertConfig {
@@ -226,26 +228,32 @@ function NotifPreview({ style: visualStyle }: { style: 'subtle' | 'standard' | '
 // ── Main page ───────────────────────────────────────────────────────────
 export default function AlertSettings() {
   const navigate  = useNavigate()
+  const { user }  = useAuth()
   const [cfg, setCfg]           = useState<AlertConfig>(load)
   const [kwInput, setKwInput]   = useState('')
   const [pushStatus, setPushStatus] = useState<PushPermission>(getPushStatus)
   const kwRef = useRef<HTMLInputElement>(null)
 
+  const VAPID_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined
+
   async function handlePushToggle(on: boolean) {
     if (!on) {
+      await unsubscribeFromPush()
       patch({ channels: { ...cfg.channels, push: false } })
       return
     }
     if (pushStatus === 'unsupported') return
+    if (pushStatus === 'denied') return
     if (pushStatus === 'granted') {
+      if (VAPID_KEY) await subscribeToPush(VAPID_KEY)
       patch({ channels: { ...cfg.channels, push: true } })
       return
     }
-    if (pushStatus === 'denied') return   // user must fix in browser settings
-    // 'default' — ask
+    // 'default' — request permission
     const result = await Notification.requestPermission()
     setPushStatus(result as PushPermission)
     if (result === 'granted') {
+      if (VAPID_KEY) await subscribeToPush(VAPID_KEY)
       patch({ channels: { ...cfg.channels, push: true } })
     }
   }
@@ -262,7 +270,8 @@ export default function AlertSettings() {
 
   useEffect(() => {
     localStorage.setItem('wsp-alert-settings', JSON.stringify(cfg))
-  }, [cfg])
+    if (user) syncAlertSettings(cfg).catch(() => {})
+  }, [cfg, user])
 
   function patch(partial: Partial<AlertConfig>) {
     setCfg(prev => ({ ...prev, ...partial }))
@@ -404,7 +413,7 @@ export default function AlertSettings() {
                   fontFamily: "'Nunito', sans-serif", fontSize: 12,
                   color: 'var(--color-text-tertiary)', marginTop: 6, marginLeft: 50,
                 }}>
-                  Works on mobile when this site is saved to your home screen.
+                  Works on any browser — laptop, phone, or tablet.
                 </div>
               )}
             </div>

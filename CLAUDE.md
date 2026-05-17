@@ -22,6 +22,17 @@ npx supabase functions deploy auth-signout
 npx supabase functions deploy auth-register
 npx supabase functions deploy auth-create-account
 npx supabase functions deploy daily-refresh
+
+# Notification system
+npx supabase functions deploy push-subscribe
+npx supabase functions deploy alert-settings-save
+npx supabase functions deploy bill-status-sync
+npx supabase functions deploy notifications-list
+npx supabase functions deploy notifications-read
+npx supabase functions deploy notify-send
+
+# Generate VAPID keys (run once, then set secrets as instructed)
+node scripts/gen-vapid.mjs
 ```
 
 There are no tests. There is no linter config beyond the default Vite scaffold.

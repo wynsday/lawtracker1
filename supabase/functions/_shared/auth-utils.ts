@@ -65,7 +65,34 @@ export function makeSessionCookieShort(token: string): string {
   return `${SESSION_COOKIE}=${token}; HttpOnly;${sec} SameSite=Lax; Path=/`
 }
 
-// PBKDF2-SHA256 with random salt. Stored as "saltHex:hashHex".
+// ── Session resolution ────────────────────────────────────────────────────────
+
+export interface SessionUser {
+  id:       string
+  username: string
+  email:    string | null
+  role:     string
+  tier:     number
+}
+
+// Validates wsp_session cookie against the DB. Pass in an already-created
+// service-role Supabase client. Returns null if cookie is missing/expired.
+// deno-lint-ignore no-explicit-any
+export async function resolveSession(req: Request, supabase: any): Promise<SessionUser | null> {
+  const token = getCookie(req, SESSION_COOKIE)
+  if (!token) return null
+  const { data } = await supabase
+    .from('accounts')
+    .select('id, username, email, role, tier, session_token, session_expires_at')
+    .eq('session_token', token)
+    .maybeSingle()
+  if (!data) return null
+  if (data.session_token !== token) return null
+  if (!data.session_expires_at || new Date(data.session_expires_at) <= new Date()) return null
+  return { id: data.id, username: data.username, email: data.email ?? null, role: data.role, tier: data.tier }
+}
+
+// ── PBKDF2-SHA256 with random salt. Stored as "saltHex:hashHex". ──────────────
 export async function hashCredential(credential: string): Promise<string> {
   const salt = crypto.getRandomValues(new Uint8Array(16))
   const key = await crypto.subtle.importKey(

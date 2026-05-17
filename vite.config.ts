@@ -53,11 +53,12 @@ export default defineConfig(({ mode }) => {
       },
     },
     VitePWA({
+      strategies:   'injectManifest',
+      srcDir:       'src',
+      filename:     'sw.ts',
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
-      workbox: {
-        navigateFallback: 'index.html',
-        navigateFallbackDenylist: [/^\/functions\//],
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
       },
       manifest: {
         name: 'LawTracker — Women for Shared Progress',

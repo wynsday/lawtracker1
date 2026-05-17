@@ -4,7 +4,11 @@ import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
 import { getOfficialsByState, type Official, type OfficialParty } from '../lib/officials'
 import { supabase } from '../lib/supabase'
-import { getIdsByStatus } from '../lib/billStatus'
+import { getIdsByStatus, syncStatusesAfterLogin } from '../lib/billStatus'
+import {
+  fetchNotifications, markAllRead,
+  type AppNotification,
+} from '../lib/notificationClient'
 
 interface RepRow {
   bioguide_id: string
@@ -177,9 +181,9 @@ function MarchingBugsIcon() {
 
       {/* ── Bug 1 (lead, red ladybug) — carries flag ── */}
       <line x1="16" y1="13" x2="16" y2="1" stroke="#1a1a1a" strokeWidth="1.2" strokeLinecap="round"/>
-      <rect x="16" y="1" width="11" height="7" rx="1" fill="#B597D5"/>
+      <rect x="16" y="1" width="11" height="7" rx="1" fill="#B597D5" className="egg-flag"/>
       {/* 5-pointed pinwheel star — bigger */}
-      <polygon points="21.5,2 22.09,3.69 23.88,3.73 22.45,4.81 22.97,6.52 21.5,5.5 20.03,6.52 20.55,4.81 19.12,3.73 20.91,3.69" fill="#FFC000"/>
+      <polygon className="egg-flag-star" points="21.5,2 22.09,3.69 23.88,3.73 22.45,4.81 22.97,6.52 21.5,5.5 20.03,6.52 20.55,4.81 19.12,3.73 20.91,3.69" fill="#FFC000"/>
       {/* body */}
       <ellipse cx="10" cy="24" rx="6.5" ry="4.5" fill="url(#mb-b1)"/>
       <line x1="10" y1="19.5" x2="10" y2="28.5" stroke="#880000" strokeWidth="0.8"/>
@@ -252,6 +256,171 @@ function MarchingBugsIcon() {
       <line x1="68.5" y1="22" x2="71.5" y2="20" stroke="#1a1a1a" strokeWidth="0.7" strokeLinecap="round"/>
       <line x1="68.5" y1="24" x2="71.5" y2="24" stroke="#1a1a1a" strokeWidth="0.7" strokeLinecap="round"/>
       <line x1="68.5" y1="26" x2="71.5" y2="28" stroke="#1a1a1a" strokeWidth="0.7" strokeLinecap="round"/>
+    </svg>
+  )
+}
+
+function EggGremlinSVG() {
+  return (
+    <svg viewBox="0 0 58 88" width="58" height="88" aria-hidden="true">
+      <defs>
+        <radialGradient id="egg-skin" cx="40%" cy="35%" r="60%">
+          <stop offset="0%" stopColor="#8fdf68"/>
+          <stop offset="100%" stopColor="#3a8a28"/>
+        </radialGradient>
+      </defs>
+
+      {/* victory buns - behind everything */}
+      <circle cx="13" cy="32" r="8"  fill="#1a1230"/>
+      <circle cx="13" cy="32" r="5"  fill="#2a2040"/>
+      <circle cx="11" cy="29" r="2"  fill="white" opacity=".15"/>
+      <circle cx="33" cy="32" r="8"  fill="#1a1230"/>
+      <circle cx="33" cy="32" r="5"  fill="#2a2040"/>
+      <circle cx="31" cy="29" r="2"  fill="white" opacity=".15"/>
+      <path d="M13,32 Q23,25 33,32" stroke="#1a1230" strokeWidth="6" fill="none" strokeLinecap="round"/>
+
+      {/* overall bib drawn before head so face renders on top */}
+      <rect x="17" y="51" width="12" height="10" rx="2" fill="#8B4513" opacity=".85"/>
+      <rect x="19" y="53" width="8"  height="5"  rx="1" fill="none" stroke="#7a3a10" strokeWidth=".8"/>
+
+      {/* left ear */}
+      <polygon points="9,51 3,39 13,47"  fill="url(#egg-skin)"/>
+      <polygon points="9,50 5,41 12,47"  fill="#7a4535"/>
+      {/* right ear */}
+      <polygon points="37,51 43,39 33,47" fill="url(#egg-skin)"/>
+      <polygon points="37,50 41,41 34,47" fill="#7a4535"/>
+
+      {/* head - on top of bib so face shows */}
+      <ellipse cx="23" cy="46" rx="14" ry="13" fill="url(#egg-skin)"/>
+
+      {/* eyes */}
+      <ellipse cx="17" cy="45" rx="5"   ry="5.5" fill="#f8f4e8"/>
+      <ellipse cx="29" cy="45" rx="5"   ry="5.5" fill="#f8f4e8"/>
+      <circle  cx="18" cy="46" r="3.2"  fill="#1a0820"/>
+      <circle  cx="30" cy="46" r="3.2"  fill="#1a0820"/>
+      <circle  cx="19" cy="44.5" r="1.2" fill="white"/>
+      <circle  cx="31" cy="44.5" r="1.2" fill="white"/>
+
+      {/* eyebrows */}
+      <path d="M12,40 Q17,37 22,40" stroke="#2a4218" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
+      <path d="M24,40 Q29,37 34,40" stroke="#2a4218" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
+
+      {/* nose */}
+      <ellipse cx="23" cy="51" rx="3" ry="2" fill="#3a7828"/>
+      <circle cx="21.5" cy="51.8" r="1" fill="#2a6018"/>
+      <circle cx="24.5" cy="51.8" r="1" fill="#2a6018"/>
+
+      {/* smile - on top of head and bib */}
+      <path d="M15,55 Q23,63 31,55" stroke="#5a1010" strokeWidth="1.2" fill="#d03030" strokeLinecap="round"/>
+      <path d="M17,55 Q23,62 29,55 Z" fill="#e84040"/>
+      <path d="M17,55 Q23,62 29,55" stroke="white" strokeWidth="1.8" fill="none" opacity=".6"/>
+
+      {/* neck */}
+      <rect x="19" y="58" width="8" height="6" rx="3" fill="url(#egg-skin)"/>
+
+      {/* body skin */}
+      <ellipse cx="23" cy="71" rx="13" ry="10" fill="url(#egg-skin)"/>
+      <line x1="23" y1="62" x2="23" y2="81" stroke="#2a7018" strokeWidth="1"/>
+      <circle cx="16" cy="69" r="3"   fill="#2a7018" opacity=".45"/>
+      <circle cx="30" cy="69" r="3"   fill="#2a7018" opacity=".45"/>
+      <circle cx="18" cy="77" r="2.5" fill="#2a7018" opacity=".45"/>
+      <circle cx="28" cy="77" r="2.5" fill="#2a7018" opacity=".45"/>
+
+      {/* overall lower body - over skin, below face */}
+      <path d="M11,63 Q11,72 10,81 L36,81 Q35,72 35,63 Q35,62 23,62 Q11,62 11,63 Z" fill="#8B4513" opacity=".9"/>
+
+      {/* right arm raised */}
+      <path d="M34,67 C42,59 50,47 48,33" stroke="#3a8a28" strokeWidth="7" strokeLinecap="round" fill="none"/>
+      {/* emoji-style fist: rounded rect body + knuckle creases + thumb */}
+      <rect x="41" y="27" width="13" height="10" rx="4.5" fill="url(#egg-skin)"/>
+      <path d="M42,31 Q46.5,30 51,31" stroke="#3a7828" strokeWidth=".9" fill="none"/>
+      <line x1="44"   y1="28" x2="44"   y2="36" stroke="#3a7828" strokeWidth=".6" opacity=".5"/>
+      <line x1="47.5" y1="28" x2="47.5" y2="36" stroke="#3a7828" strokeWidth=".6" opacity=".5"/>
+      <ellipse cx="40" cy="31.5" rx="3" ry="2" fill="url(#egg-skin)" transform="rotate(-15 40 31.5)"/>
+      {/* ring spanner wrench: handle + solid head with bolt hole */}
+      <rect x="44.5" y="18" width="4" height="10" rx="2" fill="#9a9a9a"/>
+      <circle cx="46.5" cy="12" r="7.5" fill="#9a9a9a"/>
+      <circle cx="46.5" cy="12" r="4"   fill="#1a0820"/>
+      <polygon points="46.5,8.8 48,9.7 48,11.3 46.5,12.2 45,11.3 45,9.7" fill="none" stroke="#7a7a7a" strokeWidth=".6"/>
+
+      {/* left arm */}
+      <path d="M12,67 L5,77" stroke="#3a8a28" strokeWidth="6" strokeLinecap="round" fill="none"/>
+
+      {/* legs */}
+      <line x1="18" y1="80" x2="14" y2="88" stroke="#8B4513" strokeWidth="5" strokeLinecap="round"/>
+      <line x1="28" y1="80" x2="32" y2="88" stroke="#8B4513" strokeWidth="5" strokeLinecap="round"/>
+    </svg>
+  )
+}
+
+function MiniBugRed() {
+  return (
+    <svg width="22" height="28" viewBox="0 0 22 28" aria-hidden="true">
+      <ellipse cx="11" cy="18" rx="7" ry="5" fill="#cc0000"/>
+      <line x1="11" y1="13" x2="11" y2="23" stroke="#880000" strokeWidth="0.8"/>
+      <circle cx="8.5"  cy="16" r="1.2" fill="#880000"/>
+      <circle cx="13.5" cy="16" r="1.2" fill="#880000"/>
+      <circle cx="9"    cy="19.5" r="1" fill="#880000"/>
+      <circle cx="13"   cy="19.5" r="1" fill="#880000"/>
+      <circle cx="11" cy="9" r="4" fill="#1a1a1a"/>
+      <circle cx="9.5"  cy="8.3" r="1"  fill="white"/>
+      <circle cx="12.5" cy="8.3" r="1"  fill="white"/>
+      <circle cx="9.7"  cy="8.5" r=".5" fill="#333"/>
+      <circle cx="12.7" cy="8.5" r=".5" fill="#333"/>
+      <line x1="5" y1="16" x2="1"  y2="14" stroke="#1a1a1a" strokeWidth="0.7"/>
+      <line x1="5" y1="18" x2="1"  y2="18" stroke="#1a1a1a" strokeWidth="0.7"/>
+      <line x1="5" y1="20" x2="1"  y2="22" stroke="#1a1a1a" strokeWidth="0.7"/>
+      <line x1="17" y1="16" x2="21" y2="14" stroke="#1a1a1a" strokeWidth="0.7"/>
+      <line x1="17" y1="18" x2="21" y2="18" stroke="#1a1a1a" strokeWidth="0.7"/>
+      <line x1="17" y1="20" x2="21" y2="22" stroke="#1a1a1a" strokeWidth="0.7"/>
+    </svg>
+  )
+}
+
+function MiniBugBlue() {
+  return (
+    <svg width="22" height="28" viewBox="0 0 22 28" aria-hidden="true">
+      <ellipse cx="11" cy="18" rx="7" ry="5" fill="#0070c0"/>
+      <line x1="11" y1="13" x2="11" y2="23" stroke="#004a96" strokeWidth="0.8"/>
+      <circle cx="8.5"  cy="16" r="1.2" fill="#004a96"/>
+      <circle cx="13.5" cy="16" r="1.2" fill="#004a96"/>
+      <circle cx="9"    cy="19.5" r="1" fill="#004a96"/>
+      <circle cx="13"   cy="19.5" r="1" fill="#004a96"/>
+      <circle cx="11" cy="9" r="4" fill="#E97132"/>
+      <circle cx="9.5"  cy="8.3" r="1"  fill="white"/>
+      <circle cx="12.5" cy="8.3" r="1"  fill="white"/>
+      <circle cx="9.7"  cy="8.5" r=".5" fill="#333"/>
+      <circle cx="12.7" cy="8.5" r=".5" fill="#333"/>
+      <line x1="5" y1="16" x2="1"  y2="14" stroke="#0070c0" strokeWidth="0.7"/>
+      <line x1="5" y1="18" x2="1"  y2="18" stroke="#0070c0" strokeWidth="0.7"/>
+      <line x1="5" y1="20" x2="1"  y2="22" stroke="#0070c0" strokeWidth="0.7"/>
+      <line x1="17" y1="16" x2="21" y2="14" stroke="#0070c0" strokeWidth="0.7"/>
+      <line x1="17" y1="18" x2="21" y2="18" stroke="#0070c0" strokeWidth="0.7"/>
+      <line x1="17" y1="20" x2="21" y2="22" stroke="#0070c0" strokeWidth="0.7"/>
+    </svg>
+  )
+}
+
+function MiniBugYellow() {
+  return (
+    <svg width="22" height="28" viewBox="0 0 22 28" aria-hidden="true">
+      <ellipse cx="11" cy="18" rx="7" ry="5" fill="#FFC000"/>
+      <line x1="11" y1="13" x2="11" y2="23" stroke="#CC9600" strokeWidth="0.8"/>
+      <circle cx="8.5"  cy="16" r="1.2" fill="#CC9600"/>
+      <circle cx="13.5" cy="16" r="1.2" fill="#CC9600"/>
+      <circle cx="9"    cy="19.5" r="1" fill="#CC9600"/>
+      <circle cx="13"   cy="19.5" r="1" fill="#CC9600"/>
+      <circle cx="11" cy="9" r="4" fill="#1a1a1a"/>
+      <circle cx="9.5"  cy="8.3" r="1"  fill="white"/>
+      <circle cx="12.5" cy="8.3" r="1"  fill="white"/>
+      <circle cx="9.7"  cy="8.5" r=".5" fill="#333"/>
+      <circle cx="12.7" cy="8.5" r=".5" fill="#333"/>
+      <line x1="5" y1="16" x2="1"  y2="14" stroke="#1a1a1a" strokeWidth="0.7"/>
+      <line x1="5" y1="18" x2="1"  y2="18" stroke="#1a1a1a" strokeWidth="0.7"/>
+      <line x1="5" y1="20" x2="1"  y2="22" stroke="#1a1a1a" strokeWidth="0.7"/>
+      <line x1="17" y1="16" x2="21" y2="14" stroke="#1a1a1a" strokeWidth="0.7"/>
+      <line x1="17" y1="18" x2="21" y2="18" stroke="#1a1a1a" strokeWidth="0.7"/>
+      <line x1="17" y1="20" x2="21" y2="22" stroke="#1a1a1a" strokeWidth="0.7"/>
     </svg>
   )
 }
@@ -389,6 +558,9 @@ export default function Home() {
     } catch { return new Set() }
   })
   const [localViewMode, setLocalViewMode]         = useState<'show' | 'hide'>('show')
+  const [localParty, setLocalParty]               = useState<Record<string, string>>(() => {
+    try { const r = localStorage.getItem('wsp-local-party'); return r ? JSON.parse(r) : {} } catch { return {} }
+  })
 
   const profileAddr = (() => {
     try {
@@ -437,6 +609,10 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem('wsp-local-forms', JSON.stringify(localForms))
   }, [localForms])
+
+  useEffect(() => {
+    localStorage.setItem('wsp-local-party', JSON.stringify(localParty))
+  }, [localParty])
 
   useEffect(() => {
     if (!user?.username) return
@@ -526,6 +702,10 @@ export default function Home() {
       setLocalEditMode(prev => { const s = new Set(prev); s.delete(role); return s })
       setLocalRefreshKey(k => k + 1)
       setTimeout(() => setLocalSaveStatus(prev => { const n = { ...prev }; delete n[role]; return n }), 2000)
+      if (gremlinTimerRef.current) clearTimeout(gremlinTimerRef.current)
+      setGremlinEgg(true)
+      setGremlinKey(k => k + 1)
+      gremlinTimerRef.current = setTimeout(() => setGremlinEgg(false), 3700)
     } else {
       console.error('[local_officials] upsert error:', error.message)
       setLocalSaveStatus(prev => ({ ...prev, [role]: 'error' }))
@@ -554,6 +734,14 @@ export default function Home() {
   const deleteLocalRep = (id: string) =>
     setCustomLocalReps(prev => prev.filter(r => r.id !== id))
 
+  const [gremlinEgg, setGremlinEgg] = useState(false)
+  const [gremlinKey, setGremlinKey] = useState(0)
+  const gremlinTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const [scurryPhase, setScurryPhase] = useState<'start' | 'scatter' | null>(null)
+  const scurryPositions = useRef<Array<{ x: number; y: number; rot: number }>>([])
+  const scurryTimers   = useRef<ReturnType<typeof setTimeout>[]>([])
+
   const [alertCount,   setAlertCount]   = useState(() => getIdsByStatus('alert').size)
   const [watchCount,   setWatchCount]   = useState(() => getIdsByStatus('watch').size)
   const [archiveCount, setArchiveCount] = useState(() => getIdsByStatus('archive').size)
@@ -568,11 +756,59 @@ export default function Home() {
     return () => window.removeEventListener('bill-status-change', sync)
   }, [])
 
+  const [notifications,     setNotifications]     = useState<AppNotification[]>([])
+  const [showNotifDrop,     setShowNotifDrop]     = useState(false)
+  const notifDropRef = useRef<HTMLDivElement>(null)
+
+  // On login: fetch notifications and sync bill statuses to DB
+  useEffect(() => {
+    if (!user) return
+    fetchNotifications().then(setNotifications)
+    syncStatusesAfterLogin()
+  }, [user?.username])
+
+  // Close notification dropdown on outside click
+  useEffect(() => {
+    const close = (e: MouseEvent) => {
+      if (notifDropRef.current && !notifDropRef.current.contains(e.target as Node)) {
+        setShowNotifDrop(false)
+      }
+    }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [])
+
   if (!ready) return null
 
   const isLoggedIn = !!user
+  const unreadCount = notifications.filter(n => !n.read).length
+
+  function openNotifDrop() {
+    setShowNotifDrop(v => !v)
+    if (unreadCount > 0) {
+      markAllRead()
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+    }
+  }
 
   async function handleSignOut() { await signOut() }
+
+  function triggerScurry(newIsDark: boolean) {
+    if (newIsDark) return  // only on switch to light mode
+    scurryTimers.current.forEach(t => clearTimeout(t))
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    // scatter off-page in different directions (up-left, up, up-right)
+    scurryPositions.current = [
+      { x: -(vw * (0.65 + Math.random() * .15)), y: -(vh * (1.1 + Math.random() * .1)), rot:  720 + Math.random() * 360 },
+      { x: -(vw * (0.25 + Math.random() * .10)), y: -(vh * (1.2 + Math.random() * .1)), rot: -(540 + Math.random() * 360) },
+      { x:  (vw * (0.15 + Math.random() * .10)), y: -(vh * (1.1 + Math.random() * .1)), rot:  540 + Math.random() * 360 },
+    ]
+    setScurryPhase('start')
+    requestAnimationFrame(() => requestAnimationFrame(() => setScurryPhase('scatter')))
+    const t = setTimeout(() => setScurryPhase(null), 10000)
+    scurryTimers.current = [t]
+  }
 
   async function handleFeedbackSubmit() {
     if (!feedbackText.trim() || submitting) return
@@ -630,8 +866,84 @@ export default function Home() {
         </div>
         <p className="home-header-org">by Women for Shared Progress (W4SP)</p>
       </header>
-      <div style={{ position: 'fixed', top: 8, right: 12, zIndex: 100 }}>
-        <ThemeToggle />
+      <div style={{ position: 'fixed', top: 8, right: 12, zIndex: 100, display: 'flex', alignItems: 'center', gap: 8 }}>
+        {isLoggedIn && (
+          <div ref={notifDropRef} style={{ position: 'relative' }}>
+            <button
+              onClick={openNotifDrop}
+              aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+              style={{
+                background: 'rgba(128,100,180,.18)',
+                border: '1px solid rgba(128,100,180,.32)',
+                borderRadius: 20, padding: '5px 10px', cursor: 'pointer',
+                color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 5,
+                position: 'relative',
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              {unreadCount > 0 && (
+                <span style={{
+                  position: 'absolute', top: -4, right: -4,
+                  background: '#C00000', color: 'white',
+                  borderRadius: '50%', width: 16, height: 16,
+                  fontSize: 10, fontWeight: 700, fontFamily: "'Quicksand', sans-serif",
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+
+            {showNotifDrop && (
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+                width: 320, maxHeight: 400, overflowY: 'auto',
+                background: 'var(--color-card, #2a2840)',
+                border: '1px solid var(--color-border-light)',
+                borderRadius: 12, zIndex: 200,
+                boxShadow: '0 8px 32px rgba(0,0,0,.4)',
+              }}>
+                <div style={{
+                  padding: '12px 14px 10px',
+                  borderBottom: '1px solid var(--color-border-light)',
+                  fontFamily: "'Quicksand', sans-serif", fontSize: 13, fontWeight: 700,
+                  color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '.06em',
+                }}>
+                  Notifications
+                </div>
+                {notifications.length === 0 ? (
+                  <div style={{
+                    padding: '20px 14px', textAlign: 'center',
+                    fontFamily: "'Nunito', sans-serif", fontSize: 13,
+                    color: 'var(--color-text-tertiary)',
+                  }}>
+                    No notifications yet
+                  </div>
+                ) : notifications.map(n => (
+                  <div key={n.id} style={{
+                    padding: '10px 14px',
+                    borderBottom: '1px solid var(--color-border-light)',
+                    background: n.read ? 'transparent' : 'rgba(0,176,240,.06)',
+                  }}>
+                    <div style={{ fontFamily: "'Nunito', sans-serif", fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 2 }}>
+                      {n.title}
+                    </div>
+                    <div style={{ fontFamily: "'Nunito', sans-serif", fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
+                      {n.body}
+                    </div>
+                    <div style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 4 }}>
+                      {new Date(n.created_at).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        <ThemeToggle onToggle={triggerScurry} />
       </div>
 
       <div className="home-content">
@@ -667,7 +979,7 @@ export default function Home() {
           >
             <div className="home-card-icon-wrap"><ChangeLogIcon size={34} /></div>
             <span className="home-card-label">Change Log</span>
-            <span className="home-card-desc">Update capture · last 30 days</span>
+            <span className="home-card-desc">Update capture last 30 days</span>
           </button>
 
           {/* Bottom-left: Alert Settings (logged-in only) */}
@@ -777,13 +1089,6 @@ export default function Home() {
             <span className="home-secondary-badge">Placeholder</span>
           </button>
 
-          <button className="home-secondary-card" style={{ background: '#4F4262' }}
-            disabled aria-label="Policy — Coming Soon">
-            <PolicyIcon size={20} color="white" />
-            <span className="home-secondary-label">Policy</span>
-            <span className="home-secondary-badge">Coming Soon</span>
-          </button>
-
           <button
             className="home-secondary-card" style={{ background: '#B597D5' }}
             onClick={() => navigate('/about')}
@@ -791,6 +1096,13 @@ export default function Home() {
           >
             <AboutIcon size={20} color="#2D1B4E" />
             <span className="home-secondary-label" style={{ color: '#2D1B4E' }}>About W4SP</span>
+          </button>
+
+          <button className="home-secondary-card" style={{ background: '#4F4262' }}
+            disabled aria-label="Policy — Coming Soon">
+            <PolicyIcon size={20} color="white" />
+            <span className="home-secondary-label">Policy</span>
+            <span className="home-secondary-badge">Coming Soon</span>
           </button>
 
           <button
@@ -1117,7 +1429,7 @@ export default function Home() {
                               </div>
                             )
                             return (
-                              <div key={role} className={`home-rep-card${isHidden ? ' home-local-card--hidden' : ''}`} data-party="other">
+                              <div key={role} className={`home-rep-card${isHidden ? ' home-local-card--hidden' : ''}`} data-party={localParty[role] ?? 'other'}>
                                 <button
                                   className={`home-local-hide-btn${isHidden ? ' home-local-hide-btn--active' : ''}`}
                                   onClick={() => {
@@ -1135,6 +1447,9 @@ export default function Home() {
                                 {/* User's submitted entry (view mode) or form (edit/new mode) */}
                                 {isViewMode ? (
                                   <div className="home-local-view-entry">
+                                    {localParty[role] && localParty[role] !== 'other' && (
+                                      <div className="home-rep-meta" style={{ textTransform: 'capitalize', marginBottom: 2 }}>{localParty[role]}</div>
+                                    )}
                                     <div className="home-rep-name">{userEntry!.name}</div>
                                     {(userEntry!.since || userEntry!.term_ends) && (
                                       <div className="home-rep-meta">
@@ -1231,6 +1546,18 @@ export default function Home() {
                                         title="Term Ends"
                                       />
                                     )}
+                                    <select
+                                      className="home-add-local-input"
+                                      value={localParty[role] ?? ''}
+                                      onChange={e => setLocalParty(prev => ({ ...prev, [role]: e.target.value }))}
+                                    >
+                                      <option value="">— Party —</option>
+                                      <option value="democrat">Democrat</option>
+                                      <option value="republican">Republican</option>
+                                      <option value="independent">Independent</option>
+                                      <option value="nonpartisan">Nonpartisan</option>
+                                      <option value="other">Other</option>
+                                    </select>
                                     {allFilled && (
                                       anyFromDropdown
                                         ? (
@@ -1381,11 +1708,43 @@ export default function Home() {
         </div>
       )}
 
-      <button className="home-feedback-btn" aria-label="Send feedback"
-        onClick={() => setShowFeedback(f => !f)}>
-        <MarchingBugsIcon />
-        <span>Feedback</span>
-      </button>
+      {/* Scurrying bugs */}
+      {scurryPhase !== null && scurryPositions.current.map((pos, i) => {
+        const scattered = scurryPhase === 'scatter'
+        return (
+          <div key={i} style={{
+            position: 'fixed',
+            bottom: 28 + i * 3,
+            right: 28 + i * 5,
+            zIndex: 4,
+            pointerEvents: 'none',
+            transform: scattered
+              ? `translate(${pos.x}px, ${pos.y}px) rotate(${pos.rot}deg)`
+              : 'translate(0, 0) rotate(0deg)',
+            transition: scattered
+              ? `transform ${5.0 + i * 1.2}s cubic-bezier(.2,.05,.3,1), opacity ${3.0 + i * 0.5}s ease-in ${1.5 + i * 0.5}s`
+              : 'none',
+            opacity: scattered ? 0 : 1,
+          }}>
+            {i === 0 && <MiniBugRed />}
+            {i === 1 && <MiniBugBlue />}
+            {i === 2 && <MiniBugYellow />}
+          </div>
+        )
+      })}
+
+      <div className="home-feedback-wrap">
+        {gremlinEgg && (
+          <div key={gremlinKey} className="egg-gremlin">
+            <EggGremlinSVG />
+          </div>
+        )}
+        <button className={`home-feedback-btn${gremlinEgg ? ' home-feedback-btn--dancing' : ''}`}
+          aria-label="Send feedback" onClick={() => setShowFeedback(f => !f)}>
+          <MarchingBugsIcon />
+          <span>Feedback</span>
+        </button>
+      </div>
 
     </div>
   )

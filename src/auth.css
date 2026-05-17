@@ -540,6 +540,8 @@
   align-items: center;
   gap: 16px;
   min-width: 780px;
+  position: relative;
+  z-index: 3;
 }
 
 /* Main row: grid + stoplight side by side */
@@ -789,7 +791,8 @@
 .home-rep-card[data-party="independent"] { border-left-color: #808080; }
 .home-rep-card[data-party="green"]       { border-left-color: #00B050; }
 .home-rep-card[data-party="libertarian"] { border-left-color: #FFC000; }
-.home-rep-card[data-party="other"]       { border-left-color: #B597D5; }
+.home-rep-card[data-party="other"]        { border-left-color: #B597D5; }
+.home-rep-card[data-party="nonpartisan"] { border-left-color: #4a9a8a; }
 .home-rep-card[data-party="brown"]       { border-left-color: #8B4513; }
 
 /* Election within 6 months — full border all sides */
@@ -800,8 +803,9 @@
 .home-rep-card--soon[data-party="green"]       { border-color: #00B050; }
 .home-rep-card--soon[data-party="republican"]  { border-color: #C00000; }
 .home-rep-card--soon[data-party="libertarian"] { border-color: #FFC000; }
-.home-rep-card--soon[data-party="other"]       { border-color: #B597D5; }
-.home-rep-card--soon[data-party="brown"]       { border-color: #8B4513; }
+.home-rep-card--soon[data-party="other"]        { border-color: #B597D5; }
+.home-rep-card--soon[data-party="nonpartisan"] { border-color: #4a9a8a; }
+.home-rep-card--soon[data-party="brown"]        { border-color: #8B4513; }
 
 .home-rep-role {
   font-family: 'Nunito', sans-serif;
@@ -852,11 +856,76 @@
 .home-rep-phone:hover,
 .home-rep-email:hover { color: var(--color-text-primary); text-decoration: underline; }
 
-.home-feedback-btn {
+/* ── Easter egg gremlin wrapper ───────────────────────── */
+.home-feedback-wrap {
   position: fixed;
   bottom: 20px;
   right: 20px;
   z-index: 1000;
+}
+
+@keyframes egg-gremlin-rise {
+  0%   { transform: translateY(96px); opacity: 0; }
+  14%  { transform: translateY(-6px); opacity: 1; }
+  20%  { transform: translateY(0);    opacity: 1; }
+  78%  { transform: translateY(0);    opacity: 1; }
+  100% { transform: translateY(96px); opacity: 0; }
+}
+
+.egg-gremlin {
+  position: absolute;
+  bottom: 100%;
+  right: 10px;
+  z-index: 1;
+  pointer-events: none;
+  animation: egg-gremlin-rise 3.6s ease-in-out forwards;
+}
+
+/* Bugs inside the button dance — not the button itself */
+@keyframes egg-bug-body-bounce {
+  0%,  100% { transform: translateY(0);    }
+  40%        { transform: translateY(-4px); }
+  70%        { transform: translateY(-3px); }
+}
+
+@keyframes egg-flag-wave {
+  0%,  100% { transform: rotate(0deg);   }
+  35%        { transform: rotate(22deg);  }
+  65%        { transform: rotate(-12deg); }
+}
+
+@keyframes egg-star-spin {
+  0%   { transform: rotate(0deg);   }
+  100% { transform: rotate(360deg); }
+}
+
+.home-feedback-btn--dancing .egg-flag {
+  animation: egg-flag-wave 0.5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+}
+.home-feedback-btn--dancing .egg-flag-star {
+  animation: egg-star-spin 0.9s linear infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+/* Target each of the 3 bug body ellipses inside the SVG */
+.home-feedback-btn--dancing svg > ellipse:nth-of-type(1) {
+  animation: egg-bug-body-bounce 0.38s ease-in-out infinite;
+  transform-box: fill-box; transform-origin: 50% 100%;
+}
+.home-feedback-btn--dancing svg > ellipse:nth-of-type(2) {
+  animation: egg-bug-body-bounce 0.38s ease-in-out infinite 0.1s;
+  transform-box: fill-box; transform-origin: 50% 100%;
+}
+.home-feedback-btn--dancing svg > ellipse:nth-of-type(3) {
+  animation: egg-bug-body-bounce 0.38s ease-in-out infinite 0.2s;
+  transform-box: fill-box; transform-origin: 50% 100%;
+}
+
+.home-feedback-btn {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 5px;

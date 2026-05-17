@@ -1,6 +1,8 @@
 import { useState } from 'react'
 
-export default function ThemeToggle() {
+interface Props { onToggle?: (newIsDark: boolean) => void }
+
+export default function ThemeToggle({ onToggle }: Props = {}) {
   const [isDark, setIsDark] = useState(() => localStorage.getItem('wsp-theme') !== 'light')
 
   function toggle() {
@@ -9,6 +11,7 @@ export default function ThemeToggle() {
     const theme = next ? 'dark' : 'light'
     document.documentElement.setAttribute('data-theme', theme)
     localStorage.setItem('wsp-theme', theme)
+    onToggle?.(next)
   }
 
   return (

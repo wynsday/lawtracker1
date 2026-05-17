@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import PageTopBar from '../components/PageTopBar'
 import FeedbackButton from '../components/FeedbackButton'
+import { GremlinRosie, GremlinAce, GremlinVera } from '../components/GremlinsArt'
 
 export default function About() {
   useEffect(() => {
@@ -24,9 +25,18 @@ export default function About() {
       <h1 style={{ fontFamily: "'Quicksand', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 16, color: 'var(--page-title)' }}>
         About W4SP
       </h1>
-      <p style={{ fontSize: 16, color: 'var(--page-title)', lineHeight: 1.6 }}>
-        Coming soon
+      <p style={{ fontSize: 16, color: 'var(--page-title)', lineHeight: 1.6, marginBottom: 16 }}>
+        Women for Shared Progress was founded by disabled Air Force veteran women making useful things and deploying gremlins who work for the greater good.
       </p>
+      <p style={{ fontSize: 16, color: 'var(--page-title)', lineHeight: 1.6 }}>
+        The 3am Pipeline is explicitly nonpartisan, open source, free at all levels, and encourages individual participation in our effort to make civic involvement easier and more accessible to everyone.
+      </p>
+
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 28 }}>
+        <GremlinRosie />
+        <GremlinAce />
+        <GremlinVera />
+      </div>
       <FeedbackButton />
     </div>
   )
