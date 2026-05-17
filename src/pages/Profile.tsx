@@ -633,13 +633,6 @@ export default function Profile() {
               </div>
 
               <div>
-                <label style={labelStyle} htmlFor="prof-street">Street address</label>
-                <input id="prof-street" style={inputStyle} type="text" autoComplete="street-address"
-                  placeholder="123 MAIN ST"
-                  value={data.street} onChange={e => set('street', e.target.value)} />
-              </div>
-
-              <div>
                 <label style={labelStyle} htmlFor="prof-zip">ZIP code</label>
                 <input id="prof-zip" style={inputStyle} type="text" autoComplete="postal-code"
                   inputMode="numeric" maxLength={10} value={data.zip}
@@ -653,6 +646,13 @@ export default function Profile() {
                 {geoStatus === 'error' && geoError && (
                   <div style={{ fontSize: 12, color: '#C00000', marginTop: 5 }}>{geoError}</div>
                 )}
+              </div>
+
+              <div>
+                <label style={labelStyle} htmlFor="prof-street">Street address</label>
+                <input id="prof-street" style={inputStyle} type="text" autoComplete="street-address"
+                  placeholder="123 MAIN ST"
+                  value={data.street} onChange={e => set('street', e.target.value)} />
               </div>
 
               <div>
