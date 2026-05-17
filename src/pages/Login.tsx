@@ -177,7 +177,7 @@ export default function Login() {
                 />
               </div>
 
-              <button className="auth-btn" type="submit" disabled={loading || !username.trim()}>
+              <button className="auth-btn" type="submit" disabled={loading || !username.trim()} style={{ marginTop: '1.5rem' }}>
                 {loading ? 'Checking…' : 'Continue →'}
               </button>
             </form>

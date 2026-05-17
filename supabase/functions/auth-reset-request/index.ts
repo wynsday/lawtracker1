@@ -6,7 +6,7 @@
  *
  * Required Supabase secrets:
  *   RESEND_API_KEY  — API key from resend.com
- *   RESEND_FROM     — verified sender address, e.g. "noreply@yourdomain.com"
+ *   FROM_EMAIL      — verified sender address, e.g. "noreply@yourdomain.com"
  *   ALLOWED_ORIGIN  — the app's public URL, used to build the reset link
  */
 
@@ -19,7 +19,7 @@ const supabase = createClient(
 )
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? ''
-const RESEND_FROM    = Deno.env.get('RESEND_FROM')    ?? ''
+const RESEND_FROM    = Deno.env.get('FROM_EMAIL')     ?? ''
 const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? ''
 
 function generateToken(): string {
