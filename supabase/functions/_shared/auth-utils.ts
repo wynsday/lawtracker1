@@ -10,6 +10,9 @@ export const COOKIE_MAX_AGE      = SESSION_DAYS * 24 * 60 * 60  // seconds
 // Credentials mode requires a specific origin — '*' is rejected by browsers.
 const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? ''
 const IS_HTTP = ALLOWED_ORIGIN.startsWith('http://')
+// SameSite=None required for cross-origin credentialed requests (Vercel → Supabase).
+// SameSite=${SAME_SITE} is blocked by browsers on cross-origin POSTs.
+const SAME_SITE = IS_HTTP ? 'Lax' : 'None'
 
 export const CORS = {
   'Access-Control-Allow-Origin':      ALLOWED_ORIGIN,
@@ -50,19 +53,19 @@ export function getCookie(req: Request, name: string): string | null {
 // Builds a Set-Cookie string for a persistent 45-day session.
 export function makeSessionCookie(token: string): string {
   const sec = IS_HTTP ? '' : ' Secure;'
-  return `${SESSION_COOKIE}=${token}; HttpOnly;${sec} SameSite=Lax; Max-Age=${COOKIE_MAX_AGE}; Path=/`
+  return `${SESSION_COOKIE}=${token}; HttpOnly;${sec} SameSite=${SAME_SITE}; Max-Age=${COOKIE_MAX_AGE}; Path=/`
 }
 
 // Builds a Set-Cookie string that immediately expires the session cookie.
 export function clearSessionCookie(): string {
   const sec = IS_HTTP ? '' : ' Secure;'
-  return `${SESSION_COOKIE}=; HttpOnly;${sec} SameSite=Lax; Max-Age=0; Path=/`
+  return `${SESSION_COOKIE}=; HttpOnly;${sec} SameSite=${SAME_SITE}; Max-Age=0; Path=/`
 }
 
 // Builds a Set-Cookie string for a browser-session-only cookie (no Max-Age).
 export function makeSessionCookieShort(token: string): string {
   const sec = IS_HTTP ? '' : ' Secure;'
-  return `${SESSION_COOKIE}=${token}; HttpOnly;${sec} SameSite=Lax; Path=/`
+  return `${SESSION_COOKIE}=${token}; HttpOnly;${sec} SameSite=${SAME_SITE}; Path=/`
 }
 
 // ── Session resolution ────────────────────────────────────────────────────────
