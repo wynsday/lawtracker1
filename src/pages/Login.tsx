@@ -261,6 +261,8 @@ export default function Login() {
             <div className="auth-footer">
               No account?{' '}
               <Link to="/register">Create one</Link>
+              <br />
+              <Link to="/reset-password">Forgot password?</Link>
             </div>
           </>
         )}

@@ -56,3 +56,11 @@ export function authRegister(
 ) {
   return post('auth-register', { username, password, passcode, email: email || undefined })
 }
+
+export function authResetRequest(email: string) {
+  return post('auth-reset-request', { email })
+}
+
+export function authResetConfirm(token: string, password: string) {
+  return post('auth-reset-confirm', { token, password })
+}

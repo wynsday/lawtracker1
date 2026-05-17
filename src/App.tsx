@@ -15,6 +15,7 @@ import Watching                from './pages/Watching'
 import Archive                 from './pages/Archive'
 import AlertSettings           from './pages/AlertSettings'
 import EnactedLegislation      from './pages/EnactedLegislation'
+import ResetPassword           from './pages/ResetPassword'
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
       <Route path="/archive"               element={<Archive />} />
       <Route path="/alerts/settings"       element={<AlertSettings />} />
       <Route path="/enacted-legislation"  element={<EnactedLegislation />} />
+      <Route path="/reset-password"       element={<ResetPassword />} />
     </Routes>
   )
 }
