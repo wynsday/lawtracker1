@@ -1,8 +1,33 @@
-import type { Bill } from '../types/bill'
-import { FEDERAL_STAGES, MICHIGAN_STAGES, LOCAL_STAGES, OFFICE_META } from './constants'
+/**
+ * Generates a standalone HTML tracker file from the live Supabase bills table.
+ * Usage: node --env-file=.env scripts/generate-html.mjs
+ * Output: Michigan_National_Tracker_DD_Mon_YY.html in project root.
+ */
 
-// Converts a DB bill row back to the JS object shape the original HTML template expects
-function toJsBill(b: Bill) {
+import { createClient } from '@supabase/supabase-js'
+import { writeFileSync } from 'node:fs'
+
+const supabase = createClient(
+  process.env.VITE_SUPABASE_URL,
+  process.env.SUPABASE_SECRET_KEY,
+)
+
+const FEDERAL_STAGES  = ['Introduced', 'Committee', 'House floor', 'Senate', 'Conference', 'Signed']
+const MICHIGAN_STAGES = ['Introduced', 'Committee', 'First chamber', 'Second chamber', 'Governor']
+const LOCAL_STAGES    = ['Introduced', 'Committee', 'Public Hearing', 'Vote', 'Mayor / Exec']
+const OFFICE_META = {
+  'governor':     { label: 'With Governor Whitmer', dotCls: 'od-gov'     },
+  'mi-senate':    { label: 'Michigan Senate',        dotCls: 'od-mis'     },
+  'mi-house':     { label: 'Michigan House',         dotCls: 'od-mih'     },
+  'committee':    { label: 'In Committee',           dotCls: 'od-com'     },
+  'us-senate':    { label: 'U.S. Senate',            dotCls: 'od-uss'     },
+  'president':    { label: 'President',              dotCls: 'od-pres'    },
+  'mayor':        { label: 'With Mayor / Exec',      dotCls: 'od-mayor'   },
+  'city-council': { label: 'City Council',           dotCls: 'od-council' },
+  'county-board': { label: 'County Board',           dotCls: 'od-county'  },
+}
+
+function toJsBill(b) {
   return {
     id:           b.id,
     level:        b.level,
@@ -25,17 +50,44 @@ function toJsBill(b: Bill) {
   }
 }
 
-export function generateHtml(bills: Bill[], stateName: string, dateStr: string): string {
-  const jsBills = bills.map(toJsBill)
-  const billsJson = JSON.stringify(jsBills, null, 2)
+// Format date as "16 May 26"
+function formatDate(d) {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  return `${d.getDate()} ${months[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`
+}
 
-  const STAGES_JS = `
+// Format date for filename as "16_May_26"
+function formatFilenameDate(d) {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  return `${String(d.getDate()).padStart(2,'0')}_${months[d.getMonth()]}_${String(d.getFullYear()).slice(2)}`
+}
+
+const { data: bills, error } = await supabase
+  .from('bills')
+  .select('*')
+  .in('state', ['MI', 'US'])
+  .order('id')
+
+if (error) {
+  console.error('Supabase fetch failed:', error.message)
+  process.exit(1)
+}
+
+console.log(`Fetched ${bills.length} bills`)
+
+const jsBills = bills.map(toJsBill)
+const billsJson = JSON.stringify(jsBills, null, 2)
+const today = new Date()
+const dateStr = formatDate(today)
+const stateName = 'Michigan & National'
+
+const STAGES_JS = `
 const FEDERAL_STAGES  = ${JSON.stringify(FEDERAL_STAGES)};
 const MICHIGAN_STAGES = ${JSON.stringify(MICHIGAN_STAGES)};
 const LOCAL_STAGES    = ${JSON.stringify(LOCAL_STAGES)};
 const OFFICE_META     = ${JSON.stringify(OFFICE_META)};`
 
-  return `<!DOCTYPE html>
+const html = `<!DOCTYPE html>
 <!--
 W4SP_REFRESH_INSTRUCTIONS
 
@@ -54,14 +106,14 @@ Fields to update on every bill:
   supporters   — current named key supporters (sponsors, advocacy groups, officials)
   blockers     — current named key blockers (opponents, advocacy groups, officials)
   window       — updated public influence window (when and how citizens can still act)
-  policy_bias  — updated 0–100 integer (0 = most conservative, 100 = most liberal, 50 = center)
+  policy_bias  — updated 0-100 integer (0 = most conservative, 100 = most liberal, 50 = center)
   urgency      — one of: "urgent" | "months" | "year" | "stalled"
 
 DO NOT change:
   id           — unique bill identifier (never reassign or renumber)
   level        — "federal" | "michigan" | "local"
 
-After refreshing all bills, update the page <title> and subtitle date to today,
+After refreshing all bills, update the page title and subtitle date to today,
 and save the file with today's date in the filename:
   Michigan_National_Tracker_DD_Mon_YY.html   (e.g. Michigan_National_Tracker_16_May_26.html)
 -->
@@ -110,7 +162,7 @@ and save the file with today's date in the filename:
   <div class="page-header-row">
     <div>
       <div class="page-title">${stateName} Legislation Tracker</div>
-      <div class="page-subtitle">Federal, ${stateName} state &amp; local ordinances &middot; Downloaded ${dateStr}</div>
+      <div class="page-subtitle">Federal, Michigan state &amp; local ordinances &middot; Downloaded ${dateStr}</div>
     </div>
     <div class="search-wrap">
       <input type="search" id="searchInput" class="search-input" placeholder="Search bills…" autocomplete="off" />
@@ -145,4 +197,7 @@ render();
 </script>
 </body>
 </html>`
-}
+
+const filename = `Michigan_National_Tracker_${formatFilenameDate(today)}.html`
+writeFileSync(filename, html, 'utf8')
+console.log(`Written: ${filename}`)
