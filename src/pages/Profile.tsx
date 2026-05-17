@@ -694,7 +694,51 @@ export default function Profile() {
                 My District Information
               </h2>
 
-              {/* Across from ZIP — confirm checkbox */}
+              {/* Autofill button */}
+              {(() => {
+                const zip = data.zip.replace(/\D/g, '').slice(0, 5)
+                const ready = zip.length === 5 && geoStatus !== 'loading'
+                return (
+                  <div>
+                    <button
+                      type="button"
+                      disabled={!ready}
+                      onClick={() => void runGeocode('', zip, true)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 8,
+                        padding: '9px 16px', borderRadius: 8,
+                        border: 'none', cursor: ready ? 'pointer' : 'not-allowed',
+                        background: ready ? '#1a7a72' : 'var(--color-bg-secondary)',
+                        color: ready ? '#fff' : 'var(--color-text-tertiary)',
+                        fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 13,
+                        transition: 'background .15s',
+                        width: '100%', justifyContent: 'center',
+                      }}
+                    >
+                      {geoStatus === 'loading' ? (
+                        'Looking up…'
+                      ) : (
+                        <>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                          </svg>
+                          {zip.length === 5 ? `Autofill from ZIP ${zip}` : 'Enter ZIP to autofill'}
+                        </>
+                      )}
+                    </button>
+                    {geoStatus === 'success' && (
+                      <div style={{ fontSize: 12, color: '#00B050', marginTop: 5, textAlign: 'center', fontFamily: "'Nunito', sans-serif" }}>
+                        District info filled — review and confirm below.
+                      </div>
+                    )}
+                    {geoStatus === 'error' && geoError && (
+                      <div style={{ fontSize: 12, color: '#C00000', marginTop: 5, fontFamily: "'Nunito', sans-serif" }}>{geoError}</div>
+                    )}
+                  </div>
+                )
+              })()}
+
+              {/* Verification */}
               <div>
                 <label style={labelStyle}>Verification</label>
                 <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
