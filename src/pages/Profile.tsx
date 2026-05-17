@@ -100,6 +100,7 @@ function lookupZip(zip: string): { state: string | null; city: string | null; co
 
 interface ProfileData {
   country: string
+  street: string
   zip: string
   state: string
   county: string
@@ -134,7 +135,7 @@ interface ProfileData {
 }
 
 const EMPTY: ProfileData = {
-  country: 'United States', zip: '', state: '', county: '', city: '',
+  country: 'United States', street: '', zip: '', state: '', county: '', city: '',
   congressional_district: '', state_senate_district: '', state_house_district: '',
   county_commissioner: '',
   jurisdiction: '', ward: '', precinct: '', village: '', metropolitan: '', authority: '',
@@ -440,7 +441,7 @@ export default function Profile() {
   useEffect(() => {
     const zip = data.zip.replace(/\D/g, '').slice(0, 5)
     if (zip.length === 5 && !data.congressional_district) {
-      void runGeocode('', zip)
+      void runGeocode(data.street, zip)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -632,6 +633,13 @@ export default function Profile() {
               </div>
 
               <div>
+                <label style={labelStyle} htmlFor="prof-street">Street address</label>
+                <input id="prof-street" style={inputStyle} type="text" autoComplete="street-address"
+                  placeholder="123 MAIN ST"
+                  value={data.street} onChange={e => set('street', e.target.value)} />
+              </div>
+
+              <div>
                 <label style={labelStyle} htmlFor="prof-zip">ZIP code</label>
                 <input id="prof-zip" style={inputStyle} type="text" autoComplete="postal-code"
                   inputMode="numeric" maxLength={10} value={data.zip}
@@ -705,7 +713,7 @@ export default function Profile() {
                     <button
                       type="button"
                       disabled={!ready}
-                      onClick={() => void runGeocode('', zip, true)}
+                      onClick={() => void runGeocode(data.street, zip, true)}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 8,
                         padding: '9px 16px', borderRadius: 8,
