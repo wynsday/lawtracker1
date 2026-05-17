@@ -13,7 +13,7 @@ const IS_HTTP = ALLOWED_ORIGIN.startsWith('http://')
 
 export const CORS = {
   'Access-Control-Allow-Origin':      ALLOWED_ORIGIN,
-  'Access-Control-Allow-Headers':     'Content-Type',
+  'Access-Control-Allow-Headers':     'Content-Type, Authorization',
   'Access-Control-Allow-Methods':     'POST, OPTIONS',
   'Access-Control-Allow-Credentials': 'true',
 }

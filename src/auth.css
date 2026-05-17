@@ -13,7 +13,7 @@
 .auth-card {
   background: var(--color-card, #2a2840);
   border: 1px solid var(--color-border-light);
-  border-top: 3px solid var(--michigan-bg);
+  border-top: 3px solid #008080;
   border-radius: var(--radius-lg);
   padding: 2rem 2rem 1.75rem;
   width: 100%;
@@ -76,7 +76,7 @@
 }
 
 .auth-input:focus {
-  border-color: var(--michigan-bg);
+  border-color: #FFC000;
 }
 
 .auth-input::placeholder {
@@ -93,8 +93,8 @@
   padding: 9px 16px;
   border-radius: var(--radius-md);
   border: none;
-  background: var(--michigan-bg);
-  color: white;
+  background: #FFC000;
+  color: #1a1a18;
   cursor: pointer;
   transition: opacity .15s;
   margin-top: .25rem;
@@ -153,7 +153,7 @@
 }
 
 .auth-remember input[type="checkbox"] {
-  accent-color: var(--michigan-bg);
+  accent-color: #FFC000;
   width: 14px;
   height: 14px;
   cursor: pointer;
@@ -184,7 +184,7 @@
   font-family: 'Quicksand', sans-serif;
   font-size: 13px;
   font-weight: 600;
-  color: var(--michigan-bg);
+  color: #CC9600;
   padding: 0;
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -211,7 +211,7 @@
 .auth-footer-link {
   font-family: 'Quicksand', sans-serif;
   font-weight: 600;
-  color: var(--michigan-bg);
+  color: #CC9600;
   text-decoration: none;
   cursor: pointer;
   background: none;
@@ -458,8 +458,9 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding: 14px 180px 12px 24px;
+  padding: 14px 24px 12px;
   gap: 3px;
+  text-align: center;
 }
 
 .home-header-org {
@@ -491,7 +492,7 @@
 .home-header-title-group {
   display: inline-flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   gap: 0;
 }
 

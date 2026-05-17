@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import PageTopBar from '../components/PageTopBar'
 import FeedbackButton from '../components/FeedbackButton'
-import { GremlinRosie, GremlinAce, GremlinVera } from '../components/GremlinsArt'
+import { GremlinVera } from '../components/GremlinsArt'
 
 export default function About() {
   useEffect(() => {
@@ -33,8 +33,6 @@ export default function About() {
       </p>
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 28 }}>
-        <GremlinRosie />
-        <GremlinAce />
         <GremlinVera />
       </div>
       <FeedbackButton />
