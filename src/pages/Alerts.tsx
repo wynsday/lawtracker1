@@ -7,6 +7,7 @@ import { getIdsByStatus } from '../lib/billStatus'
 import { generateHtml } from '../lib/generateHtml'
 import { supabase } from '../lib/supabase'
 import Header from '../components/Header'
+import { userKey } from '../lib/userKey'
 import FilterGroups from '../components/FilterGroups'
 import BillCard from '../components/BillCard'
 import BillActivity from '../components/BillActivity'
@@ -16,7 +17,7 @@ import type React from 'react'
 
 function alertMovementEnabled(): boolean {
   try {
-    const raw = localStorage.getItem('wsp-alert-settings')
+    const raw = localStorage.getItem(userKey('wsp-alert-settings'))
     if (!raw) return true  // default on
     return JSON.parse(raw)?.movement?.alerting !== false
   } catch { return true }

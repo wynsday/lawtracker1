@@ -5,6 +5,7 @@ import ThemeToggle from '../components/ThemeToggle'
 import { getOfficialsByState, type Official, type OfficialParty } from '../lib/officials'
 import { supabase } from '../lib/supabase'
 import { getIdsByStatus, syncStatusesAfterLogin } from '../lib/billStatus'
+import { userKey } from '../lib/userKey'
 import {
   fetchNotifications, markAllRead,
   type AppNotification,
@@ -532,7 +533,7 @@ export default function Home() {
 
   const [customLocalReps, setCustomLocalReps] = useState<Official[]>(() => {
     try {
-      const r = localStorage.getItem('wsp-local-reps')
+      const r = localStorage.getItem(userKey('wsp-local-reps'))
       return r ? JSON.parse(r) as Official[] : []
     } catch { return [] }
   })
@@ -543,7 +544,7 @@ export default function Home() {
   const [localRolesLoaded, setLocalRolesLoaded]   = useState(false)
   const [localDBOfficials, setLocalDBOfficials]   = useState<LocalOfficialRow[]>([])
   const [localForms, setLocalForms]               = useState<Record<string, { name: string; phone: string; email: string; since: string; term_ends: string }>>(() => {
-    try { const r = localStorage.getItem('wsp-local-forms'); return r ? JSON.parse(r) : {} } catch { return {} }
+    try { const r = localStorage.getItem(userKey('wsp-local-forms')); return r ? JSON.parse(r) : {} } catch { return {} }
   })
   const [localSaveStatus, setLocalSaveStatus]               = useState<Record<string, 'saving' | 'saved' | 'error'>>({})
   const [localFromDropdown, setLocalFromDropdown]           = useState<Record<string, Record<string, boolean>>>({})
@@ -553,18 +554,18 @@ export default function Home() {
   const [localRefreshKey, setLocalRefreshKey]               = useState(0)
   const [hiddenLocalRoles, setHiddenLocalRoles]   = useState<Set<string>>(() => {
     try {
-      const r = localStorage.getItem('wsp-hidden-local-roles')
+      const r = localStorage.getItem(userKey('wsp-hidden-local-roles'))
       return r ? new Set(JSON.parse(r) as string[]) : new Set()
     } catch { return new Set() }
   })
   const [localViewMode, setLocalViewMode]         = useState<'show' | 'hide'>('show')
   const [localParty, setLocalParty]               = useState<Record<string, string>>(() => {
-    try { const r = localStorage.getItem('wsp-local-party'); return r ? JSON.parse(r) : {} } catch { return {} }
+    try { const r = localStorage.getItem(userKey('wsp-local-party')); return r ? JSON.parse(r) : {} } catch { return {} }
   })
 
   const profileAddr = (() => {
     try {
-      const r = localStorage.getItem('wsp-profile')
+      const r = localStorage.getItem(userKey('wsp-profile'))
       return r ? JSON.parse(r) as {
         state?: string; city?: string; zip?: string; county?: string
         congressional_district?: string
@@ -599,19 +600,19 @@ export default function Home() {
   }, [profileAddr?.state])
 
   useEffect(() => {
-    localStorage.setItem('wsp-local-reps', JSON.stringify(customLocalReps))
+    localStorage.setItem(userKey('wsp-local-reps'), JSON.stringify(customLocalReps))
   }, [customLocalReps])
 
   useEffect(() => {
-    localStorage.setItem('wsp-hidden-local-roles', JSON.stringify([...hiddenLocalRoles]))
+    localStorage.setItem(userKey('wsp-hidden-local-roles'), JSON.stringify([...hiddenLocalRoles]))
   }, [hiddenLocalRoles])
 
   useEffect(() => {
-    localStorage.setItem('wsp-local-forms', JSON.stringify(localForms))
+    localStorage.setItem(userKey('wsp-local-forms'), JSON.stringify(localForms))
   }, [localForms])
 
   useEffect(() => {
-    localStorage.setItem('wsp-local-party', JSON.stringify(localParty))
+    localStorage.setItem(userKey('wsp-local-party'), JSON.stringify(localParty))
   }, [localParty])
 
   useEffect(() => {

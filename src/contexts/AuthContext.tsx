@@ -28,7 +28,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     authValidate()
       .then(res => {
-        if (res.ok) setUser({ username: res.username, role: res.role, tier: res.tier })
+        if (res.ok) {
+          localStorage.setItem('wsp-current-user', res.username)
+          setUser({ username: res.username, role: res.role, tier: res.tier })
+        }
         setReady(true)
       })
       .catch(() => {
@@ -45,15 +48,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   ) => {
     const res = await authSignin(username, credential, mode, remember)
     if (!res.ok) return res
-    // Token is in httpOnly cookie set by the server response — not accessible here.
-    // Store only the non-sensitive user identity in React state.
+    localStorage.setItem('wsp-current-user', username)
     setUser({ username, role: res.role, tier: res.tier })
     return { ok: true as const }
   }, [])
 
   const signOut = useCallback(async () => {
-    // httpOnly cookies cannot be cleared by JS — server sets Max-Age=0
     await authSignout().catch(() => {})
+    localStorage.removeItem('wsp-current-user')
     setUser(null)
   }, [])
 

@@ -5,6 +5,7 @@ import FeedbackButton from '../components/FeedbackButton'
 import { ISSUE_LABELS } from '../lib/constants'
 import { useAuth } from '../contexts/AuthContext'
 import { syncAlertSettings, subscribeToPush, unsubscribeFromPush } from '../lib/notificationClient'
+import { userKey } from '../lib/userKey'
 
 // ── Types ──────────────────────────────────────────────────────────────
 interface AlertConfig {
@@ -47,7 +48,7 @@ function getPushStatus(): PushPermission {
 
 function load(): AlertConfig {
   try {
-    const raw = localStorage.getItem('wsp-alert-settings')
+    const raw = localStorage.getItem(userKey('wsp-alert-settings'))
     if (!raw) return DEFAULT
     const parsed = JSON.parse(raw)
     // migrate old delivery field to channels
@@ -269,7 +270,7 @@ export default function AlertSettings() {
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('wsp-alert-settings', JSON.stringify(cfg))
+    localStorage.setItem(userKey('wsp-alert-settings'), JSON.stringify(cfg))
     if (user) syncAlertSettings(cfg).catch(() => {})
   }, [cfg, user])
 

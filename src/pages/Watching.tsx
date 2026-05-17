@@ -5,6 +5,7 @@ import { useBills } from '../hooks/useBills'
 import { filterBills } from '../lib/billUtils'
 import { getIdsByStatus } from '../lib/billStatus'
 import Header from '../components/Header'
+import { userKey } from '../lib/userKey'
 import FilterGroups from '../components/FilterGroups'
 import BillCard from '../components/BillCard'
 import BillActivity from '../components/BillActivity'
@@ -14,7 +15,7 @@ import type React from 'react'
 
 function watchMovementEnabled(): boolean {
   try {
-    const raw = localStorage.getItem('wsp-alert-settings')
+    const raw = localStorage.getItem(userKey('wsp-alert-settings'))
     if (!raw) return true
     return JSON.parse(raw)?.movement?.watching !== false
   } catch { return true }

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import PageTopBar from '../components/PageTopBar'
 import FeedbackButton from '../components/FeedbackButton'
+import { useAuth } from '../contexts/AuthContext'
+import { userKey } from '../lib/userKey'
 
 const US_STATES = [
   'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA',
@@ -142,11 +144,9 @@ const EMPTY: ProfileData = {
   confirmed: false, city_link: '',
 }
 
-const STORAGE_KEY = 'wsp-profile'
-
 function load(): ProfileData {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(userKey('wsp-profile'))
     if (raw) return { ...EMPTY, ...JSON.parse(raw) }
   } catch { /* ignore */ }
   return { ...EMPTY }
@@ -400,6 +400,7 @@ async function tryNominatim(signal: AbortSignal, street: string, zip: string): P
 }
 
 export default function Profile() {
+  const { user } = useAuth()
   const [data, setData]           = useState<ProfileData>(load)
   const [saved, setSaved]         = useState(false)
   const [geoStatus, setGeoStatus] = useState<GeoStatus>('idle')
@@ -420,7 +421,16 @@ export default function Profile() {
   }, [])
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    if (!user) return
+    try {
+      const raw = localStorage.getItem(`wsp-profile-${user.username}`)
+      setData(raw ? { ...EMPTY, ...JSON.parse(raw) } : { ...EMPTY })
+    } catch { setData({ ...EMPTY }) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.username])
+
+  useEffect(() => {
+    localStorage.setItem(userKey('wsp-profile'), JSON.stringify(data))
     setSaved(true)
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(() => setSaved(false), 2000)

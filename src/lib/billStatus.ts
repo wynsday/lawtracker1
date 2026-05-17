@@ -1,11 +1,10 @@
 import { syncBillStatus, syncAllBillStatuses } from './notificationClient'
+import { userKey } from './userKey'
 
 export type BillStatus = 'alert' | 'watch' | 'archive' | null
 
-const KEY = 'wsp-bill-status'
-
 function getAll(): Record<number, BillStatus> {
-  try { return JSON.parse(localStorage.getItem(KEY) ?? '{}') } catch { return {} }
+  try { return JSON.parse(localStorage.getItem(userKey('wsp-bill-status')) ?? '{}') } catch { return {} }
 }
 
 export function getStatus(id: number): BillStatus {
@@ -16,7 +15,7 @@ export function setStatus(id: number, status: BillStatus) {
   const all = getAll()
   if (status === null) delete all[id]
   else all[id] = status
-  localStorage.setItem(KEY, JSON.stringify(all))
+  localStorage.setItem(userKey('wsp-bill-status'), JSON.stringify(all))
   window.dispatchEvent(new CustomEvent('bill-status-change'))
   // Background DB sync — silently ignored if not logged in (returns 401)
   syncBillStatus([{ bill_id: id, status }]).catch(() => {})
